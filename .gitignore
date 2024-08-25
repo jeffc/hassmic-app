@@ -10,6 +10,8 @@ npm-debug.*
 *.orig.*
 web-build/
 
+app/secrets.ts
+
 app-example/
 
 android/

@@ -1,39 +1,53 @@
-import {
-  Button,
-  PermissionsAndroid,
-  Text,
-  View,
-} from "react-native";
+import { Button, PermissionsAndroid, Text, View } from "react-native";
+
+import { HassSocket } from "./hass";
+
+import { HASS_URL, HASS_KEY } from "./secrets";
 
 import { useState } from "react";
 
 import MicStream from "react-native-microphone-stream";
 
-
 export default function Index() {
-  let requestPermission = async () => {
-    let res = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO);
+  const requestPermission = async () => {
+    const res = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+    );
     console.log(res);
   };
 
   const [micOn, setMicOn] = useState(false);
+  const [level, setLevel] = useState(0);
 
-  const listener = MicStream.addListener(data => {});
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const listener = MicStream.addListener((data) => {
+    //setLevel(data.map((e) => Math.abs(e)).reduce((a, b) => Math.max(a, b), 0));
+  });
+
   MicStream.init({
     bufferSize: 4096,
-    sampleRate: 44100,
+    sampleRate: 16000,
     bitsPerChannel: 16,
     channelsPerFrame: 1,
   });
 
-  let startStream = async () => {
+  const startStream = async () => {
     MicStream.start();
     setMicOn(true);
   };
 
-  let stopStream = async() => {
+  const stopStream = async () => {
     MicStream.stop();
     setMicOn(false);
+  };
+
+  HassSocket.addStateChangeCallback((msg) => {
+    console.info(msg);
+  });
+
+  const hassAuth = () => {
+    const url = HASS_URL.replace("http", "ws") + "/api/websocket";
+    HassSocket.connect(url, HASS_KEY);
   };
 
   return (
@@ -45,14 +59,16 @@ export default function Index() {
       }}
     >
       <>
-        <Text>Edit app/index.tsx to edit this screen.</Text>
-        <Button 
-          title="Get Permissions"
-          onPress={requestPermission}
+        <Button title="Get Permissions" onPress={requestPermission} />
+        <Button
+          title={micOn ? "Stop" : "Start"}
+          onPress={micOn ? stopStream : startStream}
         />
-        <Button 
-          title={ micOn ? "Stop" : "Start" }
-          onPress={() => { micOn ? stopStream() : startStream(); }}
+        <Button
+          title="Hass Auth"
+          onPress={() => {
+            hassAuth();
+          }}
         />
       </>
     </View>
