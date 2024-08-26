@@ -4,10 +4,14 @@ import { HassSocket, ConnectionState } from "./hass";
 
 import { HASS_URL, HASS_KEY } from "./secrets";
 
+import { Buffer } from "buffer";
+
 import { useState, useEffect } from "react";
 import { KeyType } from "./util/AutoKeyMap";
 
-import MicStream from "react-native-microphone-stream";
+// note - patched version from
+// https://github.com/Romick2005/react-native-live-audio-stream
+import LiveAudioStream from "react-native-live-audio-stream";
 
 export default function Index() {
   const [hasAudioPermission, setHasAudioPermission] = useState(false);
@@ -35,37 +39,23 @@ export default function Index() {
   };
 
   const startStream = async () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    if (!micListener) {
-      const { remove } = MicStream.addListener((data) => {
-        //console.debug(
-        //  data.map((e) => Math.abs(e)).reduce((a, b) => Math.max(a, b), 0)
-        //);
-        HassSocket.streamAudio(data);
-      });
-      setMicListener(() => remove);
-      console.info("Set mic listener");
-    } else {
-      console.warn("Mic listener is already set");
-    }
-
-    MicStream.init({
-      bufferSize: 1024,
+    LiveAudioStream.init({
       sampleRate: 16000,
-      bitsPerChannel: 16,
-      channelsPerFrame: 1,
+      channels: 1,
+      bitsPerSample: 16,
+      audioSource: 6,
     });
-    MicStream.start();
+    LiveAudioStream.on("data", (data) => {
+      let chunk = Buffer.from(data, "base64");
+      HassSocket.streamAudio(chunk);
+    });
+    LiveAudioStream.start();
     setMicOn(true);
   };
 
   const stopStream = async () => {
-    MicStream.stop();
+    LiveAudioStream.stop();
     setMicOn(false);
-    if (micListener) {
-      micListener();
-    }
-    setMicListener(null);
   };
 
   const hassAuth = () => {

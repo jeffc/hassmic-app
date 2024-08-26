@@ -177,7 +177,7 @@ class HomeAssistantConnection {
 
   private _DEBUGSOCK?: WebSocket;
 
-  streamAudio = (streamData: any) => {
+  streamAudio = (streamData: Uint8Array) => {
     if (this._state == ConnectionState.STREAMING) {
       if (this._bin_id === undefined) {
         console.error("can't stream; bin_id is not set");
@@ -187,19 +187,7 @@ class HomeAssistantConnection {
         console.error("can't stream; socket is undefined");
         return;
       }
-      if (this._DEBUGSOCK) {
-        //const a = streamData.map((_, i) => streamData[i ^ 1]);
-        //const ar = Uint8Array.of(this._bin_id, ...a);
-        const xxx = new Uint8Array(streamData);
-        console.debug(`Sending ${xxx.length} bytes`);
-        this._DEBUGSOCK.send(xxx);
-      }
-
-      // flip endianness
-      //console.log(`got streamdata ${streamData.length} bytes`);
-      const a = streamData.map((_, i) => streamData[i ^ 1]);
-      const ar = Uint8Array.of(this._bin_id, ...a);
-      //console.log(`sending ${ar.length} bytes`);
+      const ar = Uint8Array.of(this._bin_id, ...streamData);
       this._socket.send(ar);
     }
   };
@@ -243,8 +231,7 @@ class HomeAssistantConnection {
       start_stage: "wake_word",
       end_stage: "tts",
       input: {
-        //sample_rate: 16000,
-        sample_rate: 44100,
+        sample_rate: 16000,
       },
     });
   };
