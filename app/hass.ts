@@ -8,10 +8,11 @@ export enum ConnectionState {
   AUTH_INVALID,
   READY,
   ASSIST_START,
-  STREAMING,
+  STREAMING_WAKEWORD,
+  STREAMING_STT,
   PROCESSING,
 }
-type StateChangeCallback = (newstate: ConnectionState) => void;
+type ChangeCallback<T> = (x: T) => void;
 
 interface HassServerMessage {
   type: string;
@@ -40,14 +41,20 @@ class HomeAssistantConnection {
   // ID for streaming audio
   private _bin_id?: number;
 
-  // container for callbacks on state change
-  private _stateCallbacks: AutoKeyMap<StateChangeCallback> =
-    new AutoKeyMap<StateChangeCallback>();
+  //// container for callbacks on state change
+  //private _stateCallbacks: AutoKeyMap<ChangeCallback<ConnectionState>> =
+  //  new AutoKeyMap<ChangeCallback<ConnectionState>>();
+
+  // callbacks
+  private _stateCallback?: ChangeCallback<ConnectionState>;
+  private _newSTTCallback?: ChangeCallback<string>;
+  private _newResultCallback?: ChangeCallback<string>;
 
   // Set the state and call any callbacks
   private setState = (newstate: ConnectionState) => {
     this._state = newstate;
-    this._stateCallbacks.values.forEach((f) => f(newstate));
+    //this._stateCallbacks.values.forEach((f) => f(newstate));
+    this._stateCallback?.(newstate);
   };
 
   // Getter for state
@@ -56,28 +63,51 @@ class HomeAssistantConnection {
   // convenience function
   isConnected = () => {
     switch (this._state) {
-      case ConnectionState.READY:
-        return true;
-      case ConnectionState.STREAMING:
-        return true;
       case ConnectionState.ASSIST_START:
-        return true;
       case ConnectionState.PROCESSING:
+      case ConnectionState.READY:
+      case ConnectionState.STREAMING_STT:
+      case ConnectionState.STREAMING_WAKEWORD:
         return true;
       default:
         return false;
     }
   };
 
-  // Add a callback for when the state changes
-  addStateChangeCallback = (cb: StateChangeCallback): KeyType => {
-    return this._stateCallbacks.add(cb);
+  // convenience function
+  isStreaming = () => {
+    switch (this._state) {
+      case ConnectionState.STREAMING_STT:
+      case ConnectionState.STREAMING_WAKEWORD:
+        return true;
+      default:
+        return false;
+    }
   };
 
-  // Remove a callback for when the state changes
-  removeStateChangeCallback = (key: KeyType) => {
-    this._stateCallbacks.remove(key);
-  };
+  //// Add a callback for when the state changes
+  //addChangeCallback<ConnectionState> = (cb: ChangeCallback<ConnectionState>): KeyType => {
+  //  return this._stateCallbacks.add(cb);
+  //};
+
+  // callback setters
+  onStateChange = (cb?: ChangeCallback<ConnectionState>) =>
+    (this._stateCallback = cb);
+  onSTTParsed = (cb?: ChangeCallback<string>) => (this._newSTTCallback = cb);
+  onAssistResult = (cb?: ChangeCallback<string>) =>
+    (this._newResultCallback = cb);
+
+  //// Remove a callback for when the state changes
+  //removeChangeCallback<ConnectionState> = (key: KeyType) => {
+  //  this._stateCallbacks.remove(key);
+  //};
+
+  // storage for the last TTS and STT
+  private _recognizedSpeech: string = "";
+  private _responseText: string = "";
+
+  getSTTResult = () => this._recognizedSpeech;
+  getAssistResult = () => this._responseText;
 
   // send structured data to home assistant
   sendObj = (msg: { [Key: string]: any }, addID: boolean = true) => {
@@ -138,16 +168,16 @@ class HomeAssistantConnection {
     const d = e["data"];
     switch (e["type"]) {
       case "run-start":
-        const binary_id = d["runner_data"]["stt_binary_handler_id"];
-        console.log(`Starting pipeline run with bin ID ${binary_id}`);
-        this._bin_id = binary_id;
+        this._bin_id = d["runner_data"]["stt_binary_handler_id"];
+        console.log(`Starting pipeline run with bin ID ${this._bin_id}`);
         break;
       case "wake_word-start":
         console.log("Listening for wakeword");
-        this.setState(ConnectionState.STREAMING);
+        this.setState(ConnectionState.STREAMING_WAKEWORD);
         break;
       case "stt-start":
         console.log("STT Phase start");
+        this.setState(ConnectionState.STREAMING_STT);
         break;
       case "stt-vad-start":
         console.log("Transcribing...");
@@ -157,28 +187,38 @@ class HomeAssistantConnection {
         this.setState(ConnectionState.PROCESSING);
         break;
       case "stt-end":
-        console.log(`Got STT: "${d["stt_output"]["text"]}"`);
+        this._recognizedSpeech = d["stt_output"]["text"];
+        console.log(`Got STT: "${this._recognizedSpeech}"`);
+        this._newSTTCallback?.(this._recognizedSpeech);
         break;
       case "tts-start":
-        console.log(`Got TTS: "${d["tts_input"]}"`);
+        this._responseText = d["tts_input"];
+        console.log(`Got TTS: "${this._responseText}"`);
+        this._newResultCallback?.(this._responseText);
         break;
       case "tts-end":
-        console.log(`Got TTS URL: "${d["url"]}"`);
+        console.log(`Got TTS URL: "${d["tts_output"]["url"]}"`);
+        break;
+      case "run-end":
+        console.log(`Run end. starting again...`);
         this.setState(ConnectionState.READY);
+        this.startAssist();
         break;
       case "error":
         console.error(`Got Error: (${d["code"]}): "${d["message"]}"`);
         this.setState(ConnectionState.READY);
+        this._responseText = "";
+        this._recognizedSpeech = "";
+        this._newSTTCallback("");
+        this._newResultCallback("");
         break;
       default:
         console.log(`Got event type ${e["type"]}; not explicitly handling it`);
     }
   };
 
-  private _DEBUGSOCK?: WebSocket;
-
   streamAudio = (streamData: Uint8Array) => {
-    if (this._state == ConnectionState.STREAMING) {
+    if (this.isStreaming()) {
       if (this._bin_id === undefined) {
         console.error("can't stream; bin_id is not set");
         return;
@@ -205,13 +245,8 @@ class HomeAssistantConnection {
 
     this._socket = new WebSocket(addr);
     this.setState(ConnectionState.DISCONNECTED);
-    this._DEBUGSOCK = new WebSocket("ws://192.168.1.201:7777");
-    const _hassobj = this;
 
-    this._socket.onopen = function (event) {
-      console.log(`Websocket opened: ${event}`);
-      _hassobj.setState(ConnectionState.NEWLY_CONNECTED);
-    };
+    this._socket.onopen = () => this.setState(ConnectionState.NEWLY_CONNECTED);
 
     this._socket.onmessage = (m: MessageEvent) =>
       this.handleMessage(m.data.toString());
@@ -223,8 +258,8 @@ class HomeAssistantConnection {
     this._socket.onclose = () => this.setState(ConnectionState.DISCONNECTED);
   };
 
-  // start a stream
-  startStream = () => {
+  // kick off the assist pipeline
+  startAssist = () => {
     this._currentTransactionId = undefined;
     this.sendObj({
       type: "assist_pipeline/run",

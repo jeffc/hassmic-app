@@ -17,9 +17,8 @@ export default function Index() {
   const [hasAudioPermission, setHasAudioPermission] = useState(false);
   const [hassConnected, setHassConnected] = useState(false);
   const [micOn, setMicOn] = useState(false);
-  const [hassSocketCallbackRef, setHassSocketCallbackRef] =
-    useState<KeyType | null>(null);
-  const [micListener, setMicListener] = useState<(() => void) | null>(null);
+  const [sttResult, setSTTResult] = useState("");
+  const [assistResult, setAssistResult] = useState("");
 
   // check permissions silently
   const checkPermissions = async () => {
@@ -44,9 +43,10 @@ export default function Index() {
       channels: 1,
       bitsPerSample: 16,
       audioSource: 6,
+      wavFile: "", // to make tsc happy; this isn't used anywhere
     });
     LiveAudioStream.on("data", (data) => {
-      let chunk = Buffer.from(data, "base64");
+      const chunk = Buffer.from(data, "base64");
       HassSocket.streamAudio(chunk);
     });
     LiveAudioStream.start();
@@ -65,16 +65,14 @@ export default function Index() {
 
   useEffect(() => {
     checkPermissions();
-    if (hassSocketCallbackRef != null) {
-      HassSocket.removeStateChangeCallback(hassSocketCallbackRef);
-    }
-    const ref = HassSocket.addStateChangeCallback((s) => {
+    HassSocket.onStateChange((s) => {
       const newstate = ConnectionState[s];
       console.info(newstate);
       const ic = HassSocket.isConnected();
       setHassConnected(ic);
     });
-    setHassSocketCallbackRef(ref);
+    HassSocket.onSTTParsed(setSTTResult);
+    HassSocket.onAssistResult(setAssistResult);
   }, []);
 
   return (
@@ -86,11 +84,17 @@ export default function Index() {
       }}
     >
       <>
+        {sttResult ? (
+          <>
+            <Text>Latest STT: {sttResult}</Text>
+            <Text>Latest Answer: {assistResult}</Text>
+          </>
+        ) : null}
         {hasAudioPermission ? null : (
           <Button title="Get Permissions" onPress={requestPermission} />
         )}
         <Button
-          title={micOn ? "Stop" : "Start"}
+          title={micOn ? "Stop Microphone" : "Start Microphone"}
           onPress={micOn ? stopStream : startStream}
         />
         {!hassConnected ? (
@@ -103,8 +107,8 @@ export default function Index() {
         ) : (
           <>
             <Button
-              title="Start Assist Stream"
-              onPress={() => HassSocket.startStream()}
+              title="Start Assist Pipeline"
+              onPress={() => HassSocket.startAssist()}
             />
             <Button
               title="Disconnect"
