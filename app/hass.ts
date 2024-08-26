@@ -7,11 +7,16 @@ export enum ConnectionState {
   AWAIT_AUTH,
   AUTH_INVALID,
   READY,
+  ASSIST_START,
+  STREAMING,
+  PROCESSING,
 }
 type StateChangeCallback = (newstate: ConnectionState) => void;
 
 interface HassServerMessage {
   type: string;
+  id?: number;
+  event?: { [Key: string]: any };
 }
 
 class HomeAssistantConnection {
@@ -27,6 +32,14 @@ class HomeAssistantConnection {
   // current state of this connection
   private _state: ConnectionState = ConnectionState.UNKNOWN;
 
+  // home assistant uses message IDs to keep track of transactions
+  // message ID must increase monotonically.
+  private _nextMessageId: number = 100;
+  private _currentTransactionId?: number;
+
+  // ID for streaming audio
+  private _bin_id?: number;
+
   // container for callbacks on state change
   private _stateCallbacks: AutoKeyMap<StateChangeCallback> =
     new AutoKeyMap<StateChangeCallback>();
@@ -35,6 +48,25 @@ class HomeAssistantConnection {
   private setState = (newstate: ConnectionState) => {
     this._state = newstate;
     this._stateCallbacks.values.forEach((f) => f(newstate));
+  };
+
+  // Getter for state
+  getState = () => this._state;
+
+  // convenience function
+  isConnected = () => {
+    switch (this._state) {
+      case ConnectionState.READY:
+        return true;
+      case ConnectionState.STREAMING:
+        return true;
+      case ConnectionState.ASSIST_START:
+        return true;
+      case ConnectionState.PROCESSING:
+        return true;
+      default:
+        return false;
+    }
   };
 
   // Add a callback for when the state changes
@@ -48,7 +80,12 @@ class HomeAssistantConnection {
   };
 
   // send structured data to home assistant
-  sendObj = (msg: object) => {
+  sendObj = (msg: { [Key: string]: any }, addID: boolean = true) => {
+    if (addID) {
+      msg["id"] = this._nextMessageId;
+      this._currentTransactionId = this._nextMessageId;
+      this._nextMessageId++;
+    }
     const m: string = JSON.stringify(msg);
     console.info("sending: " + m);
     if (!this._socket) {
@@ -60,17 +97,19 @@ class HomeAssistantConnection {
 
   // handle messages from the server
   handleMessage = (m: string) => {
-    console.debug(m.toString());
     const message: HassServerMessage = JSON.parse(m);
-    console.debug(message["type"]);
+    console.debug(m.toString());
     switch (message["type"]) {
       case "auth_required":
         this.setState(ConnectionState.AWAIT_AUTH);
         // send auth
-        this.sendObj({
-          type: "auth",
-          access_token: this._hasskey,
-        });
+        this.sendObj(
+          {
+            type: "auth",
+            access_token: this._hasskey,
+          },
+          false
+        );
         break;
       case "auth_invalid":
         this.setState(ConnectionState.AUTH_INVALID);
@@ -78,6 +117,96 @@ class HomeAssistantConnection {
       case "auth_ok":
         this.setState(ConnectionState.READY);
         break;
+      case "event":
+        if (message["id"] == this._currentTransactionId) {
+          this.handleEvent(message);
+        } else {
+          console.error(
+            `Current transaction ID is ${this._currentTransactionId}, but got ID ${message["id"]} from server`
+          );
+        }
+        break;
+    }
+  };
+
+  handleEvent = (ev: HassServerMessage) => {
+    const e = ev.event;
+    if (!e) {
+      console.error("Event message had no body");
+      return;
+    }
+    const d = e["data"];
+    switch (e["type"]) {
+      case "run-start":
+        const binary_id = d["runner_data"]["stt_binary_handler_id"];
+        console.log(`Starting pipeline run with bin ID ${binary_id}`);
+        this._bin_id = binary_id;
+        break;
+      case "wake_word-start":
+        console.log("Listening for wakeword");
+        this.setState(ConnectionState.STREAMING);
+        break;
+      case "stt-start":
+        console.log("STT Phase start");
+        break;
+      case "stt-vad-start":
+        console.log("Transcribing...");
+        break;
+      case "stt-vad-end":
+        console.log("Processing");
+        this.setState(ConnectionState.PROCESSING);
+        break;
+      case "stt-end":
+        console.log(`Got STT: "${d["stt_output"]["text"]}"`);
+        break;
+      case "tts-start":
+        console.log(`Got TTS: "${d["tts_input"]}"`);
+        break;
+      case "tts-end":
+        console.log(`Got TTS URL: "${d["url"]}"`);
+        this.setState(ConnectionState.READY);
+        break;
+      case "error":
+        console.error(`Got Error: (${d["code"]}): "${d["message"]}"`);
+        this.setState(ConnectionState.READY);
+        break;
+      default:
+        console.log(`Got event type ${e["type"]}; not explicitly handling it`);
+    }
+  };
+
+  private _DEBUGSOCK?: WebSocket;
+
+  streamAudio = (streamData: any) => {
+    if (this._state == ConnectionState.STREAMING) {
+      if (this._bin_id === undefined) {
+        console.error("can't stream; bin_id is not set");
+        return;
+      }
+      if (!this._socket) {
+        console.error("can't stream; socket is undefined");
+        return;
+      }
+      if (this._DEBUGSOCK) {
+        //const a = streamData.map((_, i) => streamData[i ^ 1]);
+        //const ar = Uint8Array.of(this._bin_id, ...a);
+        const xxx = new Uint8Array(streamData);
+        console.debug(`Sending ${xxx.length} bytes`);
+        this._DEBUGSOCK.send(xxx);
+      }
+
+      // flip endianness
+      //console.log(`got streamdata ${streamData.length} bytes`);
+      const a = streamData.map((_, i) => streamData[i ^ 1]);
+      const ar = Uint8Array.of(this._bin_id, ...a);
+      //console.log(`sending ${ar.length} bytes`);
+      this._socket.send(ar);
+    }
+  };
+
+  disconnect = () => {
+    if (this._socket) {
+      this._socket.close();
     }
   };
 
@@ -88,6 +217,7 @@ class HomeAssistantConnection {
 
     this._socket = new WebSocket(addr);
     this.setState(ConnectionState.DISCONNECTED);
+    this._DEBUGSOCK = new WebSocket("ws://192.168.1.201:7777");
     const _hassobj = this;
 
     this._socket.onopen = function (event) {
@@ -102,9 +232,21 @@ class HomeAssistantConnection {
       console.error(event);
     };
 
-    this._socket.onclose = function (event) {
-      console.log(`Websocket closed: ${event}`);
-    };
+    this._socket.onclose = () => this.setState(ConnectionState.DISCONNECTED);
+  };
+
+  // start a stream
+  startStream = () => {
+    this._currentTransactionId = undefined;
+    this.sendObj({
+      type: "assist_pipeline/run",
+      start_stage: "wake_word",
+      end_stage: "tts",
+      input: {
+        //sample_rate: 16000,
+        sample_rate: 44100,
+      },
+    });
   };
 }
 
