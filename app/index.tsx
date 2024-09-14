@@ -19,6 +19,7 @@ export default function Index() {
   const [micOn, setMicOn] = useState(false);
   const [sttResult, setSTTResult] = useState("");
   const [assistResult, setAssistResult] = useState("");
+  const [hassState, setHassState] = useState(ConnectionState.UNKNOWN);
 
   // check permissions silently
   const checkPermissions = async () => {
@@ -66,6 +67,7 @@ export default function Index() {
   useEffect(() => {
     checkPermissions();
     HassSocket.onStateChange((s) => {
+      setHassState(s);
       const newstate = ConnectionState[s];
       console.info(newstate);
       const ic = HassSocket.isConnected();
@@ -84,6 +86,7 @@ export default function Index() {
       }}
     >
       <>
+        <Text>Home assistant state: {ConnectionState[hassState]}</Text>
         {sttResult ? (
           <>
             <Text>Latest STT: {sttResult}</Text>

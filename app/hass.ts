@@ -1,7 +1,7 @@
 import { AutoKeyMap, KeyType } from "./util/AutoKeyMap";
 
 export enum ConnectionState {
-  UNKNOWN = 1,
+  UNKNOWN,
   DISCONNECTED,
   NEWLY_CONNECTED,
   AWAIT_AUTH,
@@ -205,12 +205,16 @@ class HomeAssistantConnection {
         this.startAssist();
         break;
       case "error":
-        console.error(`Got Error: (${d["code"]}): "${d["message"]}"`);
+        if (d["code"] == "wake-word-timeout") {
+          console.log("Wakeword timeout. Restarting");
+        } else {
+          console.error(`Got Error: (${d["code"]}): "${d["message"]}"`);
+        }
         this.setState(ConnectionState.READY);
         this._responseText = "";
         this._recognizedSpeech = "";
-        this._newSTTCallback("");
-        this._newResultCallback("");
+        this._newSTTCallback?.("");
+        this._newResultCallback?.("");
         break;
       default:
         console.log(`Got event type ${e["type"]}; not explicitly handling it`);
