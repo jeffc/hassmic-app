@@ -5,10 +5,8 @@ buildscript {
         //buildToolsVersion = findProperty('android.buildToolsVersion') ?: '34.0.0'
         buildToolsVersion = '26.0.0'
         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')
-        //compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
-        compileSdkVersion = 34
-        //targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-        targetSdkVersion = 26
+        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
+        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
 
         ndkVersion = "26.1.10909125"
