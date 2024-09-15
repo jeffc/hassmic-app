@@ -1,6 +1,6 @@
 import { Button, PermissionsAndroid, Text, View } from "react-native";
 
-import { HassSocket, ConnectionState } from "./hass";
+import { CheyenneSocket } from "./cheyenne";
 
 import { HASS_URL, HASS_KEY } from "./secrets";
 
@@ -19,7 +19,7 @@ export default function Index() {
   const [micOn, setMicOn] = useState(false);
   const [sttResult, setSTTResult] = useState("");
   const [assistResult, setAssistResult] = useState("");
-  const [hassState, setHassState] = useState(ConnectionState.UNKNOWN);
+  //const [hassState, setHassState] = useState(ConnectionState.UNKNOWN);
 
   // check permissions silently
   const checkPermissions = async () => {
@@ -48,7 +48,7 @@ export default function Index() {
     });
     LiveAudioStream.on("data", (data) => {
       const chunk = Buffer.from(data, "base64");
-      HassSocket.streamAudio(chunk);
+      CheyenneSocket.streamAudio(chunk);
     });
     LiveAudioStream.start();
     setMicOn(true);
@@ -61,20 +61,20 @@ export default function Index() {
 
   const hassAuth = () => {
     const url = HASS_URL.replace("http", "ws") + "/api/websocket";
-    HassSocket.connect(url, HASS_KEY);
+    //HassSocket.connect(url, HASS_KEY);
   };
 
   useEffect(() => {
     checkPermissions();
-    HassSocket.onStateChange((s) => {
-      setHassState(s);
-      const newstate = ConnectionState[s];
-      console.info(newstate);
-      const ic = HassSocket.isConnected();
-      setHassConnected(ic);
-    });
-    HassSocket.onSTTParsed(setSTTResult);
-    HassSocket.onAssistResult(setAssistResult);
+    //HassSocket.onStateChange((s) => {
+    //  setHassState(s);
+    //  const newstate = ConnectionState[s];
+    //  console.info(newstate);
+    //  const ic = HassSocket.isConnected();
+    //  setHassConnected(ic);
+    //});
+    //HassSocket.onSTTParsed(setSTTResult);
+    //HassSocket.onAssistResult(setAssistResult);
   }, []);
 
   return (
@@ -86,6 +86,14 @@ export default function Index() {
       }}
     >
       <>
+        {hasAudioPermission ? null : (
+          <Button title="Get Permissions" onPress={requestPermission} />
+        )}
+        <Button
+          title={micOn ? "Stop" : "Start"}
+          onPress={micOn ? stopStream : startStream}
+        />
+        {/*
         <Text>Home assistant state: {ConnectionState[hassState]}</Text>
         {sttResult ? (
           <>
@@ -119,6 +127,7 @@ export default function Index() {
             />
           </>
         )}
+        */}
       </>
     </View>
   );
