@@ -14,8 +14,6 @@ app/secrets.ts
 
 app-example/
 
-android/
-
 *.sw*
 
 # macOS

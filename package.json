@@ -17,6 +17,7 @@
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
     "@react-navigation/native": "^6.0.2",
+    "@voximplant/react-native-foreground-service": "^3.0.2",
     "buffer": "^6.0.3",
     "expo": "~51.0.28",
     "expo-constants": "~16.0.2",
