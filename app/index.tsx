@@ -4,8 +4,8 @@ import { HASS_URL, HASS_KEY } from "./secrets";
 import { Buffer } from "buffer";
 import { useState, useEffect } from "react";
 import { NetworkInfo } from "react-native-network-info";
-import VIForegroundService from "@voximplant/react-native-foreground-service";
 import { NativeModules } from "react-native";
+import { ZeroconfManager } from "./zeroconf";
 
 //const { AutostartService } = NativeModules;
 
@@ -40,34 +40,6 @@ export default function Index() {
     console.log(res);
   };
 
-  const setupForegroundService = async () => {
-    const fgServiceChannelConfig = {
-      id: "foregroundServiceChannel",
-      name: "Foreground Service",
-      description:
-        "Necessary for running a persistent task when the app is closed",
-      enableVibration: false,
-    };
-    await VIForegroundService.getInstance().createNotificationChannel(
-      fgServiceChannelConfig
-    );
-    const notificationConfig = {
-      channelId: fgServiceChannelConfig.id,
-      id: 3456,
-      title: "HassMic",
-      text: "HassMic is Running",
-      icon: "ic_icon",
-      button: "this does nothing",
-    };
-    try {
-      console.log("starting fg service");
-      await VIForegroundService.getInstance().startService(notificationConfig);
-      console.log("started fg service");
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   const startStream = async () => {
     LiveAudioStream.init({
       sampleRate: 16000,
@@ -97,9 +69,7 @@ export default function Index() {
       }
     });
     NetworkInfo.getIPV4Address().then(setLocalIP);
-    setupForegroundService().then(() =>
-      console.log("Foreground service set up")
-    );
+    ZeroconfManager.StartZeroconf().then(() => {});
   }, []);
 
   return (

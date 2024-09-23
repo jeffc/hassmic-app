@@ -1,4 +1,5 @@
 import TcpSocket from "react-native-tcp-socket";
+import * as Application from "expo-application";
 
 type CallbackType<T> = ((s: T) => void) | null;
 

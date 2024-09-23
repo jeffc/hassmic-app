@@ -32,7 +32,10 @@
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
-		<service android:name="com.voximplant.foregroundservice.VIForegroundService"> </service>
+    <service
+      android:name="com.voximplant.foregroundservice.VIForegroundService"
+      android:foregroundServiceType="microphone"
+      > </service>
     <receiver
       android:directBootAware="true"
       android:name=".AutostartModule"
