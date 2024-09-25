@@ -68,6 +68,7 @@ export default function Index() {
         startStream();
       }
     });
+    CheyenneSocket.startServer();
     NetworkInfo.getIPV4Address().then(setLocalIP);
     ZeroconfManager.StartZeroconf().then(() => {});
   }, []);
