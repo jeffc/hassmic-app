@@ -15,24 +15,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 
-//class BootReceiver extends BroadcastReceiver {
 public class AutostartModule extends BroadcastReceiver {
   @Override
-   public void onReceive(Context context, Intent intent) {
-     if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-       Intent activityIntent = new Intent(context, MainActivity.class);
-       context.startActivity(activityIntent);
-     }
-   }
+  public void onReceive(Context context, Intent intent) {
+    if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
+      context.startService(new Intent(context, BackgroundTaskService.class));
+    }
+  }
 }
-
-//public class AutostartModule extends ReactContextBaseJavaModule {
-//   AutostartModule(ReactApplicationContext context) {
-//       super(context);
-//       context.registerReceiver(new BootReceiver(), new IntentFilter("android.intent.action.BOOT_COMPLETED"));
-//   }
-//
-//   public String getName() {
-//     return "AutostartModule";
-//   }
-//}

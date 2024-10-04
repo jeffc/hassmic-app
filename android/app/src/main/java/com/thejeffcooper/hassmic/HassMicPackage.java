@@ -20,7 +20,7 @@ public class HassMicPackage implements ReactPackage {
            ReactApplicationContext reactContext) {
        List<NativeModule> modules = new ArrayList<>();
 
-       //modules.add(new AutostartModule(reactContext));
+       modules.add(new BackgroundTaskModule(reactContext));
 
        return modules;
    }
