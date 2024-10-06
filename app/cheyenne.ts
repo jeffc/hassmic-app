@@ -57,6 +57,26 @@ class CheyenneServer {
     }
   };
 
+  // sends a ping every 10 seconds while the socket is open.
+  startPing = () => {
+    return (async () => {
+      while (this._sock) {
+        try {
+          this._sock.write(
+            JSON.stringify({
+              type: "ping",
+            }) + "\n"
+          );
+          this._sock.write(streamData);
+        } catch (e) {
+          console.info(e);
+        }
+        await new Promise((resolve) => setTimeout(resolve, 10 * 1e3));
+      }
+      console.log("done ping");
+    })().then(() => {});
+  };
+
   startServer = async () => {
     this._uuid = await UUIDManager.getUUID();
 
@@ -85,6 +105,7 @@ class CheyenneServer {
         socket.setTimeout(60e3);
         this._setConnectionState(true);
         this.sendInfo(this._uuid);
+        this.startPing();
       } else {
         console.info("Already have a socket, dropping new connection");
         socket.destroy();
@@ -93,8 +114,13 @@ class CheyenneServer {
   };
 
   stopServer = async () => {
-    this._server?.close();
+    console.log("stopping server...");
+    const p = new Promise<void>((resolve) => {
+      this._server?.close(resolve);
+    });
     this._sock?.destroy();
+    await p;
+    console.log("Server stopped");
   };
 }
 
