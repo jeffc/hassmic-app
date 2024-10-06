@@ -139,13 +139,14 @@ class BackgroundTaskManager_ {
     CheyenneSocket.startServer();
     console.log("Started server");
     await ZeroconfManager.StartZeroconf();
-    //const ok = await PermissionsAndroid.check(
-    //  PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
-    //);
-    //if (!ok) {
-    //  console.log("no permission; bailing");
-    //  return;
-    //}
+    const ok = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+    );
+    if (!ok) {
+      console.error("no permission; bailing");
+      this.setState(TaskState.FAILED);
+      return;
+    }
     console.log("permissions okay, starting stream");
     LiveAudioStream.init({
       sampleRate: 16000,

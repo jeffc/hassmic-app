@@ -2,6 +2,7 @@ import {
   Button,
   PermissionsAndroid,
   SafeAreaView,
+  StyleSheet,
   StatusBar,
   Switch,
   Text,
@@ -14,6 +15,7 @@ import { Buffer } from "buffer";
 import { useState, useEffect } from "react";
 import { NetworkInfo } from "react-native-network-info";
 import { NativeModules } from "react-native";
+import { UUIDManager } from "./util";
 import { ZeroconfManager } from "./zeroconf";
 
 // note - patched version from
@@ -30,6 +32,7 @@ export default function Index() {
   const [backgroundTaskState, setBackgroundTaskState] = useState(
     TaskState.UNKNOWN
   );
+  const [uuid, setUUID] = useState("");
 
   // check audio permission silently
   const checkAudioPermission = async (): Promise<boolean> => {
@@ -85,6 +88,7 @@ export default function Index() {
   useEffect(() => {
     CheyenneSocket.setConnectionStateCallback(setIsConnected);
     NetworkInfo.getIPV4Address().then(setLocalIP);
+    UUIDManager.getUUID().then(setUUID);
 
     // kill any existing instance of the background task (ie, task running even
     // though the app was killed)
@@ -119,7 +123,7 @@ export default function Index() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar hidden={false} />
+      <StatusBar backgroundColor="#000000" />
       <View
         style={{
           flex: 1,
@@ -128,26 +132,35 @@ export default function Index() {
         }}
       >
         <>
-          <Button
-            title="Start Background Task"
-            //onPress={() => BackgroundTaskModule.startService()}
-            onPress={() => BackgroundTaskManager.run()}
-          />
-          <Button
-            title="Stop Background Task"
-            //onPress={() => BackgroundTaskModule.startService()}
-            onPress={() => BackgroundTaskManager.stop()}
-          />
-          <View style={{ flexDirection: "row" }}>
-            <Text>Enable running in background: </Text>
+          <View
+            style={{
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+          >
+            {hasAudioPermission ? null : (
+              <Button title="Get Permissions" onPress={requestPermissions} />
+            )}
+            <Text
+              style={{
+                fontSize: 24,
+              }}
+            >
+              Enable running in background:{" "}
+            </Text>
             <Switch
               onValueChange={BackgroundTaskManager.setEnabled}
               value={isBackgroundTaskEnabled}
             />
           </View>
-          {hasAudioPermission ? null : (
-            <Button title="Get Permissions" onPress={requestPermissions} />
-          )}
+          <View
+            style={{
+              borderBottomColor: "black",
+              borderBottomWidth: 1,
+              height: 10,
+            }}
+          />
           <Text>
             Background Task: {isBackgroundTaskEnabled ? "enabled" : "disabled"}{" "}
             and{" "}
@@ -156,6 +169,7 @@ export default function Index() {
               : "not running"}
           </Text>
           <Text>Local IP: {localIP}</Text>
+          <Text>Device Unique ID: {uuid}</Text>
           <Text>Connected: {isConnected ? "yes" : "no"}</Text>
           <Text>
             Permission to record audio: {hasAudioPermission ? "yes" : "no"}
