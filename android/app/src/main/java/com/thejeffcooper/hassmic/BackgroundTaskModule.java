@@ -24,21 +24,21 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
     return "BackgroundTaskModule";
   }
 
- @ReactMethod
-    public void startService() {
-        Intent serviceIntent = new Intent(this.reactContext, BackgroundTaskService.class);
-        Log.d("BackgroundTaskModuleModule", "Starting background task");
+  @ReactMethod
+  public void startService() {
+    Intent serviceIntent = new Intent(this.reactContext, BackgroundTaskService.class);
+    Log.d("BackgroundTaskModuleModule", "Starting background task");
 
-        // Start service based on Android version
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            this.reactContext.startForegroundService(serviceIntent);
-        } else {
-            this.reactContext.startService(serviceIntent);
-        }
+    // Start service based on Android version
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      this.reactContext.startForegroundService(serviceIntent);
+    } else {
+      this.reactContext.startService(serviceIntent);
     }
+  }
 
-    @ReactMethod
-    public void stopService() {
-        this.reactContext.stopService(new Intent(this.reactContext, BackgroundTaskService.class));
-    }
+  @ReactMethod
+  public void stopService() {
+    this.reactContext.stopService(new Intent(this.reactContext, BackgroundTaskService.class));
+  }
 }
