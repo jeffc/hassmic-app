@@ -116,56 +116,64 @@ class BackgroundTaskManager_ {
   };
 
   // actually run the task
-  run_fn = async (taskData: any) => {
-    if (this.taskState == TaskState.RUNNING) {
-      console.error("Background task is already running; not starting again!");
-      return;
-    }
+  run_fn = (taskData: any): Promise<void> => {
+    return new Promise((resolve, fail) => {
+      (async () => {
+        if (this.taskState == TaskState.RUNNING) {
+          console.error(
+            "Background task is already running; not starting again!"
+          );
+          return;
+        }
 
-    const shouldRun = await this.isEnabled;
+        const shouldRun = await this.isEnabled;
 
-    if (!shouldRun) {
-      console.log("Not running background task; is disabled");
-      this.setState(TaskState.STOPPED);
-      return;
-    }
+        if (!shouldRun) {
+          console.log("Not running background task; is disabled");
+          this.setState(TaskState.STOPPED);
+          BackgroundTaskModule.stopService();
+          return;
+        }
 
-    console.log("Started background task");
-    const shouldStop = new Promise<void>((resolve) => {
-      this.stop_fn = resolve;
+        console.log("Started background task");
+        const shouldStop = new Promise<void>((resolve) => {
+          this.stop_fn = resolve;
+        });
+
+        CheyenneSocket.startServer();
+        console.log("Started server");
+        await ZeroconfManager.StartZeroconf();
+        //const ok = await PermissionsAndroid.check(
+        //  PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
+        //);
+        //if (!ok) {
+        //  console.log("no permission; bailing");
+        //  return;
+        //}
+        console.log("permissions okay, starting stream");
+        LiveAudioStream.init({
+          sampleRate: 16000,
+          channels: 1,
+          bitsPerSample: 16,
+          audioSource: 6,
+          wavFile: "", // to make tsc happy; this isn't used anywhere
+        });
+        LiveAudioStream.on("data", (data) => {
+          const chunk = Buffer.from(data, "base64");
+          CheyenneSocket.streamAudio(chunk);
+        });
+        LiveAudioStream.start();
+        console.log("stream started");
+        this.setState(TaskState.RUNNING);
+
+        console.log("Background task running, awaiting stop signal");
+        await shouldStop;
+        console.log("Background task got stop signal, stopping");
+        LiveAudioStream.stop();
+        CheyenneSocket.stopServer();
+        BackgroundTaskModule.stopService();
+      })();
     });
-
-    CheyenneSocket.startServer();
-    console.log("Started server");
-    await ZeroconfManager.StartZeroconf();
-    //const ok = await PermissionsAndroid.check(
-    //  PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
-    //);
-    //if (!ok) {
-    //  console.log("no permission; bailing");
-    //  return;
-    //}
-    console.log("permissions okay, starting stream");
-    LiveAudioStream.init({
-      sampleRate: 16000,
-      channels: 1,
-      bitsPerSample: 16,
-      audioSource: 6,
-      wavFile: "", // to make tsc happy; this isn't used anywhere
-    });
-    LiveAudioStream.on("data", (data) => {
-      const chunk = Buffer.from(data, "base64");
-      CheyenneSocket.streamAudio(chunk);
-    });
-    LiveAudioStream.start();
-    console.log("stream started");
-    this.setState(TaskState.RUNNING);
-
-    console.log("Background task running, awaiting stop signal");
-    await shouldStop;
-    console.log("Background task got stop signal, stopping");
-    LiveAudioStream.stop();
-    CheyenneSocket.stopServer();
   };
 
   // stop_fun is set by run() to the resolver on a promise. run() then runs
