@@ -7,7 +7,7 @@ import { STORAGE_KEY_UUID } from "./constants";
 // Manages the app UUID in storage and sets it if it isn't set
 class AppUUIDManager_ {
   // adapted from https://www.jonmellman.com/posts/singleton-promises
-  private _uuid_setup_promise = new Promise((resolve, fail) => {
+  private _uuid_setup_promise = new Promise<string>((resolve, fail) => {
     (async () => {
       let zcuuid: string = "";
       try {
@@ -38,7 +38,7 @@ class AppUUIDManager_ {
     })();
   });
 
-  getUUID = async () => {
+  getUUID = async (): Promise<string> => {
     return await this._uuid_setup_promise;
   };
 }

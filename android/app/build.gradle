@@ -193,8 +193,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    implementation project(':react-native-android-log')
 }
 
 if (rnVersion < versionToNumber(0, 75, 0)) {

@@ -8,9 +8,13 @@ type CallbackType<T> = ((s: T) => void) | null;
 // "Cheyenne" protocol server
 class CheyenneServer {
   // Keep track of the socket
-  sock: TcpSocket.Socket | null = null;
+  _sock: TcpSocket.Socket | null = null;
 
-  _uuid: str | null = null;
+  // also track the server object
+  _server: TcpSocket.Server | null = null;
+
+  // the UUID for this device
+  _uuid: string = "";
 
   // settable callback for connection state
   connectionStateCallback: CallbackType<boolean> = null;
@@ -24,31 +28,33 @@ class CheyenneServer {
   };
 
   streamAudio = (streamData: Uint8Array) => {
-    if (this.sock) {
+    if (this._sock) {
       try {
-        this.sock.write(
+        this._sock.write(
           JSON.stringify({
             type: "audio-chunk",
             payload_length: streamData.length,
           }) + "\n"
         );
-        this.sock.write(streamData);
+        this._sock.write(streamData);
       } catch (e) {
         console.info(e);
       }
     }
   };
 
-  sendInfo = (uuid: str) => {
-    this.sock.write(
-      JSON.stringify({
-        type: "client-info",
-        data: {
-          uuid: uuid,
-          app_version: APP_VERSION,
-        },
-      }) + "\n"
-    );
+  sendInfo = (uuid: string) => {
+    if (this._sock) {
+      this._sock.write(
+        JSON.stringify({
+          type: "client-info",
+          data: {
+            uuid: uuid,
+            app_version: APP_VERSION,
+          },
+        }) + "\n"
+      );
+    }
   };
 
   startServer = async () => {
@@ -61,8 +67,8 @@ class CheyenneServer {
 
       socket.on("close", (err) => {
         console.info(`Closed connection`);
-        if (this.sock == socket) {
-          this.sock = null;
+        if (this._sock == socket) {
+          this._sock = null;
         }
         this._setConnectionState(false);
       });
@@ -74,8 +80,8 @@ class CheyenneServer {
       });
 
       console.info(`Got connection`);
-      if (this.sock == null) {
-        this.sock = socket;
+      if (this._sock == null) {
+        this._sock = socket;
         socket.setTimeout(60e3);
         this._setConnectionState(true);
         this.sendInfo(this._uuid);
@@ -84,6 +90,11 @@ class CheyenneServer {
         socket.destroy();
       }
     }).listen({ port: 11700, host: "0.0.0.0" });
+  };
+
+  stopServer = async () => {
+    this._server?.close();
+    this._sock?.destroy();
   };
 }
 

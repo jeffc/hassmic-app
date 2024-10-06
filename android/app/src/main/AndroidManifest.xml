@@ -1,9 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
@@ -41,7 +41,7 @@
       android:foregroundServiceType="microphone"
       > </service>
     <service
-      android:name="com.thejeffcooper.hassmic.ExampleEventService"
+      android:name="com.thejeffcooper.hassmic.BackgroundEventService"
       android:foregroundServiceType="microphone"
       > </service>
     <receiver

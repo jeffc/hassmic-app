@@ -25,8 +25,6 @@ import com.facebook.react.bridge.Arguments;
 
 import javax.annotation.Nullable;
 
-import com.thejeffcooper.hassmic.ExampleEventService;
-
 public class BackgroundTaskService extends Service {
     private static final int SERVICE_NOTIFICATION_ID = 100001;
     private static final String CHANNEL_ID = "BACKGROUND_LISTEN";
@@ -39,8 +37,8 @@ public class BackgroundTaskService extends Service {
 
             Context context = getApplicationContext();
 
-            // Start ExampleEventService
-            Intent myIntent = new Intent(context, ExampleEventService.class);
+            // Start BackgroundEventService
+            Intent myIntent = new Intent(context, BackgroundEventService.class);
             context.startService(myIntent);
 
             // Acquire wake lock
@@ -66,6 +64,7 @@ public class BackgroundTaskService extends Service {
     public void onDestroy() {
         super.onDestroy();
         this.handler.removeCallbacks(this.runnableCode); // Stop runnable execution
+        stopForeground(STOP_FOREGROUND_REMOVE);
     }
 
     @Override
@@ -92,10 +91,6 @@ public class BackgroundTaskService extends Service {
               startForeground(SERVICE_NOTIFICATION_ID, notification);
             }
         }
-
-
-
-
         return START_STICKY_COMPATIBILITY;
     }
 
