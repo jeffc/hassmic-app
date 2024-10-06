@@ -34,7 +34,6 @@ class AppUUIDManager_ {
           return;
         }
       }
-      console.log(`Resolving promise with UUID ${zcuuid}`);
       resolve(zcuuid);
     })();
   });

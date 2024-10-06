@@ -86,7 +86,11 @@ public class BackgroundTaskService extends Service {
                     .setOngoing(true)
                     .build();
 
-            startForeground(SERVICE_NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+              startForeground(SERVICE_NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
+            } else {
+              startForeground(SERVICE_NOTIFICATION_ID, notification);
+            }
         }
 
 

@@ -1,10 +1,9 @@
 {
   "name": "hassmic",
-  "main": "expo-router/entry",
+  "main": "index.js",
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
@@ -33,6 +32,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.74.5",
+    "react-native-android-log": "^1.1.0",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-live-audio-stream": "github:Romick2005/react-native-live-audio-stream",
     "react-native-microphone-stream": "^1.0.3",
