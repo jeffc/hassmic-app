@@ -67,7 +67,6 @@ class CheyenneServer {
               type: "ping",
             }) + "\n"
           );
-          this._sock.write(streamData);
         } catch (e) {
           console.info(e);
         }

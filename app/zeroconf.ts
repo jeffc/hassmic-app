@@ -18,6 +18,13 @@ class ZeroconfManager_ {
       HASSMIC_PORT
     );
   };
+
+  StopZeroconf = async () => {
+    let zcuuid: string = await UUIDManager.getUUID();
+
+    console.debug(`Stopping Zeroconf using UUID ${zcuuid}`);
+    this.zeroconf.unpublishService(zcuuid);
+  };
 }
 
 export const ZeroconfManager: ZeroconfManager_ = new ZeroconfManager_();

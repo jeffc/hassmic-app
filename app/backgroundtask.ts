@@ -169,6 +169,7 @@ class BackgroundTaskManager_ {
     LiveAudioStream.stop();
     CheyenneSocket.stopServer();
     BackgroundTaskModule.stopService();
+    ZeroconfManager.StopZeroconf();
     this.setState(TaskState.STOPPED);
   };
 
