@@ -23,7 +23,7 @@ jobs:
         run: |
           cd android && ./gradlew assembleRelease
       - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: app-latest.apk
           path: android/app/build/outputs/apk/release/
