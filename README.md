@@ -1,50 +1,32 @@
-# Welcome to your Expo app 👋
+# HassMic (The App)
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is the HassMic app, an Android application designed to run on devices
+acting as Home Assistant voice assistant satellites.
 
-## Get started
+It is meant to pair with the [HassMic
+Integration](http://github.com/jeffc/hassmic-integration).
 
-1. Install dependencies
+It is currently in active development and probably has lots of bugs. Some
+highlights:
 
-   ```bash
-   npm install
-   ```
+-   Automatically starting on Android 12+ fails in an annoying way: the service
+    auto-starts, but can't access the microphone. This is a security feature
+    added to Android that I don't have a great solution for (no auto-start
+    services can access the microphone unless they also start a UI).
+-   There's not really a "UI" to speak of. Opening the app gives some diagnostic
+    information and a single toggle switch. You **must** enable running in the
+    background, since that's where all the work happens. If running in the
+    background isn't enabled, the app does nothing.
 
-2. Start the app
+## License
 
-   ```bash
-    npx expo start
-   ```
+[![CC BY-SA 4.0][cc-by-sa-shield]][cc-by-sa]
 
-In the output, you'll find options to open the app in a
+This work is licensed under a
+[Creative Commons Attribution-ShareAlike 4.0 International License][cc-by-sa].
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+[![CC BY-SA 4.0][cc-by-sa-image]][cc-by-sa]
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+[cc-by-sa]: http://creativecommons.org/licenses/by-sa/4.0/
+[cc-by-sa-image]: https://licensebuttons.net/l/by-sa/4.0/88x31.png
+[cc-by-sa-shield]: https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg
