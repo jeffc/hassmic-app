@@ -10,7 +10,7 @@ import { ZeroconfManager } from "./zeroconf";
 const { BackgroundTaskModule } = NativeModules;
 
 // note - patched version from
-// https://github.com/Romick2005/react-native-live-audio-stream
+// https://github.com/jeffc/react-native-live-audio-stream
 import LiveAudioStream from "react-native-live-audio-stream";
 
 const sleep = (delay: number) =>
@@ -74,7 +74,7 @@ class BackgroundTaskManager_ {
         }
 
         let en: boolean = en_str === "true";
-        if (!en_str) {
+        if (en_str === null) {
           console.log("No enable state found. Setting to false.");
           en = false;
         }
@@ -136,6 +136,10 @@ class BackgroundTaskManager_ {
       this.stop_fn = resolve;
     });
 
+    CheyenneSocket.setPlaySpeechCallback((url) => {
+      console.log(`Playing tts: ${url}`);
+      this.playTTS(url);
+    });
     CheyenneSocket.startServer();
     console.log("Started server");
     await ZeroconfManager.StartZeroconf();
@@ -155,7 +159,11 @@ class BackgroundTaskManager_ {
       audioSource: 6,
       wavFile: "", // to make tsc happy; this isn't used anywhere
     });
-    LiveAudioStream.on("data", (data) => {
+    LiveAudioStream.on("RNLiveAudioStream.data", (data) => {
+      if (typeof data == "object") {
+        console.warn(`Can't process: ${JSON.stringify(data)}`);
+        return;
+      }
       const chunk = Buffer.from(data, "base64");
       CheyenneSocket.streamAudio(chunk);
     });
@@ -198,6 +206,11 @@ class BackgroundTaskManager_ {
   // start the task
   run = () => {
     BackgroundTaskModule.startService();
+  };
+
+  // play some speech
+  playTTS = (url: string) => {
+    BackgroundTaskModule.playSpeech(url);
   };
 }
 

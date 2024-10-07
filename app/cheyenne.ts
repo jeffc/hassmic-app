@@ -8,23 +8,30 @@ type CallbackType<T> = ((s: T) => void) | null;
 // "Cheyenne" protocol server
 class CheyenneServer {
   // Keep track of the socket
-  _sock: TcpSocket.Socket | null = null;
+  private _sock: TcpSocket.Socket | null = null;
 
   // also track the server object
-  _server: TcpSocket.Server | null = null;
+  private _server: TcpSocket.Server | null = null;
 
   // the UUID for this device
-  _uuid: string = "";
+  private _uuid: string = "";
 
   // settable callback for connection state
-  connectionStateCallback: CallbackType<boolean> = null;
+  private _connectionStateCallback: CallbackType<boolean> = null;
 
   setConnectionStateCallback = (cb: CallbackType<boolean>) => {
-    this.connectionStateCallback = cb;
+    this._connectionStateCallback = cb;
   };
 
-  _setConnectionState = (s: boolean) => {
-    this.connectionStateCallback?.(s);
+  private _setConnectionState = (s: boolean) => {
+    this._connectionStateCallback?.(s);
+  };
+
+  // callback to play audio via URL
+  private _playSpeechCallback: CallbackType<string> = null;
+
+  setPlaySpeechCallback = (cb: CallbackType<string>) => {
+    this._playSpeechCallback = cb;
   };
 
   streamAudio = (streamData: Uint8Array) => {
@@ -98,6 +105,33 @@ class CheyenneServer {
         this._setConnectionState(false);
       });
 
+      socket.on("data", (d) => {
+        console.info("Got data");
+        try {
+          let m = JSON.parse(d.toString());
+
+          // TODO - move incoming message parsing somewhere else
+          switch (m["type"]) {
+            case "play-tts":
+              console.info("Got play-tts message");
+              const data = m["data"] || {};
+              const url = data["url"] || "";
+              if (url) {
+                console.log(`Playing URL '${url}'`);
+                this._playSpeechCallback?.(url);
+              } else {
+                console.warn("message.data.url is not set");
+              }
+              break;
+
+            default:
+              console.warn(`Got unknown message type '${m["type"]}'`);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
       console.info(`Got connection`);
       if (this._sock == null) {
         this._sock = socket;
@@ -115,7 +149,7 @@ class CheyenneServer {
   stopServer = async () => {
     console.log("stopping server...");
     const p = new Promise<void>((resolve) => {
-      this._server?.close(resolve);
+      this._server?.close(() => resolve());
     });
     this._sock?.destroy();
     await p;

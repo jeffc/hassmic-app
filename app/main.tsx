@@ -11,12 +11,13 @@ import {
 import { BackgroundTaskManager, TaskState } from "./backgroundtask";
 import { CheyenneSocket } from "./cheyenne";
 import { HASS_URL, HASS_KEY } from "./secrets";
-import { Buffer } from "buffer";
 import { useState, useEffect } from "react";
 import { NetworkInfo } from "react-native-network-info";
 import { NativeModules } from "react-native";
 import { UUIDManager } from "./util";
 import { ZeroconfManager } from "./zeroconf";
+
+const { BackgroundTaskModule } = NativeModules;
 
 // note - patched version from
 // https://github.com/Romick2005/react-native-live-audio-stream

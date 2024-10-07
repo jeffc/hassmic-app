@@ -27,7 +27,7 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void startService() {
     Intent serviceIntent = new Intent(this.reactContext, BackgroundTaskService.class);
-    Log.d("BackgroundTaskModuleModule", "Starting background task");
+    Log.d("HassmicBackgroundTaskModule", "Starting background task");
 
     // Start service based on Android version
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -40,5 +40,14 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void stopService() {
     this.reactContext.stopService(new Intent(this.reactContext, BackgroundTaskService.class));
+  }
+
+  @ReactMethod
+  public void playSpeech(String url) {
+    Log.d("HassmicBackgroundTaskModule", "Sending play media intent: " + url);
+    Intent playIntent = new Intent(BackgroundTaskService.PLAY_SPEECH_ACTION)
+      .putExtra(BackgroundTaskService.URL_KEY, url);
+    Log.d("HassmicBackgroundTaskModule", playIntent.toString());
+    this.reactContext.sendBroadcast(playIntent);
   }
 }
