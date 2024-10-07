@@ -30,3 +30,21 @@ This work is licensed under a
 [cc-by-sa]: http://creativecommons.org/licenses/by-sa/4.0/
 [cc-by-sa-image]: https://licensebuttons.net/l/by-sa/4.0/88x31.png
 [cc-by-sa-shield]: https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg
+
+## Dev Tips
+
+This project is built on React-Native. To run a dev build, connect to an
+android device or emulator and run:
+
+```
+npx expo run:android
+```
+
+To build an APK for release,
+
+```
+cd android
+./gradlew assembleRelease
+```
+
+The built APK will be at `android/app/build/outputs/apk/release/app-release.apk`
