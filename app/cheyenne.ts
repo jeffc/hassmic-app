@@ -37,13 +37,18 @@ class CheyenneServer {
   streamAudio = (streamData: Uint8Array) => {
     if (this._sock) {
       try {
-        this._sock.write(
+        // build the JSON packet and the stream data into a single Uint8Array
+        // so that they send atomically
+        const pkt = new TextEncoder().encode(
           JSON.stringify({
             type: "audio-chunk",
             payload_length: streamData.length,
           }) + "\n"
         );
-        this._sock.write(streamData);
+        let combinedArray = new Uint8Array(pkt.length + streamData.length);
+        combinedArray.set(pkt);
+        combinedArray.set(streamData, pkt.length);
+        this._sock.write(combinedArray);
       } catch (e) {
         console.info(e);
       }

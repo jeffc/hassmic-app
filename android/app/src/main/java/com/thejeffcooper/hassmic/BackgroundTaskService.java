@@ -18,6 +18,7 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -25,19 +26,31 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 import com.facebook.react.HeadlessJsTaskService;
-import com.facebook.react.jstasks.HeadlessJsTaskConfig;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.jstasks.HeadlessJsTaskConfig;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import javax.annotation.Nullable;
 
 public class BackgroundTaskService extends Service {
   public static final String PLAY_SPEECH_ACTION = "com.thejeffcooper.hassmic.INTENT_PLAY_SOUND";
+
+  public static final String EVENT_PLAY_SPEECH_START = "hassmic.SpeechStart";
+  public static final String EVENT_PLAY_SPEECH_STOP = "hassmic.SpeechStop";
+
   public static final String URL_KEY = "URL";
+
   private static final int SERVICE_NOTIFICATION_ID = 100001;
   private static final String CHANNEL_ID = "BACKGROUND_LISTEN";
 
   private Handler handler = new Handler();
+  private ExecutorService mediaExecutor = Executors.newSingleThreadExecutor();
 
   private Runnable runnableCode = new Runnable() {
     @Override
@@ -72,15 +85,20 @@ public class BackgroundTaskService extends Service {
   }
 
   private final BroadcastReceiver brec = new BroadcastReceiver() {
+    // used to keep strong references to media player objects, so that they
+    // don't get GC'd
+    private Set<MediaPlayer> activePlayers = new HashSet<MediaPlayer>();
+
     @Override
     public void onReceive(Context context, Intent intent) {
       String action = intent.getAction();
-      if(action.equals(PLAY_SPEECH_ACTION)){
+      if(action.equals(PLAY_SPEECH_ACTION)) {
         String url = intent.getStringExtra(URL_KEY);
-        Log.d("HassmicBackgroundTaskService", "Playing sound " + url);
+        Log.d("HassmicBackgroundTaskService", "Buffering sound " + url);
 
         try {
           MediaPlayer mediaPlayer = new MediaPlayer();
+          mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
           mediaPlayer.setAudioAttributes(
               new AudioAttributes.Builder()
               .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
@@ -88,8 +106,32 @@ public class BackgroundTaskService extends Service {
               .build()
               );
           mediaPlayer.setDataSource(url);
-          mediaPlayer.prepare(); // might take long! (for buffering, etc)
-          mediaPlayer.start();
+
+          // start once the file has buffered
+          mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer player) {
+              // emit a "speech starting" event back to RN
+              Log.d("HassmicBackgroundTaskService", "Starting sound " + url);
+              BackgroundTaskModule.FireJSEvent(getApplicationContext(), EVENT_PLAY_SPEECH_START);
+              player.start();
+            }
+          });
+
+          // clean up once finished
+          mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer player) {
+              // emit a "speech ending" event back to RN
+              Log.d("HassmicBackgroundTaskService", "Done playing sound " + url);
+              BackgroundTaskModule.FireJSEvent(getApplicationContext(), EVENT_PLAY_SPEECH_STOP);
+              player.release();
+              activePlayers.remove(mediaPlayer);
+            }
+          });
+
+          activePlayers.add(mediaPlayer);
+          mediaPlayer.prepareAsync(); // might take long! (for buffering, etc)
         } catch (IOException e) {
           Log.e("HassmicBackgroundTaskService", "Got error: " + e.toString());
         }
@@ -100,14 +142,15 @@ public class BackgroundTaskService extends Service {
   @Override
   public void onDestroy() {
     super.onDestroy();
+    Log.d("HassmicBackgroundTaskService", "Destroying service");
     this.handler.removeCallbacks(this.runnableCode); // Stop runnable execution
     stopForeground(STOP_FOREGROUND_REMOVE);
     unregisterReceiver(brec);
-    Log.d("HassmicBackgroundTaskService", "Destroyed service");
   }
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
+    Log.d("HassmicBackgroundTaskService", "Starting service");
     this.handler.post(this.runnableCode); // Start runnable execution
 
     // Create notification for foreground service
