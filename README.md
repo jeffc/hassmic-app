@@ -6,6 +6,8 @@ acting as Home Assistant voice assistant satellites.
 It is meant to pair with the [HassMic
 Integration](http://github.com/jeffc/hassmic-integration).
 
+[**Latest commit APK**](https://nightly.link/jeffc/hassmic-app/workflows/build-apk-dev/dev/app-latest.apk.zip) (no guarantee of functionality)
+
 It is currently in active development and probably has lots of bugs. Some
 highlights:
 
