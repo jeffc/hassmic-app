@@ -8,16 +8,16 @@ import {
   Text,
   View,
 } from "react-native";
+import { APP_VERSION } from "./constants";
 import { BackgroundTaskManager, TaskState } from "./backgroundtask";
 import { CheyenneSocket } from "./cheyenne";
 import { HASS_URL, HASS_KEY } from "./secrets";
-import { useState, useEffect } from "react";
 import { NetworkInfo } from "react-native-network-info";
-import { NativeModules } from "react-native";
 import { UUIDManager } from "./util";
 import { ZeroconfManager } from "./zeroconf";
+import { useState, useEffect } from "react";
 
-const { BackgroundTaskModule } = NativeModules;
+import { pkgJson } from "../package.json";
 
 // note - patched version from
 // https://github.com/Romick2005/react-native-live-audio-stream
@@ -180,6 +180,7 @@ export default function Index() {
             Permission to show notification:{" "}
             {hasNotificationPermission ? "yes" : "no"}
           </Text>
+          <Text>Version {APP_VERSION}</Text>
         </>
       </View>
     </SafeAreaView>
