@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.core.content.ContextCompat;
+
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -44,7 +46,7 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
       }
     };
 
-    reactContext.registerReceiver(jsEventRec, new IntentFilter(KEY_FIRE_JS_EVENT));
+    ContextCompat.registerReceiver(reactContext, jsEventRec, new IntentFilter(KEY_FIRE_JS_EVENT), ContextCompat.RECEIVER_NOT_EXPORTED);
   }
 
   @Override

@@ -167,6 +167,7 @@ android {
 }
 
 dependencies {
+    def androidx_core_version = "1.13.1";
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
@@ -193,6 +194,11 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    implementation "androidx.core:core:$androidx_core_version"
+    implementation "androidx.media3:media3-exoplayer:1.4.1"
+    implementation "androidx.media3:media3-exoplayer-dash:1.4.1"
+    implementation "androidx.media3:media3-ui:1.4.1"
 }
 
 if (rnVersion < versionToNumber(0, 75, 0)) {

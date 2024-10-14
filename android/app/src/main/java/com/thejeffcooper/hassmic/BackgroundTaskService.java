@@ -15,15 +15,20 @@ import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+
+import androidx.media3.common.MediaItem;
+import androidx.media3.exoplayer.ExoPlayer;
 
 import com.facebook.react.HeadlessJsTaskService;
 import com.facebook.react.bridge.Arguments;
@@ -34,8 +39,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import javax.annotation.Nullable;
 
 public class BackgroundTaskService extends Service {
@@ -50,7 +53,7 @@ public class BackgroundTaskService extends Service {
   private static final String CHANNEL_ID = "BACKGROUND_LISTEN";
 
   private Handler handler = new Handler();
-  private ExecutorService mediaExecutor = Executors.newSingleThreadExecutor();
+  private ExoPlayer exo;
 
   private Runnable runnableCode = new Runnable() {
     @Override
@@ -65,9 +68,8 @@ public class BackgroundTaskService extends Service {
       // Acquire wake lock
       HeadlessJsTaskService.acquireWakeLockNow(context);
 
-      // Schedule next execution
-      // TODO - maybe use this for restarting failed listen task?
-      //handler.postDelayed(this, 20000); // 20 seconds
+      // start the exoplayer
+      exo = new ExoPlayer.Builder(context).build();
     }
   };
 
@@ -80,61 +82,21 @@ public class BackgroundTaskService extends Service {
   public void onCreate() {
     super.onCreate();
     IntentFilter filter = new IntentFilter(PLAY_SPEECH_ACTION);
-    getApplicationContext().registerReceiver(brec, filter);
+    ContextCompat.registerReceiver(getApplicationContext(), brec, filter, ContextCompat.RECEIVER_EXPORTED);
     Log.d("HassmicBackgroundTaskService", "Registered receiver for " + filter.toString());
   }
 
   private final BroadcastReceiver brec = new BroadcastReceiver() {
-    // used to keep strong references to media player objects, so that they
-    // don't get GC'd
-    private Set<MediaPlayer> activePlayers = new HashSet<MediaPlayer>();
-
     @Override
     public void onReceive(Context context, Intent intent) {
       String action = intent.getAction();
       if(action.equals(PLAY_SPEECH_ACTION)) {
         String url = intent.getStringExtra(URL_KEY);
-        Log.d("HassmicBackgroundTaskService", "Buffering sound " + url);
-
-        try {
-          MediaPlayer mediaPlayer = new MediaPlayer();
-          mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-          mediaPlayer.setAudioAttributes(
-              new AudioAttributes.Builder()
-              .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-              .setUsage(AudioAttributes.USAGE_MEDIA)
-              .build()
-              );
-          mediaPlayer.setDataSource(url);
-
-          // start once the file has buffered
-          mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer player) {
-              // emit a "speech starting" event back to RN
-              Log.d("HassmicBackgroundTaskService", "Starting sound " + url);
-              BackgroundTaskModule.FireJSEvent(getApplicationContext(), EVENT_PLAY_SPEECH_START);
-              player.start();
-            }
-          });
-
-          // clean up once finished
-          mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer player) {
-              // emit a "speech ending" event back to RN
-              Log.d("HassmicBackgroundTaskService", "Done playing sound " + url);
-              BackgroundTaskModule.FireJSEvent(getApplicationContext(), EVENT_PLAY_SPEECH_STOP);
-              player.release();
-              activePlayers.remove(mediaPlayer);
-            }
-          });
-
-          activePlayers.add(mediaPlayer);
-          mediaPlayer.prepareAsync(); // might take long! (for buffering, etc)
-        } catch (IOException e) {
-          Log.e("HassmicBackgroundTaskService", "Got error: " + e.toString());
-        }
+        Log.d("HassmicBackgroundTaskService", "Playing " + url);
+        MediaItem i = MediaItem.fromUri(url);
+        exo.setMediaItem(i);
+        exo.prepare();
+        exo.play();
       }
     }
   };
@@ -143,6 +105,7 @@ public class BackgroundTaskService extends Service {
   public void onDestroy() {
     super.onDestroy();
     Log.d("HassmicBackgroundTaskService", "Destroying service");
+    exo.release();
     this.handler.removeCallbacks(this.runnableCode); // Stop runnable execution
     stopForeground(STOP_FOREGROUND_REMOVE);
     unregisterReceiver(brec);
@@ -168,7 +131,7 @@ public class BackgroundTaskService extends Service {
         .build();
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        startForeground(SERVICE_NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
+        startForeground(SERVICE_NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE | ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
       } else {
         startForeground(SERVICE_NOTIFICATION_ID, notification);
       }

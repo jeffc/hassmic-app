@@ -55,18 +55,22 @@ class CheyenneServer {
     }
   };
 
-  sendInfo = (uuid: string) => {
+  sendMessage = (type: string, data: dict | undefined) => {
     if (this._sock) {
       this._sock.write(
         JSON.stringify({
-          type: "client-info",
-          data: {
-            uuid: uuid,
-            app_version: APP_VERSION,
-          },
+          type: type,
+          data: data,
         }) + "\n"
       );
     }
+  };
+
+  sendInfo = (uuid: string) => {
+    this.sendMessage("client-info", {
+      uuid: uuid,
+      app_version: APP_VERSION,
+    });
   };
 
   // sends a ping every 10 seconds while the socket is open.

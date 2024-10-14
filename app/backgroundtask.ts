@@ -2,9 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppRegistry } from "react-native";
 import { Buffer } from "buffer";
 import { CheyenneSocket } from "./cheyenne";
-import { NativeModules } from "react-native";
+import { NativeModules, NativeEventEmitter } from "react-native";
 import { PermissionsAndroid } from "react-native";
 import { STORAGE_KEY_RUN_BACKGROUND_TASK } from "./constants";
+import SoundPlayer from "react-native-sound-player";
 import { ZeroconfManager } from "./zeroconf";
 
 const { BackgroundTaskModule } = NativeModules;
@@ -136,9 +137,20 @@ class BackgroundTaskManager_ {
       this.stop_fn = resolve;
     });
 
+    const emitter = new NativeEventEmitter(BackgroundTaskModule);
+    emitter.addListener("hassmic.SpeechStart", () => {
+      console.log("Speech playback start");
+      CheyenneSocket.sendMessage("tts-start", {});
+    });
+    emitter.addListener("hassmic.SpeechStop", () => {
+      console.log("Speech playback stop");
+      CheyenneSocket.sendMessage("tts-stop", {});
+    });
+
     CheyenneSocket.setPlaySpeechCallback((url) => {
       console.log(`Playing tts: ${url}`);
       this.playTTS(url);
+      //SoundPlayer.playUrl(url);
     });
     CheyenneSocket.startServer();
     console.log("Started server");

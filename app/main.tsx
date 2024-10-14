@@ -153,6 +153,7 @@ export default function Index() {
             <Switch
               onValueChange={BackgroundTaskManager.setEnabled}
               value={isBackgroundTaskEnabled}
+              disabled={!hasAudioPermission}
             />
           </View>
           <View
