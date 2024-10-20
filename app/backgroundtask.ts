@@ -5,7 +5,6 @@ import { CheyenneSocket } from "./cheyenne";
 import { NativeModules, NativeEventEmitter } from "react-native";
 import { PermissionsAndroid } from "react-native";
 import { STORAGE_KEY_RUN_BACKGROUND_TASK } from "./constants";
-import SoundPlayer from "react-native-sound-player";
 import { ZeroconfManager } from "./zeroconf";
 
 const { BackgroundTaskModule } = NativeModules;

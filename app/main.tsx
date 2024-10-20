@@ -17,11 +17,19 @@ import { UUIDManager } from "./util";
 import { ZeroconfManager } from "./zeroconf";
 import { useState, useEffect } from "react";
 
-import { pkgJson } from "../package.json";
-
 // note - patched version from
-// https://github.com/Romick2005/react-native-live-audio-stream
+// https://github.com/jeffc/react-native-live-audio-stream
 import LiveAudioStream from "react-native-live-audio-stream";
+
+const Separator = () => (
+  <View
+    style={{
+      marginVertical: 8,
+      borderBottomColor: "#737373",
+      borderBottomWidth: StyleSheet.hairlineWidth,
+    }}
+  />
+);
 
 export default function Index() {
   const [hasAudioPermission, setHasAudioPermission] = useState(false);
@@ -133,6 +141,11 @@ export default function Index() {
         }}
       >
         <>
+          {hasAudioPermission ? null : (
+            <View>
+              <Button title="Get Permissions" onPress={requestPermissions} />
+            </View>
+          )}
           <View
             style={{
               alignItems: "center",
@@ -140,9 +153,6 @@ export default function Index() {
               flexDirection: "row",
             }}
           >
-            {hasAudioPermission ? null : (
-              <Button title="Get Permissions" onPress={requestPermissions} />
-            )}
             <Text
               style={{
                 fontSize: 24,
