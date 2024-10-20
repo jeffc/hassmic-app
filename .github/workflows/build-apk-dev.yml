@@ -28,15 +28,19 @@ jobs:
         with:
           name: app-latest.apk
           path: android/app/build/outputs/apk/release/
-  upload-b2:
-    needs: build-android
-    runs-on: ubuntu-latest
-    steps:
-      - name: Upload to B2
+      - name: Upload to B2 by SHA
         uses: jeffc/backblaze-b2-upload-action@testing
         with:
           key_id: ${{ secrets.B2_APPKEY_ID }}
           application_key: ${{ secrets.B2_APPKEY_SECRET }}
           bucket_name: ${{ secrets.B2_BUCKET }}
-          remote_path: hassmic-artifacts/hassmic-${{ github.sha }}.apk
+          remote_path: hassmic-builds/by-hash/hassmic-${{ github.sha }}.apk
+          file_path: android/app/build/outputs/apk/release/app-release.apk
+      - name: Upload to B2 by Branch
+        uses: jeffc/backblaze-b2-upload-action@testing
+        with:
+          key_id: ${{ secrets.B2_APPKEY_ID }}
+          application_key: ${{ secrets.B2_APPKEY_SECRET }}
+          bucket_name: ${{ secrets.B2_BUCKET }}
+          remote_path: hassmic-builds/by-branch/hassmic-${{ github.ref_name }}.apk
           file_path: android/app/build/outputs/apk/release/app-release.apk
