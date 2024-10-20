@@ -83,7 +83,7 @@ public class BackgroundTaskService extends Service {
     super.onCreate();
     IntentFilter filter = new IntentFilter(PLAY_SPEECH_ACTION);
     ContextCompat.registerReceiver(getApplicationContext(), brec, filter, ContextCompat.RECEIVER_EXPORTED);
-    Log.d("HassmicBackgroundTaskService", "Registered receiver for " + filter.toString());
+    Log.d("HassmicBackgroundTaskService", "Registered receiver for " + brec.toString());
   }
 
   private final BroadcastReceiver brec = new BroadcastReceiver() {
@@ -107,8 +107,8 @@ public class BackgroundTaskService extends Service {
     Log.d("HassmicBackgroundTaskService", "Destroying service");
     exo.release();
     this.handler.removeCallbacks(this.runnableCode); // Stop runnable execution
+    getApplicationContext().unregisterReceiver(brec);
     stopForeground(STOP_FOREGROUND_REMOVE);
-    unregisterReceiver(brec);
   }
 
   @Override
