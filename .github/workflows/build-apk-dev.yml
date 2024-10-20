@@ -11,7 +11,8 @@ jobs:
           npm install
   build-android:
     needs: install-and-test
-    runs-on: reactnativecommunity/react-native-android
+    runs-on: ubuntu-latest
+    container: reactnativecommunity/react-native-android
     steps: 
       - uses: actions/checkout@v3
       - name: Install npm dependencies
@@ -22,6 +23,7 @@ jobs:
         run: |
           cd android && ./gradlew assembleRelease
       - name: Upload Artifact
+        if: ${{ !env.ACT }}
         uses: actions/upload-artifact@v4
         with:
           name: app-latest.apk
