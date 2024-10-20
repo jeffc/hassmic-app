@@ -1,8 +1,6 @@
 name: react-native-android-build-dev-apk
 on:
   push:
-    branches:
-      - dev
 jobs:
   install-and-test:
     runs-on: ubuntu-latest
@@ -13,11 +11,12 @@ jobs:
           npm install
   build-android:
     needs: install-and-test
-    runs-on: ubuntu-latest
+    runs-on: reactnativecommunity/react-native-android
     steps: 
       - uses: actions/checkout@v3
       - name: Install npm dependencies
         run: |
+          apt-get update && apt-get install -y npm
           npm install
       - name: Build Android Release
         run: |
@@ -27,3 +26,15 @@ jobs:
         with:
           name: app-latest.apk
           path: android/app/build/outputs/apk/release/
+  upload-b2:
+    needs: build-android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload to B2
+        uses: jeffc/backblaze-b2-upload-action@testing
+        with:
+          key_id: ${{ secrets.B2_APPKEY_ID }}
+          application_key: ${{ secrets.B2_APPKEY_SECRET }}
+          bucket_name: ${{ secrets.B2_BUCKET }}
+          remote_path: hassmic-artifacts/hassmic-{{ github.sha }}.apk
+          file_path: android/app/build/outputs/apk/release/app-release.apk
