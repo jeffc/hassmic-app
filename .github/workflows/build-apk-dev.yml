@@ -38,5 +38,5 @@ jobs:
           key_id: ${{ secrets.B2_APPKEY_ID }}
           application_key: ${{ secrets.B2_APPKEY_SECRET }}
           bucket_name: ${{ secrets.B2_BUCKET }}
-          remote_path: hassmic-artifacts/hassmic-{{ github.sha }}.apk
+          remote_path: hassmic-artifacts/hassmic-${{ github.sha }}.apk
           file_path: android/app/build/outputs/apk/release/app-release.apk
