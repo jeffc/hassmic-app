@@ -4,6 +4,7 @@ import { UUIDManager } from "./util";
 import { APP_VERSION } from "./constants";
 
 type CallbackType<T> = ((s: T) => void) | null;
+type PlayAudioCallbackType = ((url: string, announce: boolean) => void) | null;
 
 // "Cheyenne" protocol server
 class CheyenneServer {
@@ -28,10 +29,10 @@ class CheyenneServer {
   };
 
   // callback to play audio via URL
-  private _playSpeechCallback: CallbackType<string> = null;
+  private _playAudioCallback: PlayAudioCallbackType = null;
 
-  setPlaySpeechCallback = (cb: CallbackType<string>) => {
-    this._playSpeechCallback = cb;
+  setPlayAudioCallback = (cb: PlayAudioCallbackType) => {
+    this._playAudioCallback = cb;
   };
 
   streamAudio = (streamData: Uint8Array) => {
@@ -55,7 +56,7 @@ class CheyenneServer {
     }
   };
 
-  sendMessage = (type: string, data: dict | undefined) => {
+  sendMessage = (type: string, data: object | undefined) => {
     if (this._sock) {
       this._sock.write(
         JSON.stringify({
@@ -115,30 +116,7 @@ class CheyenneServer {
       });
 
       socket.on("data", (d) => {
-        console.info("Got data");
-        try {
-          let m = JSON.parse(d.toString());
-
-          // TODO - move incoming message parsing somewhere else
-          switch (m["type"]) {
-            case "play-tts":
-              console.info("Got play-tts message");
-              const data = m["data"] || {};
-              const url = data["url"] || "";
-              if (url) {
-                console.log(`Playing URL '${url}'`);
-                this._playSpeechCallback?.(url);
-              } else {
-                console.warn("message.data.url is not set");
-              }
-              break;
-
-            default:
-              console.warn(`Got unknown message type '${m["type"]}'`);
-          }
-        } catch (e) {
-          console.error(e);
-        }
+        this._handleIncomingData(d.toString());
       });
 
       console.info(`Got connection`);
@@ -163,6 +141,46 @@ class CheyenneServer {
     this._sock?.destroy();
     await p;
     console.log("Server stopped");
+  };
+
+  private _handleIncomingData = async (d: string) => {
+    try {
+      let m = JSON.parse(d.toString());
+
+      switch (m["type"]) {
+        case "play-announce":
+          {
+            console.info("Got play-announce message");
+            const data = m["data"] || {};
+            const url = data["url"] || "";
+            if (url) {
+              console.log(`Playing URL '${url}'`);
+              this._playAudioCallback?.(url, true);
+            } else {
+              console.warn("message.data.url is not set");
+            }
+          }
+          break;
+        case "play-audio":
+          {
+            console.info("Got play-audio message");
+            const data = m["data"] || {};
+            const url = data["url"] || "";
+            if (url) {
+              console.log(`Playing URL '${url}'`);
+              this._playAudioCallback?.(url, false);
+            } else {
+              console.warn("message.data.url is not set");
+            }
+          }
+          break;
+
+        default:
+          console.warn(`Got unknown message type '${m["type"]}'`);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 }
 

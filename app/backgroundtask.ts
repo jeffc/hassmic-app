@@ -146,10 +146,9 @@ class BackgroundTaskManager_ {
       CheyenneSocket.sendMessage("tts-stop", {});
     });
 
-    CheyenneSocket.setPlaySpeechCallback((url) => {
-      console.log(`Playing tts: ${url}`);
-      this.playTTS(url);
-      //SoundPlayer.playUrl(url);
+    CheyenneSocket.setPlayAudioCallback((url: string, announce: boolean) => {
+      console.log(`Playing audio: '${url}' (announce=${announce})`);
+      this.playAudio(url, announce);
     });
     CheyenneSocket.startServer();
     console.log("Started server");
@@ -170,6 +169,8 @@ class BackgroundTaskManager_ {
       audioSource: 6,
       wavFile: "", // to make tsc happy; this isn't used anywhere
     });
+
+    // @ts-ignore: This error is some weird interaction between TS and Java
     LiveAudioStream.on("RNLiveAudioStream.data", (data) => {
       if (typeof data == "object") {
         console.warn(`Can't process: ${JSON.stringify(data)}`);
@@ -219,9 +220,9 @@ class BackgroundTaskManager_ {
     BackgroundTaskModule.startService();
   };
 
-  // play some speech
-  playTTS = (url: string) => {
-    BackgroundTaskModule.playSpeech(url);
+  // play some audio
+  playAudio = (url: string, announce: boolean) => {
+    BackgroundTaskModule.playAudio(url, announce);
   };
 }
 

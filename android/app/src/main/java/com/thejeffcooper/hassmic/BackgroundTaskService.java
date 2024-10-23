@@ -13,65 +13,93 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
-import android.media.AudioAttributes;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.util.Log;
-
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
-
+import androidx.media3.common.AudioAttributes;
+import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
-
 import com.facebook.react.HeadlessJsTaskService;
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableNativeMap;
-import com.facebook.react.jstasks.HeadlessJsTaskConfig;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import javax.annotation.Nullable;
 
 public class BackgroundTaskService extends Service {
-  public static final String PLAY_SPEECH_ACTION = "com.thejeffcooper.hassmic.INTENT_PLAY_SOUND";
+  public static final String PLAY_AUDIO_ACTION = "com.thejeffcooper.hassmic.INTENT_PLAY_AUDIO";
 
-  public static final String EVENT_PLAY_SPEECH_START = "hassmic.SpeechStart";
-  public static final String EVENT_PLAY_SPEECH_STOP = "hassmic.SpeechStop";
+  public static final String EVENT_PLAY_SOUND_START = "hassmic.SpeechStart";
+  public static final String EVENT_PLAY_SOUND_STOP = "hassmic.SpeechStop";
 
   public static final String URL_KEY = "URL";
+  public static final String ANNOUNCE_KEY = "ANNOUNCE";
 
   private static final int SERVICE_NOTIFICATION_ID = 100001;
   private static final String CHANNEL_ID = "BACKGROUND_LISTEN";
 
   private Handler handler = new Handler();
-  private ExoPlayer exo;
+  private ExoPlayer audioExo;
+  private ExoPlayer announceExo;
 
-  private Runnable runnableCode = new Runnable() {
-    @Override
-    public void run() {
+  private Runnable runnableCode =
+      new Runnable() {
+        @Override
+        public void run() {
 
-      Context context = getApplicationContext();
+          Context context = getApplicationContext();
 
-      // Start BackgroundEventService
-      Intent myIntent = new Intent(context, BackgroundEventService.class);
-      context.startService(myIntent);
+          // Start BackgroundEventService
+          Intent myIntent = new Intent(context, BackgroundEventService.class);
+          context.startService(myIntent);
 
-      // Acquire wake lock
-      HeadlessJsTaskService.acquireWakeLockNow(context);
+          // Acquire wake lock
+          HeadlessJsTaskService.acquireWakeLockNow(context);
 
-      // start the exoplayer
-      exo = new ExoPlayer.Builder(context).build();
-    }
-  };
+          // Create the exoplayers: one for normal audio (music) and one for
+          // announcements.
+
+          // Audio exoplayer
+          audioExo =
+              new ExoPlayer.Builder(context)
+                  .setAudioAttributes(
+                      new AudioAttributes.Builder()
+                          .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+                          .setUsage(C.USAGE_MEDIA)
+                          .build(),
+                      true)
+                  .build();
+
+          // Announcement exoplayer
+          announceExo =
+              new ExoPlayer.Builder(context)
+                  .setAudioAttributes(
+                      new AudioAttributes.Builder()
+                          .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
+                          .setUsage(C.USAGE_ASSISTANT)
+                          .build(),
+                      false)
+                  .build();
+        }
+
+        // listen for important events and fire them back to JS
+        Player.Listener audioEventListener =
+            new Player.Listener() {
+              @Override
+              public void onEvents(Player p, Player.Events events) {
+                String which_player = null;
+                if (p == audioExo) {
+                  which_player = "audio";
+                } else if (p == announceExo) {
+                  which_player = "announce";
+                }
+                Log.d("HassmicBackgroundTaskService", "Got events for " + which_player);
+
+                for (int i = 0; i < events.size(); i++) {}
+              }
+            };
+      };
 
   @Override
   public IBinder onBind(Intent intent) {
@@ -81,31 +109,63 @@ public class BackgroundTaskService extends Service {
   @Override
   public void onCreate() {
     super.onCreate();
-    IntentFilter filter = new IntentFilter(PLAY_SPEECH_ACTION);
-    ContextCompat.registerReceiver(getApplicationContext(), brec, filter, ContextCompat.RECEIVER_EXPORTED);
+    IntentFilter filter = new IntentFilter(PLAY_AUDIO_ACTION);
+    ContextCompat.registerReceiver(
+        getApplicationContext(), brec, filter, ContextCompat.RECEIVER_EXPORTED);
     Log.d("HassmicBackgroundTaskService", "Registered receiver for " + brec.toString());
   }
 
-  private final BroadcastReceiver brec = new BroadcastReceiver() {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      String action = intent.getAction();
-      if(action.equals(PLAY_SPEECH_ACTION)) {
-        String url = intent.getStringExtra(URL_KEY);
-        Log.d("HassmicBackgroundTaskService", "Playing " + url);
-        MediaItem i = MediaItem.fromUri(url);
-        exo.setMediaItem(i);
-        exo.prepare();
-        exo.play();
-      }
-    }
-  };
+  private final BroadcastReceiver brec =
+      new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+          String action = intent.getAction();
+          if (action.equals(PLAY_AUDIO_ACTION)) {
+            String url = intent.getStringExtra(URL_KEY);
+            boolean announce = intent.getBooleanExtra(ANNOUNCE_KEY, false);
+            Log.d(
+                "HassmicBackgroundTaskService",
+                "Playing " + url + " (announce = " + String.valueOf(announce) + ")");
+            MediaItem i = MediaItem.fromUri(url);
+
+            if (announce) {
+              // if we're announcing, pause the audioExo if it's playing
+              if (audioExo.isPlaying()) {
+                Log.d(
+                    "HassmicBackgroundTaskService", "Playing announcement. Pausing playing audio");
+                audioExo.pause();
+                announceExo.addListener(
+                    new Player.Listener() {
+                      @Override
+                      public void onPlaybackStateChanged(@Player.State int newState) {
+                        if (newState == Player.STATE_ENDED) {
+                          Log.d(
+                              "HassmicBackgroundTaskService",
+                              "Finished playing announcement. Resuming audio");
+                          audioExo.play();
+                          announceExo.removeListener(this);
+                        }
+                      }
+                    });
+              }
+              announceExo.setMediaItem(i);
+              announceExo.prepare();
+              announceExo.play();
+            } else {
+              audioExo.setMediaItem(i);
+              audioExo.prepare();
+              audioExo.play();
+            }
+          }
+        }
+      };
 
   @Override
   public void onDestroy() {
     super.onDestroy();
     Log.d("HassmicBackgroundTaskService", "Destroying service");
-    exo.release();
+    audioExo.release();
+    announceExo.release();
     this.handler.removeCallbacks(this.runnableCode); // Stop runnable execution
     getApplicationContext().unregisterReceiver(brec);
     stopForeground(STOP_FOREGROUND_REMOVE);
@@ -118,20 +178,30 @@ public class BackgroundTaskService extends Service {
 
     // Create notification for foreground service
     Intent notificationIntent = new Intent(this, MainActivity.class);
-    PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    PendingIntent contentIntent =
+        PendingIntent.getActivity(
+            this,
+            0,
+            notificationIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       createChannel();
-      Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-        .setContentIntent(contentIntent)
-        .setTicker("HassMic Active") // Informative ticker text
-        .setContentTitle("HassMic") // Your app's name
-        .setContentText("HassMic is Running") // Explain what's happening
-        .setSmallIcon(R.mipmap.ic_launcher)
-        .setOngoing(true)
-        .build();
+      Notification notification =
+          new NotificationCompat.Builder(this, CHANNEL_ID)
+              .setContentIntent(contentIntent)
+              .setTicker("HassMic Active") // Informative ticker text
+              .setContentTitle("HassMic") // Your app's name
+              .setContentText("HassMic is Running") // Explain what's happening
+              .setSmallIcon(R.mipmap.ic_launcher)
+              .setOngoing(true)
+              .build();
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        startForeground(SERVICE_NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE | ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+        startForeground(
+            SERVICE_NOTIFICATION_ID,
+            notification,
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE
+                | ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
       } else {
         startForeground(SERVICE_NOTIFICATION_ID, notification);
       }
@@ -143,10 +213,11 @@ public class BackgroundTaskService extends Service {
   private void createChannel() {
     String description = "Background Notifications";
     int importance = NotificationManager.IMPORTANCE_DEFAULT;
-    NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "background_notifications", importance);
+    NotificationChannel channel =
+        new NotificationChannel(CHANNEL_ID, "background_notifications", importance);
     channel.setDescription(description);
     NotificationManager notificationManager =
-      (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
+        (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
 
     notificationManager.createNotificationChannel(channel);
   }
