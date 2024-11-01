@@ -18,6 +18,7 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
 
   public static final String KEY_FIRE_JS_EVENT = "HassMicFireJSEvent";
   public static final String KEY_JS_EVENT_NAME = "HassMicJSEventName";
+  public static final String KEY_JS_EVENT_DATA = "HassMicJSEventData";
 
   BackgroundTaskModule(ReactApplicationContext context) {
     super(context);
@@ -82,8 +83,8 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
     this.reactContext.sendBroadcast(playIntent);
   }
 
-  public static void FireJSEvent(Context ctx, String eventName) {
-    Log.d("HassmicBackgroundTaskModule", "Firing JS Event: " + eventName);
+  public static void FireJSEvent(Context ctx, String eventName, String dataJson) {
+    Log.d("HassmicBackgroundTaskModule", "Firing JS Event: " + eventName + ", " + dataJson);
     Intent fireJSEvent = new Intent(KEY_FIRE_JS_EVENT);
     fireJSEvent.putExtra(KEY_JS_EVENT_NAME, eventName);
     ctx.sendBroadcast(fireJSEvent);

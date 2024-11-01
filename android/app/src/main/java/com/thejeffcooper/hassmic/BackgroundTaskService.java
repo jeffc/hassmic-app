@@ -26,12 +26,20 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import com.facebook.react.HeadlessJsTaskService;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class BackgroundTaskService extends Service {
   public static final String PLAY_AUDIO_ACTION = "com.thejeffcooper.hassmic.INTENT_PLAY_AUDIO";
 
   public static final String EVENT_PLAY_SOUND_START = "hassmic.SpeechStart";
   public static final String EVENT_PLAY_SOUND_STOP = "hassmic.SpeechStop";
+  public static final String EVENT_MEDIA_PLAYER_EVENT = "hassmic.MediaPlayerEvent";
+
+  public static final String MEDIA_PLAYER_EVENT_WHICH_PLAYER = "which_player";
+  public static final String MEDIA_PLAYER_EVENT_WHICH_EVENT = "which_event";
+
+  public static final String MEDIA_PLAYER_EVENT_PLAYBACK_STATE_CHANGED = "playback_state_changed";
 
   public static final String URL_KEY = "URL";
   public static final String ANNOUNCE_KEY = "ANNOUNCE";
@@ -81,24 +89,53 @@ public class BackgroundTaskService extends Service {
                           .build(),
                       false)
                   .build();
-        }
 
-        // listen for important events and fire them back to JS
-        Player.Listener audioEventListener =
-            new Player.Listener() {
-              @Override
-              public void onEvents(Player p, Player.Events events) {
-                String which_player = null;
-                if (p == audioExo) {
-                  which_player = "audio";
-                } else if (p == announceExo) {
-                  which_player = "announce";
+          // listen for important events and fire them back to JS
+          Player.Listener audioEventListener =
+              new Player.Listener() {
+                @Override
+                public void onEvents(Player p, Player.Events events) {
+                  String which_player = null;
+                  if (p == audioExo) {
+                    which_player = "audio";
+                  } else if (p == announceExo) {
+                    which_player = "announce";
+                  }
+                  Log.d("HassmicBackgroundTaskService", "Got events for " + which_player);
+
+                  // Loop over each media player event in this tick and fire it back
+                  // to JS
+                  for (int i = 0; i < events.size(); i++) {
+                    @Player.Event int e = events.get(i);
+                    String event_name = null;
+
+                    try {
+                      JSONObject data = new JSONObject();
+                      switch (e) {
+                        case Player.EVENT_PLAYBACK_STATE_CHANGED:
+                          event_name = MEDIA_PLAYER_EVENT_PLAYBACK_STATE_CHANGED;
+                          @Player.State int new_state = p.getPlaybackState();
+                          break;
+                      }
+
+                      data.put(MEDIA_PLAYER_EVENT_WHICH_PLAYER, which_player);
+                      data.put(MEDIA_PLAYER_EVENT_WHICH_EVENT, event_name);
+
+                      if (event_name == null) {
+                        Log.w("HassmicBackgroundtaskService", "Unknown event type: " + e);
+                      } else {
+                        BackgroundTaskModule.FireJSEvent(
+                            getApplicationContext(), EVENT_MEDIA_PLAYER_EVENT, data.toString());
+                      }
+                    } catch (JSONException ex) {
+                      Log.e("HassmicBackgroundTaskService", ex.toString());
+                    }
+                  }
                 }
-                Log.d("HassmicBackgroundTaskService", "Got events for " + which_player);
-
-                for (int i = 0; i < events.size(); i++) {}
-              }
-            };
+              };
+          audioExo.addListener(audioEventListener);
+          announceExo.addListener(audioEventListener);
+        }
       };
 
   @Override
