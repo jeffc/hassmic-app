@@ -42,7 +42,8 @@
     "react-native-tcp-socket": "^6.2.0",
     "react-native-uuid": "^2.0.2",
     "react-native-web": "~0.19.10",
-    "react-native-zeroconf": "^0.13.8"
+    "react-native-zeroconf": "^0.13.8",
+    "ts-proto": "^2.2.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

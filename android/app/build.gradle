@@ -167,6 +167,7 @@ android {
 }
 
 dependencies {
+    implementation project(':proto')
     def androidx_core_version = "1.13.1";
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")

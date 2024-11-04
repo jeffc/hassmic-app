@@ -62,5 +62,6 @@ if (getRNMinorVersion() < 75) {
   applyNativeModulesSettingsGradle(settings)
 }
 
-include ':app'
+include ':proto', ':app'
+
 includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
