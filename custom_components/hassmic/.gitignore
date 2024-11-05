@@ -1,0 +1,4 @@
+__pycache__
+*.sw*
+venv
+.ruff_cache

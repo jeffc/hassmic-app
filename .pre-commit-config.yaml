@@ -4,3 +4,22 @@ repos:
     hooks:
       - id: pretty-format-java
         args: [--autofix]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  #  - repo: https://github.com/astral-sh/ruff-pre-commit
+  #    rev: v0.6.4
+  #    hooks:
+  #      - id: ruff
+  #        args:
+  #          - --fix
+  #      - id: ruff-format
+  #        files: ^((homeassistant|pylint|script|tests)/.+)?[^/]+\.(py|pyi)$
+  - repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+      - id: black
+        name: "Python formatter (black)"
