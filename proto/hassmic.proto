@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package hassmic;
 
-option java_package = "com.thejeffcooper.hassmic";
+option java_package = "com.thejeffcooper.hassmic.proto";
 option java_multiple_files = true;
 
 
@@ -27,4 +27,3 @@ message ClientMessage {
     ClientInfo client_info = 2;
   }
 }
-

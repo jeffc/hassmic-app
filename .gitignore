@@ -1,5 +1,7 @@
+venv
+node_modules
+
 *.sw*
 
 # macOS
 .DS_Store
-

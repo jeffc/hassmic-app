@@ -1,11 +1,5 @@
-The files that go in this directory are **generated** and should not be checked
-in directly.
+The files that go in this directory are **generated** and should not be modified
+directly.
 
-They are regenerated as part of the android release process (`cd android;
-./gradlew assembleRelease`).
-
-To regenerate manually, go to the main project directory and run
-
-```
-protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=app/ ./proto/*.proto
-```
+They are regenerated using the `scripts/proto_regen.sh` script in the project
+root.
