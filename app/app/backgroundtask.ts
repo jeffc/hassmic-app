@@ -139,11 +139,9 @@ class BackgroundTaskManager_ {
     const emitter = new NativeEventEmitter(BackgroundTaskModule);
     emitter.addListener("hassmic.SpeechStart", () => {
       console.log("Speech playback start");
-      CheyenneSocket.sendMessage("tts-start", {});
     });
     emitter.addListener("hassmic.SpeechStop", () => {
       console.log("Speech playback stop");
-      CheyenneSocket.sendMessage("tts-stop", {});
     });
 
     CheyenneSocket.setPlayAudioCallback((url: string, announce: boolean) => {

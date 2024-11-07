@@ -14,7 +14,10 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@bufbuild/protobuf": "^2.2.2",
+    "@expo/metro-config": "^0.18.11",
     "@expo/vector-icons": "^14.0.2",
+    "@protobuf-ts/plugin": "^2.9.4",
     "@react-native-async-storage/async-storage": "^2.0.0",
     "@react-navigation/native": "^6.0.2",
     "buffer": "^6.0.3",
@@ -42,8 +45,7 @@
     "react-native-tcp-socket": "^6.2.0",
     "react-native-uuid": "^2.0.2",
     "react-native-web": "~0.19.10",
-    "react-native-zeroconf": "^0.13.8",
-    "ts-proto": "^2.2.5"
+    "react-native-zeroconf": "^0.13.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

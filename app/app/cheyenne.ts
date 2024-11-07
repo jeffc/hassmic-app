@@ -3,6 +3,8 @@ import * as Application from "expo-application";
 import { UUIDManager } from "./util";
 import { APP_VERSION } from "./constants";
 
+import { ClientMessage, ClientInfo, Ping, AudioData } from "./proto/hassmic";
+
 type CallbackType<T> = ((s: T) => void) | null;
 type PlayAudioCallbackType = ((url: string, announce: boolean) => void) | null;
 
@@ -38,40 +40,45 @@ class CheyenneServer {
   streamAudio = (streamData: Uint8Array) => {
     if (this._sock) {
       try {
-        // build the JSON packet and the stream data into a single Uint8Array
-        // so that they send atomically
-        const pkt = new TextEncoder().encode(
-          JSON.stringify({
-            type: "audio-chunk",
-            payload_length: streamData.length,
-          }) + "\n"
+        this.sendMessage(
+          ClientMessage.create({
+            msg: {
+              oneofKind: "audioData",
+              audioData: {
+                data: streamData,
+              },
+            },
+          })
         );
-        let combinedArray = new Uint8Array(pkt.length + streamData.length);
-        combinedArray.set(pkt);
-        combinedArray.set(streamData, pkt.length);
-        this._sock.write(combinedArray);
       } catch (e) {
         console.info(e);
       }
     }
   };
 
-  sendMessage = (type: string, data: object | undefined) => {
+  sendMessage = (m: ClientMessage) => {
     if (this._sock) {
-      this._sock.write(
-        JSON.stringify({
-          type: type,
-          data: data,
-        }) + "\n"
-      );
+      try {
+        this._sock.write(ClientMessage.toBinary(m));
+      } catch (e) {
+        console.error(e);
+        console.error(e.stack);
+      }
     }
   };
 
   sendInfo = (uuid: string) => {
-    this.sendMessage("client-info", {
-      uuid: uuid,
-      app_version: APP_VERSION,
-    });
+    this.sendMessage(
+      ClientMessage.create({
+        msg: {
+          oneofKind: "clientInfo",
+          clientInfo: {
+            uuid: uuid,
+            version: APP_VERSION,
+          },
+        },
+      })
+    );
   };
 
   // sends a ping every 10 seconds while the socket is open.
@@ -79,10 +86,13 @@ class CheyenneServer {
     return (async () => {
       while (this._sock) {
         try {
-          this._sock.write(
-            JSON.stringify({
-              type: "ping",
-            }) + "\n"
+          this.sendMessage(
+            ClientMessage.create({
+              msg: {
+                oneofKind: "ping",
+                ping: {},
+              },
+            })
           );
         } catch (e) {
           console.info(e);
@@ -126,6 +136,7 @@ class CheyenneServer {
         this._setConnectionState(true);
         this.sendInfo(this._uuid);
         this.startPing();
+        console.info("All set up -- waiting");
       } else {
         console.info("Already have a socket, dropping new connection");
         socket.destroy();

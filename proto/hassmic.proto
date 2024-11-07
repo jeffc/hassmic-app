@@ -21,9 +21,22 @@ message AudioData {
   bytes data = 1;
 }
 
+// Events that the client wants to make the server aware of
+enum ClientEvent {
+  UNKNOWN_EVENT = 0;
+}
+
+// Tell the server that a client event occurred
+message ClientEventOccurred {
+  ClientEvent event = 1;
+}
+
+
 message ClientMessage {
   oneof msg {
     Ping ping = 1;
     ClientInfo client_info = 2;
+    AudioData audio_data = 3;
+    ClientEvent event_occurred = 4;
   }
 }

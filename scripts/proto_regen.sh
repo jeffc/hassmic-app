@@ -26,12 +26,17 @@ npm install
 
 
 echo "Regenerating sources from protos"
-protoc \
-  --plugin=./node_modules/.bin/protoc-gen-ts_proto \
-  --ts_proto_out=app/app/ \
-  --python_out=custom_components/hassmic/ \
+#protoc \
+#  --plugin=./node_modules/.bin/protoc-gen-ts_proto \
+#  --ts_proto_out=app/app/ \
+#  --python_out=custom_components/hassmic/ \
+#  --java_out=lite:app/android/app/src/main/java/ \
+#  proto/*
+./node_modules/.bin/protoc \
+  --ts_out=app/app/proto \
+  --python_out=custom_components/hassmic/proto \
   --java_out=lite:app/android/app/src/main/java/ \
-  proto/*
+  -I proto proto/*
 
 
 popd
