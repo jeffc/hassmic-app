@@ -59,7 +59,14 @@ class CheyenneServer {
   sendMessage = (m: ClientMessage) => {
     if (this._sock) {
       try {
-        this._sock.write(ClientMessage.toBinary(m));
+        let msg = ClientMessage.toBinary(m);
+        // get the size of the generated binary buffer as a 32-bit integer
+        let sz = new Uint8Array(Uint32Array.of(msg.length).buffer);
+        // write the size, then the payload, using one write call
+        let combined = new Uint8Array(4 + msg.length);
+        combined.set(sz);
+        combined.set(msg, 4);
+        this._sock.write(combined);
       } catch (e) {
         console.error(e);
         console.error(e.stack);
