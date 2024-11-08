@@ -35,14 +35,10 @@ This work is licensed under a
 
 ## Dev Tips
 
-This project is built on React-Native. To run a dev build, connect to an
-android device or emulator and run:
+This project is built on React-Native, but uses a substantial amount of native
+code. Using `npx expo run:android` _might_ work, but isn't officially supported.
 
-```
-npx expo run:android
-```
-
-To build an APK for release,
+To build an APK use,
 
 ```
 cd android
@@ -50,3 +46,24 @@ cd android
 ```
 
 The built APK will be at `android/app/build/outputs/apk/release/app-release.apk`
+
+You can also use `installRelease` instead of `assembleRelease` to install the
+built package to a device connected via adb.
+
+## Protocol Notes
+
+The HassMic client and server communicate using a slightly strange paradigm
+based on protocol buffers (defined in the `proto/` directory). The server sends
+`ServerMessage` messages to the client, and the client sends `ClientMessage`s
+to the server. Because of a strange bug that I never quite got to the bottom of
+with sending raw binary data back and forth, these protos are marshalled to
+their binary forms and then base64-encoded, and sent over the wire as
+newline-separated strings. There is no handshaking involved; client messages and
+server messages are handled by separate threads on both ends. The client also
+sends a periodic `ping` to let the server know it's still connected, even if
+it's not sending audio data.
+
+The protocol name `Cheyenne` is an outdated pun -- in early versions of Hassmic,
+the protocol was based around the core of the Wyoming protocol. It has since
+been rewritten and no longer resembles Wyoming, but for the moment the name
+persists.
