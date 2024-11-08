@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
 import androidx.core.content.ContextCompat;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.thejeffcooper.hassmic.proto.ClientEvent;
 
 public class BackgroundTaskModule extends ReactContextBaseJavaModule {
 
@@ -19,6 +22,8 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
   public static final String KEY_FIRE_JS_EVENT = "HassMicFireJSEvent";
   public static final String KEY_JS_EVENT_NAME = "HassMicJSEventName";
   public static final String KEY_JS_EVENT_DATA = "HassMicJSEventData";
+  public static final String KEY_JS_PROTO_VALUED_EVENT = "HassMic.ProtoValuedEvent";
+  public static final String KEY_JS_EVENT_PROTO = "HassMicJSEventProto";
 
   BackgroundTaskModule(ReactApplicationContext context) {
     super(context);
@@ -28,17 +33,24 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
         new BroadcastReceiver() {
           @Override
           public void onReceive(Context context, Intent intent) {
-            String eventName = intent.getStringExtra(KEY_JS_EVENT_NAME);
-            if (eventName == null || eventName.equals("")) {
+            byte[] protodata = intent.getByteArrayExtra(KEY_JS_EVENT_PROTO);
+            if (protodata == null || protodata.length == 0) {
               Log.e(
                   "HassmicBackgroundTaskModule",
-                  "Was asked to send a JS event, but didn't get an event name");
+                  "Was asked to send a JS event, but didn't get proto data");
               return;
             }
-            Log.d("HassmicBackgroundTaskModule", "Sending event JS event " + eventName);
-            reactContext
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit(eventName, null);
+            try {
+              Log.d(
+                  "HassmicBackgroundTaskModule",
+                  "Sending event JS event " + ClientEvent.parseFrom(protodata).getEventCase());
+              reactContext
+                  .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                  .emit(
+                      KEY_JS_PROTO_VALUED_EVENT, Base64.encodeToString(protodata, Base64.NO_WRAP));
+            } catch (InvalidProtocolBufferException e) {
+              Log.e("HassmicBackgroundTaskModule", "Failed to send JS event: bad proto");
+            }
           }
         };
 
@@ -83,10 +95,10 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
     this.reactContext.sendBroadcast(playIntent);
   }
 
-  public static void FireJSEvent(Context ctx, String eventName, String dataJson) {
-    Log.d("HassmicBackgroundTaskModule", "Firing JS Event: " + eventName + ", " + dataJson);
+  public static void FireJSEvent(Context ctx, ClientEvent ev) {
+    Log.d("HassmicBackgroundTaskModule", "Firing JS Event");
     Intent fireJSEvent = new Intent(KEY_FIRE_JS_EVENT);
-    fireJSEvent.putExtra(KEY_JS_EVENT_NAME, eventName);
+    fireJSEvent.putExtra(KEY_JS_EVENT_PROTO, ev.toByteArray());
     ctx.sendBroadcast(fireJSEvent);
   }
 }

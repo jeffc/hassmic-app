@@ -6,10 +6,26 @@ from dataclasses import dataclass
 import betterproto
 
 
-class ClientEvent(betterproto.Enum):
-    """Events that the client wants to make the server aware of"""
+class MediaPlayerState(betterproto.Enum):
+    """
+    https://developer.android.com/reference/androidx/media3/common/Player.State
+    """
 
-    UNKNOWN_EVENT = 0
+    STATE_UNKNOWN = 0
+    STATE_IDLE = 1
+    STATE_BUFFERING = 2
+    STATE_READY = 3
+    STATE_ENDED = 4
+
+
+class MediaPlayerId(betterproto.Enum):
+    """The different media players available"""
+
+    ID_UNKNOWN = 0
+    # The normal music/audio playback player
+    ID_PLAYBACK = 1
+    # The announce player
+    ID_ANNOUNCE = 2
 
 
 @dataclass
@@ -34,10 +50,41 @@ class AudioData(betterproto.Message):
 
 
 @dataclass
-class ClientEventOccurred(betterproto.Message):
+class ClientEvent(betterproto.Message):
     """Tell the server that a client event occurred"""
 
-    event: "ClientEvent" = betterproto.enum_field(1)
+    media_player_state_change: "ClientEventMediaPlayerStateChange" = (
+        betterproto.message_field(1, group="event")
+    )
+    media_player_volume_change: "ClientEventMediaPlayerVolumeChange" = (
+        betterproto.message_field(2, group="event")
+    )
+    device_volume_change: "ClientEventDeviceVolumeChange" = betterproto.message_field(
+        3, group="event"
+    )
+
+
+@dataclass
+class ClientEventMediaPlayerStateChange(betterproto.Message):
+    """A media player has changed state"""
+
+    player: "MediaPlayerId" = betterproto.enum_field(1)
+    new_state: "MediaPlayerState" = betterproto.enum_field(2)
+
+
+@dataclass
+class ClientEventMediaPlayerVolumeChange(betterproto.Message):
+    """A media player has changed volume"""
+
+    player: "MediaPlayerId" = betterproto.enum_field(1)
+    new_volume: float = betterproto.float_field(2)
+
+
+@dataclass
+class ClientEventDeviceVolumeChange(betterproto.Message):
+    """The device volume has changed"""
+
+    new_volume: float = betterproto.float_field(1)
 
 
 @dataclass
@@ -47,7 +94,7 @@ class ClientMessage(betterproto.Message):
     ping: "Ping" = betterproto.message_field(1, group="msg")
     client_info: "ClientInfo" = betterproto.message_field(2, group="msg")
     audio_data: "AudioData" = betterproto.message_field(3, group="msg")
-    event_occurred: "ClientEvent" = betterproto.enum_field(4, group="msg")
+    client_event: "ClientEvent" = betterproto.message_field(4, group="msg")
 
 
 @dataclass

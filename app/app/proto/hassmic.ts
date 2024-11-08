@@ -46,13 +46,74 @@ export interface AudioData {
 /**
  * Tell the server that a client event occurred
  *
- * @generated from protobuf message hassmic.ClientEventOccurred
+ * @generated from protobuf message hassmic.ClientEvent
  */
-export interface ClientEventOccurred {
+export interface ClientEvent {
     /**
-     * @generated from protobuf field: hassmic.ClientEvent event = 1;
+     * @generated from protobuf oneof: event
      */
-    event: ClientEvent;
+    event: {
+        oneofKind: "mediaPlayerStateChange";
+        /**
+         * @generated from protobuf field: hassmic.ClientEvent.MediaPlayerStateChange media_player_state_change = 1;
+         */
+        mediaPlayerStateChange: ClientEvent_MediaPlayerStateChange;
+    } | {
+        oneofKind: "mediaPlayerVolumeChange";
+        /**
+         * @generated from protobuf field: hassmic.ClientEvent.MediaPlayerVolumeChange media_player_volume_change = 2;
+         */
+        mediaPlayerVolumeChange: ClientEvent_MediaPlayerVolumeChange;
+    } | {
+        oneofKind: "deviceVolumeChange";
+        /**
+         * @generated from protobuf field: hassmic.ClientEvent.DeviceVolumeChange device_volume_change = 3;
+         */
+        deviceVolumeChange: ClientEvent_DeviceVolumeChange;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ * A media player has changed state
+ *
+ * @generated from protobuf message hassmic.ClientEvent.MediaPlayerStateChange
+ */
+export interface ClientEvent_MediaPlayerStateChange {
+    /**
+     * @generated from protobuf field: hassmic.MediaPlayerId player = 1;
+     */
+    player: MediaPlayerId;
+    /**
+     * @generated from protobuf field: hassmic.MediaPlayerState new_state = 2;
+     */
+    newState: MediaPlayerState;
+}
+/**
+ * A media player has changed volume
+ *
+ * @generated from protobuf message hassmic.ClientEvent.MediaPlayerVolumeChange
+ */
+export interface ClientEvent_MediaPlayerVolumeChange {
+    /**
+     * @generated from protobuf field: hassmic.MediaPlayerId player = 1;
+     */
+    player: MediaPlayerId;
+    /**
+     * @generated from protobuf field: float new_volume = 2;
+     */
+    newVolume: number;
+}
+/**
+ * The device volume has changed
+ *
+ * @generated from protobuf message hassmic.ClientEvent.DeviceVolumeChange
+ */
+export interface ClientEvent_DeviceVolumeChange {
+    /**
+     * @generated from protobuf field: float new_volume = 1;
+     */
+    newVolume: number;
 }
 /**
  * The wrapper message that actually gets sent to the server
@@ -82,11 +143,11 @@ export interface ClientMessage {
          */
         audioData: AudioData;
     } | {
-        oneofKind: "eventOccurred";
+        oneofKind: "clientEvent";
         /**
-         * @generated from protobuf field: hassmic.ClientEvent event_occurred = 4;
+         * @generated from protobuf field: hassmic.ClientEvent client_event = 4;
          */
-        eventOccurred: ClientEvent;
+        clientEvent: ClientEvent;
     } | {
         oneofKind: undefined;
     };
@@ -130,15 +191,54 @@ export interface ServerMessage {
     };
 }
 /**
- * Events that the client wants to make the server aware of
+ * https://developer.android.com/reference/androidx/media3/common/Player.State
  *
- * @generated from protobuf enum hassmic.ClientEvent
+ * @generated from protobuf enum hassmic.MediaPlayerState
  */
-export enum ClientEvent {
+export enum MediaPlayerState {
     /**
-     * @generated from protobuf enum value: UNKNOWN_EVENT = 0;
+     * @generated from protobuf enum value: STATE_UNKNOWN = 0;
      */
-    UNKNOWN_EVENT = 0
+    STATE_UNKNOWN = 0,
+    /**
+     * @generated from protobuf enum value: STATE_IDLE = 1;
+     */
+    STATE_IDLE = 1,
+    /**
+     * @generated from protobuf enum value: STATE_BUFFERING = 2;
+     */
+    STATE_BUFFERING = 2,
+    /**
+     * @generated from protobuf enum value: STATE_READY = 3;
+     */
+    STATE_READY = 3,
+    /**
+     * @generated from protobuf enum value: STATE_ENDED = 4;
+     */
+    STATE_ENDED = 4
+}
+/**
+ * The different media players available
+ *
+ * @generated from protobuf enum hassmic.MediaPlayerId
+ */
+export enum MediaPlayerId {
+    /**
+     * @generated from protobuf enum value: ID_UNKNOWN = 0;
+     */
+    ID_UNKNOWN = 0,
+    /**
+     * The normal music/audio playback player
+     *
+     * @generated from protobuf enum value: ID_PLAYBACK = 1;
+     */
+    ID_PLAYBACK = 1,
+    /**
+     * The announce player
+     *
+     * @generated from protobuf enum value: ID_ANNOUNCE = 2;
+     */
+    ID_ANNOUNCE = 2
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class ClientInfo$Type extends MessageType<ClientInfo> {
@@ -268,26 +368,43 @@ class AudioData$Type extends MessageType<AudioData> {
  */
 export const AudioData = new AudioData$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class ClientEventOccurred$Type extends MessageType<ClientEventOccurred> {
+class ClientEvent$Type extends MessageType<ClientEvent> {
     constructor() {
-        super("hassmic.ClientEventOccurred", [
-            { no: 1, name: "event", kind: "enum", T: () => ["hassmic.ClientEvent", ClientEvent] }
+        super("hassmic.ClientEvent", [
+            { no: 1, name: "media_player_state_change", kind: "message", oneof: "event", T: () => ClientEvent_MediaPlayerStateChange },
+            { no: 2, name: "media_player_volume_change", kind: "message", oneof: "event", T: () => ClientEvent_MediaPlayerVolumeChange },
+            { no: 3, name: "device_volume_change", kind: "message", oneof: "event", T: () => ClientEvent_DeviceVolumeChange }
         ]);
     }
-    create(value?: PartialMessage<ClientEventOccurred>): ClientEventOccurred {
+    create(value?: PartialMessage<ClientEvent>): ClientEvent {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.event = 0;
+        message.event = { oneofKind: undefined };
         if (value !== undefined)
-            reflectionMergePartial<ClientEventOccurred>(this, message, value);
+            reflectionMergePartial<ClientEvent>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ClientEventOccurred): ClientEventOccurred {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ClientEvent): ClientEvent {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* hassmic.ClientEvent event */ 1:
-                    message.event = reader.int32();
+                case /* hassmic.ClientEvent.MediaPlayerStateChange media_player_state_change */ 1:
+                    message.event = {
+                        oneofKind: "mediaPlayerStateChange",
+                        mediaPlayerStateChange: ClientEvent_MediaPlayerStateChange.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).mediaPlayerStateChange)
+                    };
+                    break;
+                case /* hassmic.ClientEvent.MediaPlayerVolumeChange media_player_volume_change */ 2:
+                    message.event = {
+                        oneofKind: "mediaPlayerVolumeChange",
+                        mediaPlayerVolumeChange: ClientEvent_MediaPlayerVolumeChange.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).mediaPlayerVolumeChange)
+                    };
+                    break;
+                case /* hassmic.ClientEvent.DeviceVolumeChange device_volume_change */ 3:
+                    message.event = {
+                        oneofKind: "deviceVolumeChange",
+                        deviceVolumeChange: ClientEvent_DeviceVolumeChange.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).deviceVolumeChange)
+                    };
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -300,10 +417,16 @@ class ClientEventOccurred$Type extends MessageType<ClientEventOccurred> {
         }
         return message;
     }
-    internalBinaryWrite(message: ClientEventOccurred, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* hassmic.ClientEvent event = 1; */
-        if (message.event !== 0)
-            writer.tag(1, WireType.Varint).int32(message.event);
+    internalBinaryWrite(message: ClientEvent, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* hassmic.ClientEvent.MediaPlayerStateChange media_player_state_change = 1; */
+        if (message.event.oneofKind === "mediaPlayerStateChange")
+            ClientEvent_MediaPlayerStateChange.internalBinaryWrite(message.event.mediaPlayerStateChange, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* hassmic.ClientEvent.MediaPlayerVolumeChange media_player_volume_change = 2; */
+        if (message.event.oneofKind === "mediaPlayerVolumeChange")
+            ClientEvent_MediaPlayerVolumeChange.internalBinaryWrite(message.event.mediaPlayerVolumeChange, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* hassmic.ClientEvent.DeviceVolumeChange device_volume_change = 3; */
+        if (message.event.oneofKind === "deviceVolumeChange")
+            ClientEvent_DeviceVolumeChange.internalBinaryWrite(message.event.deviceVolumeChange, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -311,9 +434,166 @@ class ClientEventOccurred$Type extends MessageType<ClientEventOccurred> {
     }
 }
 /**
- * @generated MessageType for protobuf message hassmic.ClientEventOccurred
+ * @generated MessageType for protobuf message hassmic.ClientEvent
  */
-export const ClientEventOccurred = new ClientEventOccurred$Type();
+export const ClientEvent = new ClientEvent$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ClientEvent_MediaPlayerStateChange$Type extends MessageType<ClientEvent_MediaPlayerStateChange> {
+    constructor() {
+        super("hassmic.ClientEvent.MediaPlayerStateChange", [
+            { no: 1, name: "player", kind: "enum", T: () => ["hassmic.MediaPlayerId", MediaPlayerId] },
+            { no: 2, name: "new_state", kind: "enum", T: () => ["hassmic.MediaPlayerState", MediaPlayerState] }
+        ]);
+    }
+    create(value?: PartialMessage<ClientEvent_MediaPlayerStateChange>): ClientEvent_MediaPlayerStateChange {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.player = 0;
+        message.newState = 0;
+        if (value !== undefined)
+            reflectionMergePartial<ClientEvent_MediaPlayerStateChange>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ClientEvent_MediaPlayerStateChange): ClientEvent_MediaPlayerStateChange {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* hassmic.MediaPlayerId player */ 1:
+                    message.player = reader.int32();
+                    break;
+                case /* hassmic.MediaPlayerState new_state */ 2:
+                    message.newState = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ClientEvent_MediaPlayerStateChange, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* hassmic.MediaPlayerId player = 1; */
+        if (message.player !== 0)
+            writer.tag(1, WireType.Varint).int32(message.player);
+        /* hassmic.MediaPlayerState new_state = 2; */
+        if (message.newState !== 0)
+            writer.tag(2, WireType.Varint).int32(message.newState);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message hassmic.ClientEvent.MediaPlayerStateChange
+ */
+export const ClientEvent_MediaPlayerStateChange = new ClientEvent_MediaPlayerStateChange$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ClientEvent_MediaPlayerVolumeChange$Type extends MessageType<ClientEvent_MediaPlayerVolumeChange> {
+    constructor() {
+        super("hassmic.ClientEvent.MediaPlayerVolumeChange", [
+            { no: 1, name: "player", kind: "enum", T: () => ["hassmic.MediaPlayerId", MediaPlayerId] },
+            { no: 2, name: "new_volume", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ClientEvent_MediaPlayerVolumeChange>): ClientEvent_MediaPlayerVolumeChange {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.player = 0;
+        message.newVolume = 0;
+        if (value !== undefined)
+            reflectionMergePartial<ClientEvent_MediaPlayerVolumeChange>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ClientEvent_MediaPlayerVolumeChange): ClientEvent_MediaPlayerVolumeChange {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* hassmic.MediaPlayerId player */ 1:
+                    message.player = reader.int32();
+                    break;
+                case /* float new_volume */ 2:
+                    message.newVolume = reader.float();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ClientEvent_MediaPlayerVolumeChange, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* hassmic.MediaPlayerId player = 1; */
+        if (message.player !== 0)
+            writer.tag(1, WireType.Varint).int32(message.player);
+        /* float new_volume = 2; */
+        if (message.newVolume !== 0)
+            writer.tag(2, WireType.Bit32).float(message.newVolume);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message hassmic.ClientEvent.MediaPlayerVolumeChange
+ */
+export const ClientEvent_MediaPlayerVolumeChange = new ClientEvent_MediaPlayerVolumeChange$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ClientEvent_DeviceVolumeChange$Type extends MessageType<ClientEvent_DeviceVolumeChange> {
+    constructor() {
+        super("hassmic.ClientEvent.DeviceVolumeChange", [
+            { no: 1, name: "new_volume", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ClientEvent_DeviceVolumeChange>): ClientEvent_DeviceVolumeChange {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.newVolume = 0;
+        if (value !== undefined)
+            reflectionMergePartial<ClientEvent_DeviceVolumeChange>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ClientEvent_DeviceVolumeChange): ClientEvent_DeviceVolumeChange {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* float new_volume */ 1:
+                    message.newVolume = reader.float();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ClientEvent_DeviceVolumeChange, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* float new_volume = 1; */
+        if (message.newVolume !== 0)
+            writer.tag(1, WireType.Bit32).float(message.newVolume);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message hassmic.ClientEvent.DeviceVolumeChange
+ */
+export const ClientEvent_DeviceVolumeChange = new ClientEvent_DeviceVolumeChange$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class ClientMessage$Type extends MessageType<ClientMessage> {
     constructor() {
@@ -321,7 +601,7 @@ class ClientMessage$Type extends MessageType<ClientMessage> {
             { no: 1, name: "ping", kind: "message", oneof: "msg", T: () => Ping },
             { no: 2, name: "client_info", kind: "message", oneof: "msg", T: () => ClientInfo },
             { no: 3, name: "audio_data", kind: "message", oneof: "msg", T: () => AudioData },
-            { no: 4, name: "event_occurred", kind: "enum", oneof: "msg", T: () => ["hassmic.ClientEvent", ClientEvent] }
+            { no: 4, name: "client_event", kind: "message", oneof: "msg", T: () => ClientEvent }
         ]);
     }
     create(value?: PartialMessage<ClientMessage>): ClientMessage {
@@ -354,10 +634,10 @@ class ClientMessage$Type extends MessageType<ClientMessage> {
                         audioData: AudioData.internalBinaryRead(reader, reader.uint32(), options, (message.msg as any).audioData)
                     };
                     break;
-                case /* hassmic.ClientEvent event_occurred */ 4:
+                case /* hassmic.ClientEvent client_event */ 4:
                     message.msg = {
-                        oneofKind: "eventOccurred",
-                        eventOccurred: reader.int32()
+                        oneofKind: "clientEvent",
+                        clientEvent: ClientEvent.internalBinaryRead(reader, reader.uint32(), options, (message.msg as any).clientEvent)
                     };
                     break;
                 default:
@@ -381,9 +661,9 @@ class ClientMessage$Type extends MessageType<ClientMessage> {
         /* hassmic.AudioData audio_data = 3; */
         if (message.msg.oneofKind === "audioData")
             AudioData.internalBinaryWrite(message.msg.audioData, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
-        /* hassmic.ClientEvent event_occurred = 4; */
-        if (message.msg.oneofKind === "eventOccurred")
-            writer.tag(4, WireType.Varint).int32(message.msg.eventOccurred);
+        /* hassmic.ClientEvent client_event = 4; */
+        if (message.msg.oneofKind === "clientEvent")
+            ClientEvent.internalBinaryWrite(message.msg.clientEvent, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

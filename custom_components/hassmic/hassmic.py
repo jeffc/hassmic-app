@@ -156,14 +156,20 @@ class HassMic:
         if m is None:
             return None
 
-        match m:
-            case ClientMessage(audio_data=d):
-                self._pipeline_manager.enqueue_chunk(d.data)
+        # match this way because the example given on the betterproto docs
+        # always matches the first case given for some reason.
+        (which, val) = betterproto.which_one_of(m, "msg")
+        match which:
+            case "audio_data":
+                self._pipeline_manager.enqueue_chunk(val.data)
 
-            case ClientMessage(client_info=value):
-                _LOGGER.debug("Got client info: %s", repr(value))
+            case "client_info":
+                _LOGGER.debug("Got client info: %s", repr(val))
 
-            case ClientMessage(ping=_):
+            case "client_event":
+                _LOGGER.debug("Got client event: %s", repr(val))
+
+            case "ping":
                 pass
 
             case _:

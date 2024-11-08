@@ -6,6 +6,7 @@ import { NativeModules, NativeEventEmitter } from "react-native";
 import { PermissionsAndroid } from "react-native";
 import { STORAGE_KEY_RUN_BACKGROUND_TASK } from "./constants";
 import { ZeroconfManager } from "./zeroconf";
+import { ClientEvent, ClientMessage } from "./proto/hassmic";
 
 const { BackgroundTaskModule } = NativeModules;
 
@@ -142,6 +143,26 @@ class BackgroundTaskManager_ {
     });
     emitter.addListener("hassmic.SpeechStop", () => {
       console.log("Speech playback stop");
+    });
+    emitter.addListener("HassMic.ProtoValuedEvent", (d) => {
+      console.log(`Proto-valued event: ${d}`);
+      try {
+        let b64 = d.toString().trim();
+        let bts = Buffer.from(b64, "base64");
+        let ce = ClientEvent.fromBinary(bts);
+        console.log(`Client event: ${ClientEvent.toJsonString(ce)}`);
+        // pass the proto-valued event to the server
+        let cm = ClientMessage.create({
+          msg: {
+            oneofKind: "clientEvent",
+            clientEvent: ce,
+          },
+        });
+        console.log(`Client message: ${ClientMessage.toJsonString(cm)}`);
+        CheyenneSocket.sendMessage(cm);
+      } catch (e) {
+        console.error(`Error parsing proto valued event: ${e}`);
+      }
     });
 
     CheyenneSocket.setPlayAudioCallback((url: string, announce: boolean) => {

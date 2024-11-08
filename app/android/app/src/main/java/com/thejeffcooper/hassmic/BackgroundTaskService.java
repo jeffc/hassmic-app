@@ -26,8 +26,7 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import com.facebook.react.HeadlessJsTaskService;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.thejeffcooper.hassmic.proto.*;
 
 public class BackgroundTaskService extends Service {
   public static final String PLAY_AUDIO_ACTION = "com.thejeffcooper.hassmic.INTENT_PLAY_AUDIO";
@@ -95,40 +94,47 @@ public class BackgroundTaskService extends Service {
               new Player.Listener() {
                 @Override
                 public void onEvents(Player p, Player.Events events) {
-                  String which_player = null;
+                  MediaPlayerId which_player = MediaPlayerId.ID_UNKNOWN;
                   if (p == audioExo) {
-                    which_player = "audio";
+                    which_player = MediaPlayerId.ID_PLAYBACK;
                   } else if (p == announceExo) {
-                    which_player = "announce";
+                    which_player = MediaPlayerId.ID_ANNOUNCE;
                   }
-                  Log.d("HassmicBackgroundTaskService", "Got events for " + which_player);
+                  Log.d(
+                      "HassmicBackgroundTaskService", "Got events for " + which_player.toString());
 
                   // Loop over each media player event in this tick and fire it back
                   // to JS
                   for (int i = 0; i < events.size(); i++) {
                     @Player.Event int e = events.get(i);
-                    String event_name = null;
+                    ClientEvent.Builder protob = ClientEvent.newBuilder();
 
-                    try {
-                      JSONObject data = new JSONObject();
-                      switch (e) {
-                        case Player.EVENT_PLAYBACK_STATE_CHANGED:
-                          event_name = MEDIA_PLAYER_EVENT_PLAYBACK_STATE_CHANGED;
-                          @Player.State int new_state = p.getPlaybackState();
-                          break;
-                      }
+                    switch (e) {
+                      case Player.EVENT_PLAYBACK_STATE_CHANGED:
+                        ClientEvent.MediaPlayerStateChange.Builder b =
+                            ClientEvent.MediaPlayerStateChange.newBuilder().setPlayer(which_player);
+                        switch (p.getPlaybackState()) {
+                          case Player.STATE_IDLE:
+                            b.setNewState(MediaPlayerState.STATE_IDLE);
+                            break;
+                          case Player.STATE_BUFFERING:
+                            b.setNewState(MediaPlayerState.STATE_BUFFERING);
+                            break;
+                          case Player.STATE_READY:
+                            b.setNewState(MediaPlayerState.STATE_READY);
+                            break;
+                          case Player.STATE_ENDED:
+                            b.setNewState(MediaPlayerState.STATE_ENDED);
+                            break;
+                        }
+                        protob.setMediaPlayerStateChange(b.build());
+                        break;
+                    }
 
-                      data.put(MEDIA_PLAYER_EVENT_WHICH_PLAYER, which_player);
-                      data.put(MEDIA_PLAYER_EVENT_WHICH_EVENT, event_name);
-
-                      if (event_name == null) {
-                        Log.w("HassmicBackgroundtaskService", "Unknown event type: " + e);
-                      } else {
-                        BackgroundTaskModule.FireJSEvent(
-                            getApplicationContext(), EVENT_MEDIA_PLAYER_EVENT, data.toString());
-                      }
-                    } catch (JSONException ex) {
-                      Log.e("HassmicBackgroundTaskService", ex.toString());
+                    ClientEvent ce = protob.build();
+                    Log.d("HassmicBackgroundTaskService", "Proto: " + ce.toString());
+                    if (ce.getEventCase() != ClientEvent.EventCase.EVENT_NOT_SET) {
+                      BackgroundTaskModule.FireJSEvent(getApplicationContext(), ce);
                     }
                   }
                 }

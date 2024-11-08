@@ -51,25 +51,18 @@ public interface ClientMessageOrBuilder
   com.thejeffcooper.hassmic.proto.AudioData getAudioData();
 
   /**
-   * <code>.hassmic.ClientEvent event_occurred = 4;</code>
+   * <code>.hassmic.ClientEvent client_event = 4;</code>
    *
-   * @return Whether the eventOccurred field is set.
+   * @return Whether the clientEvent field is set.
    */
-  boolean hasEventOccurred();
+  boolean hasClientEvent();
 
   /**
-   * <code>.hassmic.ClientEvent event_occurred = 4;</code>
+   * <code>.hassmic.ClientEvent client_event = 4;</code>
    *
-   * @return The enum numeric value on the wire for eventOccurred.
+   * @return The clientEvent.
    */
-  int getEventOccurredValue();
-
-  /**
-   * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-   *
-   * @return The eventOccurred.
-   */
-  com.thejeffcooper.hassmic.proto.ClientEvent getEventOccurred();
+  com.thejeffcooper.hassmic.proto.ClientEvent getClientEvent();
 
   public com.thejeffcooper.hassmic.proto.ClientMessage.MsgCase getMsgCase();
 }

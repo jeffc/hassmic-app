@@ -26,7 +26,7 @@ public final class ClientMessage
     PING(1),
     CLIENT_INFO(2),
     AUDIO_DATA(3),
-    EVENT_OCCURRED(4),
+    CLIENT_EVENT(4),
     MSG_NOT_SET(0);
     private final int value;
 
@@ -51,7 +51,7 @@ public final class ClientMessage
         case 3:
           return AUDIO_DATA;
         case 4:
-          return EVENT_OCCURRED;
+          return CLIENT_EVENT;
         case 0:
           return MSG_NOT_SET;
         default:
@@ -215,68 +215,47 @@ public final class ClientMessage
     }
   }
 
-  public static final int EVENT_OCCURRED_FIELD_NUMBER = 4;
+  public static final int CLIENT_EVENT_FIELD_NUMBER = 4;
 
-  /**
-   * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-   *
-   * @return Whether the eventOccurred field is set.
-   */
+  /** <code>.hassmic.ClientEvent client_event = 4;</code> */
   @java.lang.Override
-  public boolean hasEventOccurred() {
+  public boolean hasClientEvent() {
     return msgCase_ == 4;
   }
 
-  /**
-   * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-   *
-   * @return The enum numeric value on the wire for eventOccurred.
-   */
+  /** <code>.hassmic.ClientEvent client_event = 4;</code> */
   @java.lang.Override
-  public int getEventOccurredValue() {
+  public com.thejeffcooper.hassmic.proto.ClientEvent getClientEvent() {
     if (msgCase_ == 4) {
-      return (java.lang.Integer) msg_;
+      return (com.thejeffcooper.hassmic.proto.ClientEvent) msg_;
     }
-    return 0;
+    return com.thejeffcooper.hassmic.proto.ClientEvent.getDefaultInstance();
   }
 
-  /**
-   * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-   *
-   * @return The eventOccurred.
-   */
-  @java.lang.Override
-  public com.thejeffcooper.hassmic.proto.ClientEvent getEventOccurred() {
-    if (msgCase_ == 4) {
-      com.thejeffcooper.hassmic.proto.ClientEvent result =
-          com.thejeffcooper.hassmic.proto.ClientEvent.forNumber((java.lang.Integer) msg_);
-      return result == null ? com.thejeffcooper.hassmic.proto.ClientEvent.UNRECOGNIZED : result;
-    }
-    return com.thejeffcooper.hassmic.proto.ClientEvent.UNKNOWN_EVENT;
-  }
-
-  /**
-   * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-   *
-   * @param value The enum numeric value on the wire for eventOccurred to set.
-   */
-  private void setEventOccurredValue(int value) {
-    msgCase_ = 4;
+  /** <code>.hassmic.ClientEvent client_event = 4;</code> */
+  private void setClientEvent(com.thejeffcooper.hassmic.proto.ClientEvent value) {
+    value.getClass();
     msg_ = value;
-  }
-
-  /**
-   * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-   *
-   * @param value The eventOccurred to set.
-   */
-  private void setEventOccurred(com.thejeffcooper.hassmic.proto.ClientEvent value) {
-    msg_ = value.getNumber();
     msgCase_ = 4;
   }
 
-  /** <code>.hassmic.ClientEvent event_occurred = 4;</code> */
-  private void clearEventOccurred() {
+  /** <code>.hassmic.ClientEvent client_event = 4;</code> */
+  private void mergeClientEvent(com.thejeffcooper.hassmic.proto.ClientEvent value) {
+    value.getClass();
+    if (msgCase_ == 4 && msg_ != com.thejeffcooper.hassmic.proto.ClientEvent.getDefaultInstance()) {
+      msg_ =
+          com.thejeffcooper.hassmic.proto.ClientEvent.newBuilder(
+                  (com.thejeffcooper.hassmic.proto.ClientEvent) msg_)
+              .mergeFrom(value)
+              .buildPartial();
+    } else {
+      msg_ = value;
+    }
+    msgCase_ = 4;
+  }
+
+  /** <code>.hassmic.ClientEvent client_event = 4;</code> */
+  private void clearClientEvent() {
     if (msgCase_ == 4) {
       msgCase_ = 0;
       msg_ = null;
@@ -517,68 +496,44 @@ public final class ClientMessage
       return this;
     }
 
-    /**
-     * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-     *
-     * @return Whether the eventOccurred field is set.
-     */
+    /** <code>.hassmic.ClientEvent client_event = 4;</code> */
     @java.lang.Override
-    public boolean hasEventOccurred() {
-      return instance.hasEventOccurred();
+    public boolean hasClientEvent() {
+      return instance.hasClientEvent();
     }
 
-    /**
-     * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-     *
-     * @return The enum numeric value on the wire for eventOccurred.
-     */
+    /** <code>.hassmic.ClientEvent client_event = 4;</code> */
     @java.lang.Override
-    public int getEventOccurredValue() {
-      return instance.getEventOccurredValue();
+    public com.thejeffcooper.hassmic.proto.ClientEvent getClientEvent() {
+      return instance.getClientEvent();
     }
 
-    /**
-     * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-     *
-     * @param value The enum numeric value on the wire for eventOccurred to set.
-     * @return This builder for chaining.
-     */
-    public Builder setEventOccurredValue(int value) {
+    /** <code>.hassmic.ClientEvent client_event = 4;</code> */
+    public Builder setClientEvent(com.thejeffcooper.hassmic.proto.ClientEvent value) {
       copyOnWrite();
-      instance.setEventOccurredValue(value);
+      instance.setClientEvent(value);
       return this;
     }
 
-    /**
-     * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-     *
-     * @return The eventOccurred.
-     */
-    @java.lang.Override
-    public com.thejeffcooper.hassmic.proto.ClientEvent getEventOccurred() {
-      return instance.getEventOccurred();
-    }
-
-    /**
-     * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-     *
-     * @param value The eventOccurred to set.
-     * @return This builder for chaining.
-     */
-    public Builder setEventOccurred(com.thejeffcooper.hassmic.proto.ClientEvent value) {
+    /** <code>.hassmic.ClientEvent client_event = 4;</code> */
+    public Builder setClientEvent(
+        com.thejeffcooper.hassmic.proto.ClientEvent.Builder builderForValue) {
       copyOnWrite();
-      instance.setEventOccurred(value);
+      instance.setClientEvent(builderForValue.build());
       return this;
     }
 
-    /**
-     * <code>.hassmic.ClientEvent event_occurred = 4;</code>
-     *
-     * @return This builder for chaining.
-     */
-    public Builder clearEventOccurred() {
+    /** <code>.hassmic.ClientEvent client_event = 4;</code> */
+    public Builder mergeClientEvent(com.thejeffcooper.hassmic.proto.ClientEvent value) {
       copyOnWrite();
-      instance.clearEventOccurred();
+      instance.mergeClientEvent(value);
+      return this;
+    }
+
+    /** <code>.hassmic.ClientEvent client_event = 4;</code> */
+    public Builder clearClientEvent() {
+      copyOnWrite();
+      instance.clearClientEvent();
       return this;
     }
 
@@ -609,10 +564,11 @@ public final class ClientMessage
                 com.thejeffcooper.hassmic.proto.Ping.class,
                 com.thejeffcooper.hassmic.proto.ClientInfo.class,
                 com.thejeffcooper.hassmic.proto.AudioData.class,
+                com.thejeffcooper.hassmic.proto.ClientEvent.class,
               };
           java.lang.String info =
               "\u0000\u0004\u0001\u0000\u0001\u0004\u0004\u0000\u0000\u0000\u0001<\u0000\u0002<"
-                  + "\u0000\u0003<\u0000\u0004?\u0000";
+                  + "\u0000\u0003<\u0000\u0004<\u0000";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

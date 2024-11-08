@@ -165,9 +165,7 @@ class ConnectionManager:
         """Send some data over the socket, if connected."""
         if self._socket_writer:
             binmsg = bytes(data)
-            _LOGGER.debug(f"Sending object: {binmsg}")
             b64msg = base64.b64encode(binmsg).decode("ascii")
-            _LOGGER.debug(f"Sending bytes: {b64msg}")
             self._socket_writer.write((b64msg + "\n").encode())
             await self._socket_writer.drain()
         else:

@@ -21,14 +21,51 @@ message AudioData {
   bytes data = 1;
 }
 
-// Events that the client wants to make the server aware of
-enum ClientEvent {
-  UNKNOWN_EVENT = 0;
+// https://developer.android.com/reference/androidx/media3/common/Player.State
+enum MediaPlayerState {
+  STATE_UNKNOWN = 0;
+  STATE_IDLE = 1;
+  STATE_BUFFERING = 2;
+  STATE_READY = 3;
+  STATE_ENDED = 4;
 }
 
+// The different media players available
+enum MediaPlayerId {
+  ID_UNKNOWN = 0;
+
+  // The normal music/audio playback player
+  ID_PLAYBACK = 1;
+
+  // The announce player
+  ID_ANNOUNCE = 2;
+}
+
+
 // Tell the server that a client event occurred
-message ClientEventOccurred {
-  ClientEvent event = 1;
+message ClientEvent {
+  // A media player has changed state
+  message MediaPlayerStateChange {
+    MediaPlayerId player = 1;
+    MediaPlayerState new_state = 2;
+  }
+
+  // A media player has changed volume
+  message MediaPlayerVolumeChange {
+    MediaPlayerId player = 1;
+    float new_volume = 2;
+  }
+
+  // The device volume has changed
+  message DeviceVolumeChange {
+    float new_volume = 1;
+  }
+
+  oneof event {
+    MediaPlayerStateChange media_player_state_change = 1;
+    MediaPlayerVolumeChange media_player_volume_change = 2;
+    DeviceVolumeChange device_volume_change = 3;
+  }
 }
 
 
@@ -38,7 +75,7 @@ message ClientMessage {
     Ping ping = 1;
     ClientInfo client_info = 2;
     AudioData audio_data = 3;
-    ClientEvent event_occurred = 4;
+    ClientEvent client_event = 4;
   }
 }
 

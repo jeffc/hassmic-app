@@ -165,11 +165,8 @@ class CheyenneServer {
 
   private _handleIncomingData = async (d: Uint8Array) => {
     try {
-      console.info(`Got raw: ${d}`);
       let b64 = d.toString().trim();
-      console.info(`Got trimmed: ${b64}`);
       let bts = Buffer.from(b64, "base64");
-      console.info(`Got parsed: ${bts}`);
       let m = ServerMessage.fromBinary(bts);
 
       switch (m.msg.oneofKind) {
