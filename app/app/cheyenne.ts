@@ -1,9 +1,16 @@
 import TcpSocket from "react-native-tcp-socket";
+import { Buffer } from "buffer";
 import * as Application from "expo-application";
 import { UUIDManager } from "./util";
 import { APP_VERSION } from "./constants";
 
-import { ClientMessage, ClientInfo, Ping, AudioData } from "./proto/hassmic";
+import {
+  AudioData,
+  ClientInfo,
+  ClientMessage,
+  Ping,
+  ServerMessage,
+} from "./proto/hassmic";
 
 type CallbackType<T> = ((s: T) => void) | null;
 type PlayAudioCallbackType = ((url: string, announce: boolean) => void) | null;
@@ -60,13 +67,8 @@ class CheyenneServer {
     if (this._sock) {
       try {
         let msg = ClientMessage.toBinary(m);
-        // get the size of the generated binary buffer as a 32-bit integer
-        let sz = new Uint8Array(Uint32Array.of(msg.length).buffer);
-        // write the size, then the payload, using one write call
-        let combined = new Uint8Array(4 + msg.length);
-        combined.set(sz);
-        combined.set(msg, 4);
-        this._sock.write(combined);
+        let b64 = Buffer.from(msg).toString("base64");
+        this._sock.write(b64 + "\n");
       } catch (e) {
         console.error(e);
         console.error(e.stack);
@@ -133,7 +135,7 @@ class CheyenneServer {
       });
 
       socket.on("data", (d) => {
-        this._handleIncomingData(d.toString());
+        this._handleIncomingData(d);
       });
 
       console.info(`Got connection`);
@@ -161,40 +163,32 @@ class CheyenneServer {
     console.log("Server stopped");
   };
 
-  private _handleIncomingData = async (d: string) => {
+  private _handleIncomingData = async (d: Uint8Array) => {
     try {
-      let m = JSON.parse(d.toString());
+      console.info(`Got raw: ${d}`);
+      let b64 = d.toString().trim();
+      console.info(`Got trimmed: ${b64}`);
+      let bts = Buffer.from(b64, "base64");
+      console.info(`Got parsed: ${bts}`);
+      let m = ServerMessage.fromBinary(bts);
 
-      switch (m["type"]) {
-        case "play-announce":
+      switch (m.msg.oneofKind) {
+        case "playAudio":
           {
-            console.info("Got play-announce message");
-            const data = m["data"] || {};
-            const url = data["url"] || "";
+            console.info("Got play_audio message");
+            const data = m.msg.playAudio || {};
+            const url = data.url || "";
+            const announce = data.announce || false;
             if (url) {
-              console.log(`Playing URL '${url}'`);
-              this._playAudioCallback?.(url, true);
+              console.log(`Playing URL '${url}' (announce=${announce})`);
+              this._playAudioCallback?.(url, announce);
             } else {
-              console.warn("message.data.url is not set");
+              console.warn("audio_data.url is not set");
             }
           }
           break;
-        case "play-audio":
-          {
-            console.info("Got play-audio message");
-            const data = m["data"] || {};
-            const url = data["url"] || "";
-            if (url) {
-              console.log(`Playing URL '${url}'`);
-              this._playAudioCallback?.(url, false);
-            } else {
-              console.warn("message.data.url is not set");
-            }
-          }
-          break;
-
         default:
-          console.warn(`Got unknown message type '${m["type"]}'`);
+          console.warn(`Got unknown message type '${d.msg.oneofKind}'`);
       }
     } catch (e) {
       console.error(e);

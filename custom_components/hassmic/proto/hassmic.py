@@ -42,7 +42,26 @@ class ClientEventOccurred(betterproto.Message):
 
 @dataclass
 class ClientMessage(betterproto.Message):
+    """The wrapper message that actually gets sent to the server"""
+
     ping: "Ping" = betterproto.message_field(1, group="msg")
     client_info: "ClientInfo" = betterproto.message_field(2, group="msg")
     audio_data: "AudioData" = betterproto.message_field(3, group="msg")
     event_occurred: "ClientEvent" = betterproto.enum_field(4, group="msg")
+
+
+@dataclass
+class PlayAudio(betterproto.Message):
+    """Play an audio file"""
+
+    # Whether this should be an announcement or not
+    announce: bool = betterproto.bool_field(1)
+    # The url to play
+    url: str = betterproto.string_field(2)
+
+
+@dataclass
+class ServerMessage(betterproto.Message):
+    """The wrapper message that gets sent from the server to the client"""
+
+    play_audio: "PlayAudio" = betterproto.message_field(1, group="msg")

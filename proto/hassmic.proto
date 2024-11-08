@@ -32,11 +32,28 @@ message ClientEventOccurred {
 }
 
 
+// The wrapper message that actually gets sent to the server
 message ClientMessage {
   oneof msg {
     Ping ping = 1;
     ClientInfo client_info = 2;
     AudioData audio_data = 3;
     ClientEvent event_occurred = 4;
+  }
+}
+
+// Play an audio file
+message PlayAudio {
+  // Whether this should be an announcement or not
+  bool announce = 1;
+
+  // The url to play
+  string url = 2;
+}
+
+// The wrapper message that gets sent from the server to the client
+message ServerMessage {
+  oneof msg {
+    PlayAudio play_audio = 1;
   }
 }

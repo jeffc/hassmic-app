@@ -55,6 +55,8 @@ export interface ClientEventOccurred {
     event: ClientEvent;
 }
 /**
+ * The wrapper message that actually gets sent to the server
+ *
  * @generated from protobuf message hassmic.ClientMessage
  */
 export interface ClientMessage {
@@ -85,6 +87,44 @@ export interface ClientMessage {
          * @generated from protobuf field: hassmic.ClientEvent event_occurred = 4;
          */
         eventOccurred: ClientEvent;
+    } | {
+        oneofKind: undefined;
+    };
+}
+/**
+ * Play an audio file
+ *
+ * @generated from protobuf message hassmic.PlayAudio
+ */
+export interface PlayAudio {
+    /**
+     * Whether this should be an announcement or not
+     *
+     * @generated from protobuf field: bool announce = 1;
+     */
+    announce: boolean;
+    /**
+     * The url to play
+     *
+     * @generated from protobuf field: string url = 2;
+     */
+    url: string;
+}
+/**
+ * The wrapper message that gets sent from the server to the client
+ *
+ * @generated from protobuf message hassmic.ServerMessage
+ */
+export interface ServerMessage {
+    /**
+     * @generated from protobuf oneof: msg
+     */
+    msg: {
+        oneofKind: "playAudio";
+        /**
+         * @generated from protobuf field: hassmic.PlayAudio play_audio = 1;
+         */
+        playAudio: PlayAudio;
     } | {
         oneofKind: undefined;
     };
@@ -354,3 +394,108 @@ class ClientMessage$Type extends MessageType<ClientMessage> {
  * @generated MessageType for protobuf message hassmic.ClientMessage
  */
 export const ClientMessage = new ClientMessage$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class PlayAudio$Type extends MessageType<PlayAudio> {
+    constructor() {
+        super("hassmic.PlayAudio", [
+            { no: 1, name: "announce", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
+            { no: 2, name: "url", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<PlayAudio>): PlayAudio {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.announce = false;
+        message.url = "";
+        if (value !== undefined)
+            reflectionMergePartial<PlayAudio>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PlayAudio): PlayAudio {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* bool announce */ 1:
+                    message.announce = reader.bool();
+                    break;
+                case /* string url */ 2:
+                    message.url = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: PlayAudio, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* bool announce = 1; */
+        if (message.announce !== false)
+            writer.tag(1, WireType.Varint).bool(message.announce);
+        /* string url = 2; */
+        if (message.url !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.url);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message hassmic.PlayAudio
+ */
+export const PlayAudio = new PlayAudio$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ServerMessage$Type extends MessageType<ServerMessage> {
+    constructor() {
+        super("hassmic.ServerMessage", [
+            { no: 1, name: "play_audio", kind: "message", oneof: "msg", T: () => PlayAudio }
+        ]);
+    }
+    create(value?: PartialMessage<ServerMessage>): ServerMessage {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.msg = { oneofKind: undefined };
+        if (value !== undefined)
+            reflectionMergePartial<ServerMessage>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ServerMessage): ServerMessage {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* hassmic.PlayAudio play_audio */ 1:
+                    message.msg = {
+                        oneofKind: "playAudio",
+                        playAudio: PlayAudio.internalBinaryRead(reader, reader.uint32(), options, (message.msg as any).playAudio)
+                    };
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ServerMessage, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* hassmic.PlayAudio play_audio = 1; */
+        if (message.msg.oneofKind === "playAudio")
+            PlayAudio.internalBinaryWrite(message.msg.playAudio, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message hassmic.ServerMessage
+ */
+export const ServerMessage = new ServerMessage$Type();

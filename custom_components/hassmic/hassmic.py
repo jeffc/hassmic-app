@@ -1,6 +1,7 @@
 """Main class for hassmic."""
 
 import asyncio
+import base64
 import betterproto
 import contextlib
 import enum
@@ -115,12 +116,12 @@ class HassMic:
             if path and urlbase:
                 _LOGGER.debug("Play URL: '%s'", urlbase + path)
                 self._connection_manager.send_enqueue(
-                    {
-                        "type": "play-audio",
-                        "data": {
-                            "url": urlbase + path,
-                        },
-                    }
+                    ServerMessage(
+                        play_audio=PlayAudio(
+                            url=urlbase + path,
+                            announce=False,
+                        )
+                    )
                 )
             else:
                 _LOGGER.warning(
@@ -176,27 +177,20 @@ class HassMic:
 
     @staticmethod
     async def recv_message(reader) -> ClientMessage:
-        """Read a message from the stream, or None if the stream is closed.
+        """Read a message from the stream, or None if the stream is closed."""
 
-        Messages are a size (32 bits) followed by a payload.
-        """
+        recv = await reader.readline()
+        while recv == b"\n":  # skip blank lines if we're expecting JSON
+            recv = await reader.readline()
 
-        psb = await reader.read(4)
-        if len(psb) != 4:
-            raise BadMessageException(f"Expected 4 bytes of size data, got {len(psb)}")
-        protosize = int.from_bytes(psb, "little")
-        payload = None
-        try:
-            async with asyncio.timeout(MSG_TIMEOUT_SECS):
-                payload = await reader.read(protosize)
-        except TimeoutError as err:
-            raise BadMessageException("Timed out waiting for proto data") from err
+        if recv == b"":
+            return None
 
         try:
-            msg = ClientMessage().parse(payload)
+            msg = ClientMessage().parse(base64.b64decode(recv))
         except ValueError as err:
             raise BadMessageException(
-                f"Got bad message trying to read proto of size {protosize}: {err}"
+                f"Got bad message trying to read proto from client"
             ) from err
 
         return msg

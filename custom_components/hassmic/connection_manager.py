@@ -2,6 +2,7 @@
 
 import asyncio
 import contextlib
+import base64
 import json
 import logging
 import time
@@ -10,6 +11,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .exceptions import BadMessageException
+from .proto.hassmic import *
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -159,15 +161,19 @@ class ConnectionManager:
             await asyncio.sleep(1)
         _LOGGER.debug("Stopping ping watchdog")
 
-    async def send(self, data: dict):
+    async def send(self, data: ServerMessage):
         """Send some data over the socket, if connected."""
         if self._socket_writer:
-            self._socket_writer.write((json.dumps(data) + "\n").encode())
+            binmsg = bytes(data)
+            _LOGGER.debug(f"Sending object: {binmsg}")
+            b64msg = base64.b64encode(binmsg).decode("ascii")
+            _LOGGER.debug(f"Sending bytes: {b64msg}")
+            self._socket_writer.write((b64msg + "\n").encode())
             await self._socket_writer.drain()
         else:
             _LOGGER.warning("Tried to write data to dead socket")
 
-    def send_enqueue(self, data: dict):
+    def send_enqueue(self, data: ServerMessage):
         """Enqueue data to be sent synchronously."""
         self._outbox.put_nowait(data)
 

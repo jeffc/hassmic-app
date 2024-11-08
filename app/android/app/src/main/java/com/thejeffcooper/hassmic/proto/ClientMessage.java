@@ -3,7 +3,15 @@
 
 package com.thejeffcooper.hassmic.proto;
 
-/** Protobuf type {@code hassmic.ClientMessage} */
+/**
+ *
+ *
+ * <pre>
+ * The wrapper message that actually gets sent to the server
+ * </pre>
+ *
+ * Protobuf type {@code hassmic.ClientMessage}
+ */
 public final class ClientMessage
     extends com.google.protobuf.GeneratedMessageLite<ClientMessage, ClientMessage.Builder>
     implements
@@ -357,7 +365,15 @@ public final class ClientMessage
     return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
   }
 
-  /** Protobuf type {@code hassmic.ClientMessage} */
+  /**
+   *
+   *
+   * <pre>
+   * The wrapper message that actually gets sent to the server
+   * </pre>
+   *
+   * Protobuf type {@code hassmic.ClientMessage}
+   */
   public static final class Builder
       extends com.google.protobuf.GeneratedMessageLite.Builder<
           com.thejeffcooper.hassmic.proto.ClientMessage, Builder>
