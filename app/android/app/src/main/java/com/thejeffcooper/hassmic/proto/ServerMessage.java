@@ -24,6 +24,7 @@ public final class ServerMessage
 
   public enum MsgCase {
     PLAY_AUDIO(1),
+    SET_MIC_MUTE(2),
     MSG_NOT_SET(0);
     private final int value;
 
@@ -43,6 +44,8 @@ public final class ServerMessage
       switch (value) {
         case 1:
           return PLAY_AUDIO;
+        case 2:
+          return SET_MIC_MUTE;
         case 0:
           return MSG_NOT_SET;
         default:
@@ -67,13 +70,29 @@ public final class ServerMessage
 
   public static final int PLAY_AUDIO_FIELD_NUMBER = 1;
 
-  /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+  /**
+   *
+   *
+   * <pre>
+   * A command to play audio
+   * </pre>
+   *
+   * <code>.hassmic.PlayAudio play_audio = 1;</code>
+   */
   @java.lang.Override
   public boolean hasPlayAudio() {
     return msgCase_ == 1;
   }
 
-  /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+  /**
+   *
+   *
+   * <pre>
+   * A command to play audio
+   * </pre>
+   *
+   * <code>.hassmic.PlayAudio play_audio = 1;</code>
+   */
   @java.lang.Override
   public com.thejeffcooper.hassmic.proto.PlayAudio getPlayAudio() {
     if (msgCase_ == 1) {
@@ -82,14 +101,30 @@ public final class ServerMessage
     return com.thejeffcooper.hassmic.proto.PlayAudio.getDefaultInstance();
   }
 
-  /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+  /**
+   *
+   *
+   * <pre>
+   * A command to play audio
+   * </pre>
+   *
+   * <code>.hassmic.PlayAudio play_audio = 1;</code>
+   */
   private void setPlayAudio(com.thejeffcooper.hassmic.proto.PlayAudio value) {
     value.getClass();
     msg_ = value;
     msgCase_ = 1;
   }
 
-  /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+  /**
+   *
+   *
+   * <pre>
+   * A command to play audio
+   * </pre>
+   *
+   * <code>.hassmic.PlayAudio play_audio = 1;</code>
+   */
   private void mergePlayAudio(com.thejeffcooper.hassmic.proto.PlayAudio value) {
     value.getClass();
     if (msgCase_ == 1 && msg_ != com.thejeffcooper.hassmic.proto.PlayAudio.getDefaultInstance()) {
@@ -104,9 +139,86 @@ public final class ServerMessage
     msgCase_ = 1;
   }
 
-  /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+  /**
+   *
+   *
+   * <pre>
+   * A command to play audio
+   * </pre>
+   *
+   * <code>.hassmic.PlayAudio play_audio = 1;</code>
+   */
   private void clearPlayAudio() {
     if (msgCase_ == 1) {
+      msgCase_ = 0;
+      msg_ = null;
+    }
+  }
+
+  public static final int SET_MIC_MUTE_FIELD_NUMBER = 2;
+
+  /**
+   *
+   *
+   * <pre>
+   * Set whether the mic should be muted
+   * </pre>
+   *
+   * <code>bool set_mic_mute = 2;</code>
+   *
+   * @return Whether the setMicMute field is set.
+   */
+  @java.lang.Override
+  public boolean hasSetMicMute() {
+    return msgCase_ == 2;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set whether the mic should be muted
+   * </pre>
+   *
+   * <code>bool set_mic_mute = 2;</code>
+   *
+   * @return The setMicMute.
+   */
+  @java.lang.Override
+  public boolean getSetMicMute() {
+    if (msgCase_ == 2) {
+      return (java.lang.Boolean) msg_;
+    }
+    return false;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set whether the mic should be muted
+   * </pre>
+   *
+   * <code>bool set_mic_mute = 2;</code>
+   *
+   * @param value The setMicMute to set.
+   */
+  private void setSetMicMute(boolean value) {
+    msgCase_ = 2;
+    msg_ = value;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set whether the mic should be muted
+   * </pre>
+   *
+   * <code>bool set_mic_mute = 2;</code>
+   */
+  private void clearSetMicMute() {
+    if (msgCase_ == 2) {
       msgCase_ = 0;
       msg_ = null;
     }
@@ -225,43 +337,158 @@ public final class ServerMessage
       return this;
     }
 
-    /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+    /**
+     *
+     *
+     * <pre>
+     * A command to play audio
+     * </pre>
+     *
+     * <code>.hassmic.PlayAudio play_audio = 1;</code>
+     */
     @java.lang.Override
     public boolean hasPlayAudio() {
       return instance.hasPlayAudio();
     }
 
-    /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+    /**
+     *
+     *
+     * <pre>
+     * A command to play audio
+     * </pre>
+     *
+     * <code>.hassmic.PlayAudio play_audio = 1;</code>
+     */
     @java.lang.Override
     public com.thejeffcooper.hassmic.proto.PlayAudio getPlayAudio() {
       return instance.getPlayAudio();
     }
 
-    /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+    /**
+     *
+     *
+     * <pre>
+     * A command to play audio
+     * </pre>
+     *
+     * <code>.hassmic.PlayAudio play_audio = 1;</code>
+     */
     public Builder setPlayAudio(com.thejeffcooper.hassmic.proto.PlayAudio value) {
       copyOnWrite();
       instance.setPlayAudio(value);
       return this;
     }
 
-    /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+    /**
+     *
+     *
+     * <pre>
+     * A command to play audio
+     * </pre>
+     *
+     * <code>.hassmic.PlayAudio play_audio = 1;</code>
+     */
     public Builder setPlayAudio(com.thejeffcooper.hassmic.proto.PlayAudio.Builder builderForValue) {
       copyOnWrite();
       instance.setPlayAudio(builderForValue.build());
       return this;
     }
 
-    /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+    /**
+     *
+     *
+     * <pre>
+     * A command to play audio
+     * </pre>
+     *
+     * <code>.hassmic.PlayAudio play_audio = 1;</code>
+     */
     public Builder mergePlayAudio(com.thejeffcooper.hassmic.proto.PlayAudio value) {
       copyOnWrite();
       instance.mergePlayAudio(value);
       return this;
     }
 
-    /** <code>.hassmic.PlayAudio play_audio = 1;</code> */
+    /**
+     *
+     *
+     * <pre>
+     * A command to play audio
+     * </pre>
+     *
+     * <code>.hassmic.PlayAudio play_audio = 1;</code>
+     */
     public Builder clearPlayAudio() {
       copyOnWrite();
       instance.clearPlayAudio();
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set whether the mic should be muted
+     * </pre>
+     *
+     * <code>bool set_mic_mute = 2;</code>
+     *
+     * @return Whether the setMicMute field is set.
+     */
+    @java.lang.Override
+    public boolean hasSetMicMute() {
+      return instance.hasSetMicMute();
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set whether the mic should be muted
+     * </pre>
+     *
+     * <code>bool set_mic_mute = 2;</code>
+     *
+     * @return The setMicMute.
+     */
+    @java.lang.Override
+    public boolean getSetMicMute() {
+      return instance.getSetMicMute();
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set whether the mic should be muted
+     * </pre>
+     *
+     * <code>bool set_mic_mute = 2;</code>
+     *
+     * @param value The setMicMute to set.
+     * @return This builder for chaining.
+     */
+    public Builder setSetMicMute(boolean value) {
+      copyOnWrite();
+      instance.setSetMicMute(value);
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set whether the mic should be muted
+     * </pre>
+     *
+     * <code>bool set_mic_mute = 2;</code>
+     *
+     * @return This builder for chaining.
+     */
+    public Builder clearSetMicMute() {
+      copyOnWrite();
+      instance.clearSetMicMute();
       return this;
     }
 
@@ -290,7 +517,8 @@ public final class ServerMessage
                 "msg_", "msgCase_", com.thejeffcooper.hassmic.proto.PlayAudio.class,
               };
           java.lang.String info =
-              "\u0000\u0001\u0001\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001<\u0000";
+              "\u0000\u0002\u0001\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001<\u0000\u0002:"
+                  + "\u0000";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

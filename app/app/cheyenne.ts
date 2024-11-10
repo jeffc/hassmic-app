@@ -29,6 +29,9 @@ class CheyenneServer {
   // settable callback for connection state
   private _connectionStateCallback: CallbackType<boolean> = null;
 
+  // Whether the mic should be muted
+  private _mic_muted: boolean = false;
+
   setConnectionStateCallback = (cb: CallbackType<boolean>) => {
     this._connectionStateCallback = cb;
   };
@@ -45,7 +48,7 @@ class CheyenneServer {
   };
 
   streamAudio = (streamData: Uint8Array) => {
-    if (this._sock) {
+    if (this._sock && !this._mic_muted) {
       try {
         this.sendMessage(
           ClientMessage.create({
@@ -184,8 +187,14 @@ class CheyenneServer {
             }
           }
           break;
+        case "setMicMute":
+          console.info("Got set_mic_mute message");
+          const shouldMute: boolean = m.msg.setMicMute;
+          console.info(`Setting mic mute to ${shouldMute}`);
+          this._mic_muted = shouldMute;
+          break;
         default:
-          console.warn(`Got unknown message type '${d.msg.oneofKind}'`);
+          console.warn(`Got unknown message type '${m.msg.oneofKind}'`);
       }
     } catch (e) {
       console.error(e);

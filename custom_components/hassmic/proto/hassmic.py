@@ -111,4 +111,7 @@ class PlayAudio(betterproto.Message):
 class ServerMessage(betterproto.Message):
     """The wrapper message that gets sent from the server to the client"""
 
+    # A command to play audio
     play_audio: "PlayAudio" = betterproto.message_field(1, group="msg")
+    # Set whether the mic should be muted
+    set_mic_mute: bool = betterproto.bool_field(2, group="msg")

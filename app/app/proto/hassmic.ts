@@ -183,9 +183,19 @@ export interface ServerMessage {
     msg: {
         oneofKind: "playAudio";
         /**
+         * A command to play audio
+         *
          * @generated from protobuf field: hassmic.PlayAudio play_audio = 1;
          */
         playAudio: PlayAudio;
+    } | {
+        oneofKind: "setMicMute";
+        /**
+         * Set whether the mic should be muted
+         *
+         * @generated from protobuf field: bool set_mic_mute = 2;
+         */
+        setMicMute: boolean;
     } | {
         oneofKind: undefined;
     };
@@ -733,7 +743,8 @@ export const PlayAudio = new PlayAudio$Type();
 class ServerMessage$Type extends MessageType<ServerMessage> {
     constructor() {
         super("hassmic.ServerMessage", [
-            { no: 1, name: "play_audio", kind: "message", oneof: "msg", T: () => PlayAudio }
+            { no: 1, name: "play_audio", kind: "message", oneof: "msg", T: () => PlayAudio },
+            { no: 2, name: "set_mic_mute", kind: "scalar", oneof: "msg", T: 8 /*ScalarType.BOOL*/ }
         ]);
     }
     create(value?: PartialMessage<ServerMessage>): ServerMessage {
@@ -754,6 +765,12 @@ class ServerMessage$Type extends MessageType<ServerMessage> {
                         playAudio: PlayAudio.internalBinaryRead(reader, reader.uint32(), options, (message.msg as any).playAudio)
                     };
                     break;
+                case /* bool set_mic_mute */ 2:
+                    message.msg = {
+                        oneofKind: "setMicMute",
+                        setMicMute: reader.bool()
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -769,6 +786,9 @@ class ServerMessage$Type extends MessageType<ServerMessage> {
         /* hassmic.PlayAudio play_audio = 1; */
         if (message.msg.oneofKind === "playAudio")
             PlayAudio.internalBinaryWrite(message.msg.playAudio, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* bool set_mic_mute = 2; */
+        if (message.msg.oneofKind === "setMicMute")
+            writer.tag(2, WireType.Varint).bool(message.msg.setMicMute);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

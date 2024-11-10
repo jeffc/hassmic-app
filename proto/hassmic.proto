@@ -91,6 +91,10 @@ message PlayAudio {
 // The wrapper message that gets sent from the server to the client
 message ServerMessage {
   oneof msg {
+    // A command to play audio
     PlayAudio play_audio = 1;
+
+    // Set whether the mic should be muted
+    bool set_mic_mute = 2;
   }
 }

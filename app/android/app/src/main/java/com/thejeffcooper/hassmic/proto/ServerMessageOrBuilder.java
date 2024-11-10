@@ -9,6 +9,12 @@ public interface ServerMessageOrBuilder
     com.google.protobuf.MessageLiteOrBuilder {
 
   /**
+   *
+   *
+   * <pre>
+   * A command to play audio
+   * </pre>
+   *
    * <code>.hassmic.PlayAudio play_audio = 1;</code>
    *
    * @return Whether the playAudio field is set.
@@ -16,11 +22,43 @@ public interface ServerMessageOrBuilder
   boolean hasPlayAudio();
 
   /**
+   *
+   *
+   * <pre>
+   * A command to play audio
+   * </pre>
+   *
    * <code>.hassmic.PlayAudio play_audio = 1;</code>
    *
    * @return The playAudio.
    */
   com.thejeffcooper.hassmic.proto.PlayAudio getPlayAudio();
+
+  /**
+   *
+   *
+   * <pre>
+   * Set whether the mic should be muted
+   * </pre>
+   *
+   * <code>bool set_mic_mute = 2;</code>
+   *
+   * @return Whether the setMicMute field is set.
+   */
+  boolean hasSetMicMute();
+
+  /**
+   *
+   *
+   * <pre>
+   * Set whether the mic should be muted
+   * </pre>
+   *
+   * <code>bool set_mic_mute = 2;</code>
+   *
+   * @return The setMicMute.
+   */
+  boolean getSetMicMute();
 
   public com.thejeffcooper.hassmic.proto.ServerMessage.MsgCase getMsgCase();
 }
