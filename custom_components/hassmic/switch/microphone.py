@@ -31,13 +31,24 @@ class Microphone(base.SwitchBase):
         self._hassmic = config_entry.runtime_data
 
     def turn_on(self, **kwargs) -> None:
-        _LOGGER.debug("Sending signal to turn on microphone")
-        self._hassmic.connection_manager.send_enqueue(ServerMessage(set_mic_mute=False))
         self._attr_is_on = True
+        self.send_mic_mute_status()
         self.schedule_update_ha_state()
 
     def turn_off(self, **kwargs) -> None:
-        _LOGGER.debug("Sending signal to turn off microphone")
-        self._hassmic.connection_manager.send_enqueue(ServerMessage(set_mic_mute=True))
         self._attr_is_on = False
+        self.send_mic_mute_status()
         self.schedule_update_ha_state()
+
+    def handle_connection_state_change(self, new_state: bool):
+        super().handle_connection_state_change(new_state)
+        if new_state:
+            self.send_mic_mute_status()
+
+    def send_mic_mute_status(self):
+        _LOGGER.debug(
+            "Sending signal to turn %s microphone", "on" if self._attr_is_on else "off"
+        )
+        self._hassmic.connection_manager.send_enqueue(
+            ServerMessage(set_mic_mute=not self._attr_is_on)
+        )

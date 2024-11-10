@@ -237,6 +237,16 @@ class ConnectionManager:
         _LOGGER.info("Starting network tasks for %s:%d", self._host, self._port)
         try:
             while not self._should_close:
+                if self._rec_loop_task is not None:
+                    self._rec_loop_task.cancel()
+                    self._rec_loop_task = None
+                if self._send_loop_task is not None:
+                    self._send_loop_task.cancel()
+                    self._send_loop_task = None
+                if self._watchdog_task is not None:
+                    self._watchdog_task.cancel()
+                    self._watchdog_task = None
+
                 await self.reconnect()
                 self._rec_loop_task = self._config_entry.async_create_background_task(
                     self._hass, self._rec_loop(), "hassmic_rec_loop"
@@ -265,9 +275,5 @@ class ConnectionManager:
             _LOGGER.info("Shutting down connection to %s:%d", self._host, self._port)
         except asyncio.CancelledError:
             _LOGGER.debug("Connection manager main loop caught cancel signal")
-
-        self._rec_loop_task.cancel()
-        self._send_loop_task.cancel()
-        self._watchdog_task.cancel()
 
         await self.destroy_socket()
