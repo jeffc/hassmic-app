@@ -27,7 +27,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-latest.apk
-          path: android/app/build/outputs/apk/release/
+          path: app/android/app/build/outputs/apk/release/
       - name: Upload to B2 by SHA
         uses: jeffc/backblaze-b2-upload-action@testing
         with:
