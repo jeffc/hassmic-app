@@ -28,6 +28,8 @@ enum MediaPlayerState {
   STATE_BUFFERING = 2;
   STATE_READY = 3;
   STATE_ENDED = 4;
+  STATE_PLAYING = 5;
+  STATE_PAUSED = 6;
 }
 
 // The different media players available

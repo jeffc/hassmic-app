@@ -16,6 +16,8 @@ class MediaPlayerState(betterproto.Enum):
     STATE_BUFFERING = 2
     STATE_READY = 3
     STATE_ENDED = 4
+    STATE_PLAYING = 5
+    STATE_PAUSED = 6
 
 
 class MediaPlayerId(betterproto.Enum):

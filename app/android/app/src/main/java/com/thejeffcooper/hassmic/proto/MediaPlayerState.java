@@ -23,6 +23,10 @@ public enum MediaPlayerState implements com.google.protobuf.Internal.EnumLite {
   STATE_READY(3),
   /** <code>STATE_ENDED = 4;</code> */
   STATE_ENDED(4),
+  /** <code>STATE_PLAYING = 5;</code> */
+  STATE_PLAYING(5),
+  /** <code>STATE_PAUSED = 6;</code> */
+  STATE_PAUSED(6),
   UNRECOGNIZED(-1),
   ;
 
@@ -40,6 +44,12 @@ public enum MediaPlayerState implements com.google.protobuf.Internal.EnumLite {
 
   /** <code>STATE_ENDED = 4;</code> */
   public static final int STATE_ENDED_VALUE = 4;
+
+  /** <code>STATE_PLAYING = 5;</code> */
+  public static final int STATE_PLAYING_VALUE = 5;
+
+  /** <code>STATE_PAUSED = 6;</code> */
+  public static final int STATE_PAUSED_VALUE = 6;
 
   @java.lang.Override
   public final int getNumber() {
@@ -72,6 +82,10 @@ public enum MediaPlayerState implements com.google.protobuf.Internal.EnumLite {
         return STATE_READY;
       case 4:
         return STATE_ENDED;
+      case 5:
+        return STATE_PLAYING;
+      case 6:
+        return STATE_PAUSED;
       default:
         return null;
     }

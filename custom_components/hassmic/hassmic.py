@@ -143,6 +143,14 @@ class HassMic:
             if hcsc is not None and callable(hcsc):
                 e.handle_connection_state_change(new_state)
 
+    def _handle_client_event(self, event: ClientEvent):
+        """Handle a state change from the connection manager."""
+        _LOGGER.debug("Got connection change to state: %s", repr(event))
+        for e in self._entities:
+            hce = getattr(e, "handle_client_event", None)
+            if hce is not None and callable(hce):
+                e.handle_client_event(event)
+
     async def stop(self):
         """Shut down instance."""
         await asyncio.gather(
@@ -168,6 +176,7 @@ class HassMic:
 
             case "client_event":
                 _LOGGER.debug("Got client event: %s", repr(val))
+                self._handle_client_event(val)
 
             case "ping":
                 pass

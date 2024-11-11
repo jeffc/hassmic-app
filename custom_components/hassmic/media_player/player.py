@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import betterproto
 
 from homeassistant.components import media_source
 from homeassistant.components.media_player import *
@@ -76,3 +77,34 @@ class Player(MediaPlayerEntity):
                 )
             )
         )
+
+    def handle_client_event(self, event: proto.ClientEvent):
+        """Handle a client event."""
+        (which, val) = betterproto.which_one_of(event, "event")
+
+        match which:
+            case "media_player_state_change":
+                if val.player == proto.MediaPlayerId.ID_PLAYBACK:
+                    match val.new_state:
+                        case proto.MediaPlayerState.STATE_BUFFERING:
+                            self._attr_state = MediaPlayerState.BUFFERING
+                        case proto.MediaPlayerState.STATE_PLAYING:
+                            self._attr_state = MediaPlayerState.PLAYING
+                        case proto.MediaPlayerState.STATE_PAUSED:
+                            self._attr_state = MediaPlayerState.PAUSED
+                        case proto.MediaPlayerState.STATE_ENDED | proto.MediaPlayerState.STATE_IDLE:
+                            self._attr_state = MediaPlayerState.IDLE
+                        case proto.MediaPlayerState.STATE_READY:
+                            pass
+                        case _:
+                            _LOGGER.warning(
+                                "Got unhandled media player state %s", val.new_state
+                            )
+
+            case "media_player_volume_change" | "device_volume_change":
+                _LOGGER.debug("Got %s, ignoring it", which)
+
+            case _:
+                _LOGGER.warning("Got unhandled client event type %s", which)
+
+        self.schedule_update_ha_state()

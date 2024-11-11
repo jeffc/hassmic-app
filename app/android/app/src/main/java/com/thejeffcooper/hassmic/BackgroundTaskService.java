@@ -125,7 +125,11 @@ public class BackgroundTaskService extends Service {
                             b.setNewState(MediaPlayerState.STATE_BUFFERING);
                             break;
                           case Player.STATE_READY:
-                            b.setNewState(MediaPlayerState.STATE_READY);
+                            if (p.isPlaying()) {
+                              b.setNewState(MediaPlayerState.STATE_PLAYING);
+                            } else {
+                              b.setNewState(MediaPlayerState.STATE_PAUSED);
+                            }
                             break;
                           case Player.STATE_ENDED:
                             b.setNewState(MediaPlayerState.STATE_ENDED);

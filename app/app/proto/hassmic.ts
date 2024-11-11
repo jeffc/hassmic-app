@@ -225,7 +225,15 @@ export enum MediaPlayerState {
     /**
      * @generated from protobuf enum value: STATE_ENDED = 4;
      */
-    STATE_ENDED = 4
+    STATE_ENDED = 4,
+    /**
+     * @generated from protobuf enum value: STATE_PLAYING = 5;
+     */
+    STATE_PLAYING = 5,
+    /**
+     * @generated from protobuf enum value: STATE_PAUSED = 6;
+     */
+    STATE_PAUSED = 6
 }
 /**
  * The different media players available
