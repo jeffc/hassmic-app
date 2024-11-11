@@ -109,32 +109,61 @@ public class BackgroundTaskService extends Service {
 
                   // Loop over each media player event in this tick and fire it back
                   // to JS
+                  //
+                  // We don't want to send duplicate messages, so keep track of
+                  // the types we might need to deduplicate
+                  boolean hasPlaybackStateChangedEvent = false;
+                  boolean hasIsPlayingChangedEvent = false;
+                  for (int i = 0; i < events.size(); i++) {
+                    hasPlaybackStateChangedEvent |=
+                        events.get(i) == Player.EVENT_PLAYBACK_STATE_CHANGED;
+                    hasIsPlayingChangedEvent |= events.get(i) == Player.EVENT_IS_PLAYING_CHANGED;
+                  }
+
                   for (int i = 0; i < events.size(); i++) {
                     @Player.Event int e = events.get(i);
                     ClientEvent.Builder protob = ClientEvent.newBuilder();
 
+                    // some common info
+                    @Player.Event int playbackState = p.getPlaybackState();
+                    boolean isPlaying = p.isPlaying();
+
+                    // Don't send duplicate messages:
+                    //   - If we have both IS_PLAYING_CHANGED and
+                    //     PLAYBACK_STATE_CHANGED events, ignore one or the
+                    //     other.
+                    if (hasIsPlayingChangedEvent && hasPlaybackStateChangedEvent) {
+                      if ((isPlaying && e == Player.EVENT_PLAYBACK_STATE_CHANGED)
+                          || (!isPlaying && e == Player.EVENT_IS_PLAYING_CHANGED)) {
+                        continue;
+                      }
+                    }
+
                     switch (e) {
                       case Player.EVENT_PLAYBACK_STATE_CHANGED:
+                      case Player.EVENT_IS_PLAYING_CHANGED:
                         ClientEvent.MediaPlayerStateChange.Builder b =
                             ClientEvent.MediaPlayerStateChange.newBuilder().setPlayer(which_player);
-                        switch (p.getPlaybackState()) {
-                          case Player.STATE_IDLE:
-                            b.setNewState(MediaPlayerState.STATE_IDLE);
-                            break;
-                          case Player.STATE_BUFFERING:
-                            b.setNewState(MediaPlayerState.STATE_BUFFERING);
-                            break;
-                          case Player.STATE_READY:
-                            if (p.isPlaying()) {
-                              b.setNewState(MediaPlayerState.STATE_PLAYING);
-                            } else {
-                              b.setNewState(MediaPlayerState.STATE_PAUSED);
-                            }
-                            break;
-                          case Player.STATE_ENDED:
-                            b.setNewState(MediaPlayerState.STATE_ENDED);
-                            break;
+
+                        MediaPlayerState newState = null;
+
+                        if (playbackState == Player.STATE_READY) {
+                          newState =
+                              (isPlaying)
+                                  ? MediaPlayerState.STATE_PLAYING
+                                  : MediaPlayerState.STATE_PAUSED;
+                        } else if (playbackState == Player.STATE_BUFFERING) {
+                          newState = MediaPlayerState.STATE_BUFFERING;
+                        } else if (playbackState == Player.STATE_IDLE
+                            || playbackState == Player.STATE_ENDED) {
+                          newState = MediaPlayerState.STATE_IDLE;
+                        } else {
+                          Log.w(
+                              "HassmicBackgroundTaskService",
+                              "Unhandled playback state: " + playbackState);
                         }
+
+                        b.setNewState(newState);
                         protob.setMediaPlayerStateChange(b.build());
                         break;
                     }

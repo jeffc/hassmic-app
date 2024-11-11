@@ -219,21 +219,13 @@ export enum MediaPlayerState {
      */
     STATE_BUFFERING = 2,
     /**
-     * @generated from protobuf enum value: STATE_READY = 3;
+     * @generated from protobuf enum value: STATE_PLAYING = 3;
      */
-    STATE_READY = 3,
+    STATE_PLAYING = 3,
     /**
-     * @generated from protobuf enum value: STATE_ENDED = 4;
+     * @generated from protobuf enum value: STATE_PAUSED = 4;
      */
-    STATE_ENDED = 4,
-    /**
-     * @generated from protobuf enum value: STATE_PLAYING = 5;
-     */
-    STATE_PLAYING = 5,
-    /**
-     * @generated from protobuf enum value: STATE_PAUSED = 6;
-     */
-    STATE_PAUSED = 6
+    STATE_PAUSED = 4
 }
 /**
  * The different media players available

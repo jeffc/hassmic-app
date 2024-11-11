@@ -145,7 +145,7 @@ class HassMic:
 
     def _handle_client_event(self, event: ClientEvent):
         """Handle a state change from the connection manager."""
-        _LOGGER.debug("Got connection change to state: %s", repr(event))
+        _LOGGER.debug("Got client event: %s", repr(event))
         for e in self._entities:
             hce = getattr(e, "handle_client_event", None)
             if hce is not None and callable(hce):
@@ -175,7 +175,6 @@ class HassMic:
                 _LOGGER.debug("Got client info: %s", repr(val))
 
             case "client_event":
-                _LOGGER.debug("Got client event: %s", repr(val))
                 self._handle_client_event(val)
 
             case "ping":

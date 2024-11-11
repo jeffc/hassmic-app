@@ -92,10 +92,8 @@ class Player(MediaPlayerEntity):
                             self._attr_state = MediaPlayerState.PLAYING
                         case proto.MediaPlayerState.STATE_PAUSED:
                             self._attr_state = MediaPlayerState.PAUSED
-                        case proto.MediaPlayerState.STATE_ENDED | proto.MediaPlayerState.STATE_IDLE:
+                        case proto.MediaPlayerState.STATE_IDLE:
                             self._attr_state = MediaPlayerState.IDLE
-                        case proto.MediaPlayerState.STATE_READY:
-                            pass
                         case _:
                             _LOGGER.warning(
                                 "Got unhandled media player state %s", val.new_state
