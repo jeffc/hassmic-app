@@ -6,7 +6,7 @@ import { NativeModules, NativeEventEmitter } from "react-native";
 import { PermissionsAndroid } from "react-native";
 import { STORAGE_KEY_RUN_BACKGROUND_TASK } from "./constants";
 import { ZeroconfManager } from "./zeroconf";
-import { ClientEvent, ClientMessage } from "./proto/hassmic";
+import { ClientEvent, ClientMessage, ServerMessage } from "./proto/hassmic";
 
 const { BackgroundTaskModule } = NativeModules;
 
@@ -241,7 +241,19 @@ class BackgroundTaskManager_ {
 
   // play some audio
   playAudio = (url: string, announce: boolean) => {
-    BackgroundTaskModule.playAudio(url, announce);
+    let sm = ServerMessage.create({
+      msg: {
+        oneofKind: "playAudio",
+        playAudio: {
+          url: url,
+          announce: announce,
+        },
+      },
+    });
+    let smb64: string = Buffer.from(ServerMessage.toBinary(sm)).toString(
+      "base64"
+    );
+    BackgroundTaskModule.handleServerMessage(smb64);
   };
 }
 

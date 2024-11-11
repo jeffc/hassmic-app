@@ -26,10 +26,14 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import com.facebook.react.HeadlessJsTaskService;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.thejeffcooper.hassmic.proto.*;
 
 public class BackgroundTaskService extends Service {
   public static final String PLAY_AUDIO_ACTION = "com.thejeffcooper.hassmic.INTENT_PLAY_AUDIO";
+  public static final String PROTO_SERVERMESSAGE_ACTION =
+      "com.thejeffcooper.hassmic.INTENT_PROTO_SERVERMESSAGE";
+  public static final String KEY_PROTO_DATA = "com.thejeffcooper.hassmic.KEY_PROTO_DATA";
 
   public static final String EVENT_PLAY_SOUND_START = "hassmic.SpeechStart";
   public static final String EVENT_PLAY_SOUND_STOP = "hassmic.SpeechStop";
@@ -152,7 +156,7 @@ public class BackgroundTaskService extends Service {
   @Override
   public void onCreate() {
     super.onCreate();
-    IntentFilter filter = new IntentFilter(PLAY_AUDIO_ACTION);
+    IntentFilter filter = new IntentFilter(PROTO_SERVERMESSAGE_ACTION);
     ContextCompat.registerReceiver(
         getApplicationContext(), brec, filter, ContextCompat.RECEIVER_EXPORTED);
     Log.d("HassmicBackgroundTaskService", "Registered receiver for " + brec.toString());
@@ -162,43 +166,84 @@ public class BackgroundTaskService extends Service {
       new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+          Log.d("HassmicBackgroundTaskService", "called onReceive()");
           String action = intent.getAction();
-          if (action.equals(PLAY_AUDIO_ACTION)) {
-            String url = intent.getStringExtra(URL_KEY);
-            boolean announce = intent.getBooleanExtra(ANNOUNCE_KEY, false);
-            Log.d(
+          if (!action.equals(PROTO_SERVERMESSAGE_ACTION)) {
+            Log.w(
                 "HassmicBackgroundTaskService",
-                "Playing " + url + " (announce = " + String.valueOf(announce) + ")");
-            MediaItem i = MediaItem.fromUri(url);
+                "Got action type " + action + ", which isn't " + PROTO_SERVERMESSAGE_ACTION);
+            return;
+          }
 
-            if (announce) {
-              // if we're announcing, pause the audioExo if it's playing
-              if (audioExo.isPlaying()) {
+          ServerMessage sm = null;
+          byte[] protodata = intent.getByteArrayExtra(KEY_PROTO_DATA);
+
+          Log.d("HassmicBackgroundTaskService", "Parsing proto from intent");
+          try {
+            sm = ServerMessage.parseFrom(protodata);
+          } catch (InvalidProtocolBufferException e) {
+            Log.e("HassmicBackgroundTaskService", "Failed to parse protobuf");
+            return;
+          }
+          Log.d("HassmicBackgroundTaskService", "Proto parsed ok");
+
+          switch (sm.getMsgCase()) {
+            case PLAY_AUDIO:
+              {
+                PlayAudio pa = sm.getPlayAudio();
+                boolean announce = pa.getAnnounce();
+                String url = pa.getUrl();
+
                 Log.d(
-                    "HassmicBackgroundTaskService", "Playing announcement. Pausing playing audio");
-                audioExo.pause();
-                announceExo.addListener(
-                    new Player.Listener() {
-                      @Override
-                      public void onPlaybackStateChanged(@Player.State int newState) {
-                        if (newState == Player.STATE_ENDED) {
-                          Log.d(
-                              "HassmicBackgroundTaskService",
-                              "Finished playing announcement. Resuming audio");
-                          audioExo.play();
-                          announceExo.removeListener(this);
-                        }
-                      }
-                    });
+                    "HassmicBackgroundTaskService",
+                    "Playing " + url + " (announce = " + String.valueOf(announce) + ")");
+                MediaItem i = MediaItem.fromUri(url);
+
+                if (announce) {
+                  // if we're announcing, pause the audioExo if it's playing
+                  if (audioExo.isPlaying()) {
+                    Log.d(
+                        "HassmicBackgroundTaskService",
+                        "Playing announcement. Pausing playing audio");
+                    audioExo.pause();
+                    announceExo.addListener(
+                        new Player.Listener() {
+                          @Override
+                          public void onPlaybackStateChanged(@Player.State int newState) {
+                            if (newState == Player.STATE_ENDED) {
+                              Log.d(
+                                  "HassmicBackgroundTaskService",
+                                  "Finished playing announcement. Resuming audio");
+                              audioExo.play();
+                              announceExo.removeListener(this);
+                            }
+                          }
+                        });
+                  }
+                  announceExo.setMediaItem(i);
+                  announceExo.prepare();
+                  announceExo.play();
+                } else {
+                  audioExo.setMediaItem(i);
+                  audioExo.prepare();
+                  audioExo.play();
+                }
+                break;
               }
-              announceExo.setMediaItem(i);
-              announceExo.prepare();
-              announceExo.play();
-            } else {
-              audioExo.setMediaItem(i);
-              audioExo.prepare();
-              audioExo.play();
-            }
+
+            case SET_MIC_MUTE:
+              {
+                String t = sm.getMsgCase().toString();
+                Log.e(
+                    "HassmicBackgroundTaskService",
+                    "Got ServerMessage type '" + t + "' in native code, which shouldn't happen.");
+                break;
+              }
+
+            default:
+              Log.e(
+                  "HassmicBackgroundTaskService",
+                  "Got unknown ServerMessage type: " + sm.getMsgCase().getNumber());
           }
         }
       };

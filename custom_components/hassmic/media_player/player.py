@@ -10,6 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .. import util
+from ..proto import hassmic as proto
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -68,10 +69,10 @@ class Player(MediaPlayerEntity):
 
         _LOGGER.info("Playing media: '%s'", media_id)
         self._hassmic.connection_manager.send_enqueue(
-            {
-                "type": ("play-announce" if announce else "play-audio"),
-                "data": {
-                    "url": media_id,
-                },
-            }
+            proto.ServerMessage(
+                play_audio=proto.PlayAudio(
+                    announce=announce,
+                    url=media_id,
+                )
+            )
         )

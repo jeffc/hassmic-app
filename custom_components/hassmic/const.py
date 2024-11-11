@@ -9,6 +9,7 @@ DOMAIN = "hassmic"
 PLATFORMS = [
     Platform.SENSOR,
     Platform.SWITCH,
+    Platform.MEDIA_PLAYER,
 ]
 
 # Possible states for sensors
