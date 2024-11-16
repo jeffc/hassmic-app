@@ -13,7 +13,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.thejeffcooper.hassmic.proto.*;
+import com.thejeffcooper.hassmic.proto.ClientEvent;
 
 public class BackgroundTaskModule extends ReactContextBaseJavaModule {
 
@@ -92,6 +92,18 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
         new Intent(BackgroundTaskService.PROTO_SERVERMESSAGE_ACTION)
             .putExtra(BackgroundTaskService.KEY_PROTO_DATA, smbytes);
     this.reactContext.sendBroadcast(protoIntent);
+  }
+
+  @ReactMethod
+  public static void logToServer(Context ctx, String msg) {
+    Log.d("HassmicBackgroundTaskModule", "Sending log to server: '" + msg + "'");
+    ClientEvent ev =
+        ClientEvent.newBuilder()
+            .setLog(com.thejeffcooper.hassmic.proto.Log.newBuilder().setLogText(msg).build())
+            .build();
+    Intent fireJSEvent = new Intent(KEY_FIRE_JS_EVENT);
+    fireJSEvent.putExtra(KEY_JS_EVENT_PROTO, ev.toByteArray());
+    ctx.sendBroadcast(fireJSEvent);
   }
 
   public static void FireJSEvent(Context ctx, ClientEvent ev) {

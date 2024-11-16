@@ -482,6 +482,7 @@ public final class ClientEvent
     MEDIA_PLAYER_STATE_CHANGE(1),
     MEDIA_PLAYER_VOLUME_CHANGE(2),
     DEVICE_VOLUME_CHANGE(3),
+    LOG(4),
     EVENT_NOT_SET(0);
     private final int value;
 
@@ -505,6 +506,8 @@ public final class ClientEvent
           return MEDIA_PLAYER_VOLUME_CHANGE;
         case 3:
           return DEVICE_VOLUME_CHANGE;
+        case 4:
+          return LOG;
         case 0:
           return EVENT_NOT_SET;
         default:
@@ -673,6 +676,53 @@ public final class ClientEvent
   /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
   private void clearDeviceVolumeChange() {
     if (eventCase_ == 3) {
+      eventCase_ = 0;
+      event_ = null;
+    }
+  }
+
+  public static final int LOG_FIELD_NUMBER = 4;
+
+  /** <code>.hassmic.Log log = 4;</code> */
+  @java.lang.Override
+  public boolean hasLog() {
+    return eventCase_ == 4;
+  }
+
+  /** <code>.hassmic.Log log = 4;</code> */
+  @java.lang.Override
+  public com.thejeffcooper.hassmic.proto.Log getLog() {
+    if (eventCase_ == 4) {
+      return (com.thejeffcooper.hassmic.proto.Log) event_;
+    }
+    return com.thejeffcooper.hassmic.proto.Log.getDefaultInstance();
+  }
+
+  /** <code>.hassmic.Log log = 4;</code> */
+  private void setLog(com.thejeffcooper.hassmic.proto.Log value) {
+    value.getClass();
+    event_ = value;
+    eventCase_ = 4;
+  }
+
+  /** <code>.hassmic.Log log = 4;</code> */
+  private void mergeLog(com.thejeffcooper.hassmic.proto.Log value) {
+    value.getClass();
+    if (eventCase_ == 4 && event_ != com.thejeffcooper.hassmic.proto.Log.getDefaultInstance()) {
+      event_ =
+          com.thejeffcooper.hassmic.proto.Log.newBuilder(
+                  (com.thejeffcooper.hassmic.proto.Log) event_)
+              .mergeFrom(value)
+              .buildPartial();
+    } else {
+      event_ = value;
+    }
+    eventCase_ = 4;
+  }
+
+  /** <code>.hassmic.Log log = 4;</code> */
+  private void clearLog() {
+    if (eventCase_ == 4) {
       eventCase_ = 0;
       event_ = null;
     }
@@ -921,6 +971,46 @@ public final class ClientEvent
       return this;
     }
 
+    /** <code>.hassmic.Log log = 4;</code> */
+    @java.lang.Override
+    public boolean hasLog() {
+      return instance.hasLog();
+    }
+
+    /** <code>.hassmic.Log log = 4;</code> */
+    @java.lang.Override
+    public com.thejeffcooper.hassmic.proto.Log getLog() {
+      return instance.getLog();
+    }
+
+    /** <code>.hassmic.Log log = 4;</code> */
+    public Builder setLog(com.thejeffcooper.hassmic.proto.Log value) {
+      copyOnWrite();
+      instance.setLog(value);
+      return this;
+    }
+
+    /** <code>.hassmic.Log log = 4;</code> */
+    public Builder setLog(com.thejeffcooper.hassmic.proto.Log.Builder builderForValue) {
+      copyOnWrite();
+      instance.setLog(builderForValue.build());
+      return this;
+    }
+
+    /** <code>.hassmic.Log log = 4;</code> */
+    public Builder mergeLog(com.thejeffcooper.hassmic.proto.Log value) {
+      copyOnWrite();
+      instance.mergeLog(value);
+      return this;
+    }
+
+    /** <code>.hassmic.Log log = 4;</code> */
+    public Builder clearLog() {
+      copyOnWrite();
+      instance.clearLog();
+      return this;
+    }
+
     // @@protoc_insertion_point(builder_scope:hassmic.ClientEvent)
   }
 
@@ -948,10 +1038,11 @@ public final class ClientEvent
                 com.thejeffcooper.hassmic.proto.ClientEvent.MediaPlayerStateChange.class,
                 com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.class,
                 com.thejeffcooper.hassmic.proto.DeviceVolumeChange.class,
+                com.thejeffcooper.hassmic.proto.Log.class,
               };
           java.lang.String info =
-              "\u0000\u0003\u0001\u0000\u0001\u0003\u0003\u0000\u0000\u0000\u0001<\u0000\u0002<"
-                  + "\u0000\u0003<\u0000";
+              "\u0000\u0004\u0001\u0000\u0001\u0004\u0004\u0000\u0000\u0000\u0001<\u0000\u0002<"
+                  + "\u0000\u0003<\u0000\u0004<\u0000";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

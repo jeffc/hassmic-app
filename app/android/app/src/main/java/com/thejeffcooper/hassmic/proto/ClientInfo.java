@@ -108,6 +108,12 @@ public final class ClientInfo
   private java.lang.String uuid_;
 
   /**
+   *
+   *
+   * <pre>
+   * The uuid of this client
+   * </pre>
+   *
    * <code>string uuid = 2;</code>
    *
    * @return The uuid.
@@ -118,6 +124,12 @@ public final class ClientInfo
   }
 
   /**
+   *
+   *
+   * <pre>
+   * The uuid of this client
+   * </pre>
+   *
    * <code>string uuid = 2;</code>
    *
    * @return The bytes for uuid.
@@ -128,6 +140,12 @@ public final class ClientInfo
   }
 
   /**
+   *
+   *
+   * <pre>
+   * The uuid of this client
+   * </pre>
+   *
    * <code>string uuid = 2;</code>
    *
    * @param value The uuid to set.
@@ -138,13 +156,27 @@ public final class ClientInfo
     uuid_ = value;
   }
 
-  /** <code>string uuid = 2;</code> */
+  /**
+   *
+   *
+   * <pre>
+   * The uuid of this client
+   * </pre>
+   *
+   * <code>string uuid = 2;</code>
+   */
   private void clearUuid() {
 
     uuid_ = getDefaultInstance().getUuid();
   }
 
   /**
+   *
+   *
+   * <pre>
+   * The uuid of this client
+   * </pre>
+   *
    * <code>string uuid = 2;</code>
    *
    * @param value The bytes for uuid to set.
@@ -342,6 +374,12 @@ public final class ClientInfo
     }
 
     /**
+     *
+     *
+     * <pre>
+     * The uuid of this client
+     * </pre>
+     *
      * <code>string uuid = 2;</code>
      *
      * @return The uuid.
@@ -352,6 +390,12 @@ public final class ClientInfo
     }
 
     /**
+     *
+     *
+     * <pre>
+     * The uuid of this client
+     * </pre>
+     *
      * <code>string uuid = 2;</code>
      *
      * @return The bytes for uuid.
@@ -362,6 +406,12 @@ public final class ClientInfo
     }
 
     /**
+     *
+     *
+     * <pre>
+     * The uuid of this client
+     * </pre>
+     *
      * <code>string uuid = 2;</code>
      *
      * @param value The uuid to set.
@@ -374,6 +424,12 @@ public final class ClientInfo
     }
 
     /**
+     *
+     *
+     * <pre>
+     * The uuid of this client
+     * </pre>
+     *
      * <code>string uuid = 2;</code>
      *
      * @return This builder for chaining.
@@ -385,6 +441,12 @@ public final class ClientInfo
     }
 
     /**
+     *
+     *
+     * <pre>
+     * The uuid of this client
+     * </pre>
+     *
      * <code>string uuid = 2;</code>
      *
      * @param value The bytes for uuid to set.

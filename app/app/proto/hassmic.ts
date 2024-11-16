@@ -23,6 +23,8 @@ export interface ClientInfo {
      */
     version: string;
     /**
+     * The uuid of this client
+     *
      * @generated from protobuf field: string uuid = 2;
      */
     uuid: string;
@@ -97,6 +99,12 @@ export interface ClientEvent {
          */
         deviceVolumeChange: DeviceVolumeChange;
     } | {
+        oneofKind: "log";
+        /**
+         * @generated from protobuf field: hassmic.Log log = 4;
+         */
+        log: Log;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -114,6 +122,17 @@ export interface ClientEvent_MediaPlayerStateChange {
      * @generated from protobuf field: hassmic.MediaPlayerState new_state = 2;
      */
     newState: MediaPlayerState;
+}
+/**
+ * A log message passed from the client to the server
+ *
+ * @generated from protobuf message hassmic.Log
+ */
+export interface Log {
+    /**
+     * @generated from protobuf field: string log_text = 1;
+     */
+    logText: string;
 }
 /**
  * The wrapper message that actually gets sent to the server
@@ -518,7 +537,8 @@ class ClientEvent$Type extends MessageType<ClientEvent> {
         super("hassmic.ClientEvent", [
             { no: 1, name: "media_player_state_change", kind: "message", oneof: "event", T: () => ClientEvent_MediaPlayerStateChange },
             { no: 2, name: "media_player_volume_change", kind: "message", oneof: "event", T: () => MediaPlayerVolumeChange },
-            { no: 3, name: "device_volume_change", kind: "message", oneof: "event", T: () => DeviceVolumeChange }
+            { no: 3, name: "device_volume_change", kind: "message", oneof: "event", T: () => DeviceVolumeChange },
+            { no: 4, name: "log", kind: "message", oneof: "event", T: () => Log }
         ]);
     }
     create(value?: PartialMessage<ClientEvent>): ClientEvent {
@@ -551,6 +571,12 @@ class ClientEvent$Type extends MessageType<ClientEvent> {
                         deviceVolumeChange: DeviceVolumeChange.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).deviceVolumeChange)
                     };
                     break;
+                case /* hassmic.Log log */ 4:
+                    message.event = {
+                        oneofKind: "log",
+                        log: Log.internalBinaryRead(reader, reader.uint32(), options, (message.event as any).log)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -572,6 +598,9 @@ class ClientEvent$Type extends MessageType<ClientEvent> {
         /* hassmic.DeviceVolumeChange device_volume_change = 3; */
         if (message.event.oneofKind === "deviceVolumeChange")
             DeviceVolumeChange.internalBinaryWrite(message.event.deviceVolumeChange, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
+        /* hassmic.Log log = 4; */
+        if (message.event.oneofKind === "log")
+            Log.internalBinaryWrite(message.event.log, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -637,6 +666,53 @@ class ClientEvent_MediaPlayerStateChange$Type extends MessageType<ClientEvent_Me
  * @generated MessageType for protobuf message hassmic.ClientEvent.MediaPlayerStateChange
  */
 export const ClientEvent_MediaPlayerStateChange = new ClientEvent_MediaPlayerStateChange$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class Log$Type extends MessageType<Log> {
+    constructor() {
+        super("hassmic.Log", [
+            { no: 1, name: "log_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<Log>): Log {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.logText = "";
+        if (value !== undefined)
+            reflectionMergePartial<Log>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Log): Log {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string log_text */ 1:
+                    message.logText = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: Log, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string log_text = 1; */
+        if (message.logText !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.logText);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message hassmic.Log
+ */
+export const Log = new Log$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class ClientMessage$Type extends MessageType<ClientMessage> {
     constructor() {

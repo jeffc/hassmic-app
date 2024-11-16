@@ -144,8 +144,11 @@ class HassMic:
                 e.handle_connection_state_change(new_state)
 
     def _handle_client_event(self, event: ClientEvent):
-        """Handle a state change from the connection manager."""
-        _LOGGER.debug("Got client event: %s", repr(event))
+        """Handle a client event from the device."""
+        (which, val) = betterproto.which_one_of(event, "event")
+        if which == "log":
+            _LOGGER.debug("[Client log]: %s", val.log_text)
+
         for e in self._entities:
             hce = getattr(e, "handle_client_event", None)
             if hce is not None and callable(hce):

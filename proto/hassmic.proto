@@ -71,7 +71,13 @@ message ClientEvent {
     MediaPlayerStateChange media_player_state_change = 1;
     MediaPlayerVolumeChange media_player_volume_change = 2;
     DeviceVolumeChange device_volume_change = 3;
+    Log log = 4;
   }
+}
+
+// A log message passed from the client to the server
+message Log {
+  string log_text = 1;
 }
 
 

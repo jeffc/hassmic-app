@@ -114,7 +114,7 @@ class Player(MediaPlayerEntity):
                                 "Got unhandled media player state %s", val.new_state
                             )
 
-            case "media_player_volume_change" | "device_volume_change":
+            case "media_player_volume_change" | "device_volume_change" | "log":
                 _LOGGER.debug("Got %s, ignoring it", which)
 
             case _:

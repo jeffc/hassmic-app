@@ -50,5 +50,19 @@ public interface ClientEventOrBuilder
    */
   com.thejeffcooper.hassmic.proto.DeviceVolumeChange getDeviceVolumeChange();
 
+  /**
+   * <code>.hassmic.Log log = 4;</code>
+   *
+   * @return Whether the log field is set.
+   */
+  boolean hasLog();
+
+  /**
+   * <code>.hassmic.Log log = 4;</code>
+   *
+   * @return The log.
+   */
+  com.thejeffcooper.hassmic.proto.Log getLog();
+
   public com.thejeffcooper.hassmic.proto.ClientEvent.EventCase getEventCase();
 }

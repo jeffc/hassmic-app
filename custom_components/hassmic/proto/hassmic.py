@@ -40,6 +40,7 @@ class ClientInfo(betterproto.Message):
 
     # The version, for example "0.9.2"
     version: str = betterproto.string_field(1)
+    # The uuid of this client
     uuid: str = betterproto.string_field(2)
 
 
@@ -83,6 +84,7 @@ class ClientEvent(betterproto.Message):
     device_volume_change: "DeviceVolumeChange" = betterproto.message_field(
         3, group="event"
     )
+    log: "Log" = betterproto.message_field(4, group="event")
 
 
 @dataclass
@@ -91,6 +93,13 @@ class ClientEventMediaPlayerStateChange(betterproto.Message):
 
     player: "MediaPlayerId" = betterproto.enum_field(1)
     new_state: "MediaPlayerState" = betterproto.enum_field(2)
+
+
+@dataclass
+class Log(betterproto.Message):
+    """A log message passed from the client to the server"""
+
+    log_text: str = betterproto.string_field(1)
 
 
 @dataclass

@@ -142,6 +142,7 @@ class CheyenneServer {
         this._setConnectionState(true);
         this.sendInfo(this._uuid);
         this.startPing();
+        this.logToServer("Set up successfully!");
         console.info("All set up -- waiting");
       } else {
         console.info("Already have a socket, dropping new connection");
@@ -158,6 +159,24 @@ class CheyenneServer {
     this._sock?.destroy();
     await p;
     console.log("Server stopped");
+  };
+
+  public logToServer = (m: string) => {
+    this.sendMessage(
+      ClientMessage.create({
+        msg: {
+          oneofKind: "clientEvent",
+          clientEvent: {
+            event: {
+              oneofKind: "log",
+              log: {
+                logText: m,
+              },
+            },
+          },
+        },
+      })
+    );
   };
 
   private _handleIncomingData = async (d: Uint8Array) => {

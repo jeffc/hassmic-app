@@ -35,6 +35,12 @@ public interface ClientInfoOrBuilder
   com.google.protobuf.ByteString getVersionBytes();
 
   /**
+   *
+   *
+   * <pre>
+   * The uuid of this client
+   * </pre>
+   *
    * <code>string uuid = 2;</code>
    *
    * @return The uuid.
@@ -42,6 +48,12 @@ public interface ClientInfoOrBuilder
   java.lang.String getUuid();
 
   /**
+   *
+   *
+   * <pre>
+   * The uuid of this client
+   * </pre>
+   *
    * <code>string uuid = 2;</code>
    *
    * @return The bytes for uuid.
