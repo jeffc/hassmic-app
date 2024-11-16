@@ -24,6 +24,12 @@ echo "Ensuring required packages are present"
 pip install -r requirements.txt
 npm install
 
+echo "Deleting old generated files"
+
+rm -r app/app/proto/*
+rm -r custom_components/hassmic/proto/*
+rm -r app/android/app/src/main/java/com/thejeffcooper/hassmic/proto/*
+
 
 echo "Regenerating sources from protos"
 protoc \

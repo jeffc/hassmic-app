@@ -1,8 +1,8 @@
 import TcpSocket from "react-native-tcp-socket";
-import { Buffer } from "buffer";
-import * as Application from "expo-application";
-import { UUIDManager } from "./util";
 import { APP_VERSION } from "./constants";
+import { Buffer } from "buffer";
+import { NativeModules } from "react-native";
+import { UUIDManager } from "./util";
 
 import {
   AudioData,
@@ -12,8 +12,9 @@ import {
   ServerMessage,
 } from "./proto/hassmic";
 
+const { BackgroundTaskModule } = NativeModules;
+
 type CallbackType<T> = ((s: T) => void) | null;
-type PlayAudioCallbackType = ((url: string, announce: boolean) => void) | null;
 
 // "Cheyenne" protocol server
 class CheyenneServer {
@@ -38,13 +39,6 @@ class CheyenneServer {
 
   private _setConnectionState = (s: boolean) => {
     this._connectionStateCallback?.(s);
-  };
-
-  // callback to play audio via URL
-  private _playAudioCallback: PlayAudioCallbackType = null;
-
-  setPlayAudioCallback = (cb: PlayAudioCallbackType) => {
-    this._playAudioCallback = cb;
   };
 
   streamAudio = (streamData: Uint8Array) => {
@@ -173,25 +167,19 @@ class CheyenneServer {
       let m = ServerMessage.fromBinary(bts);
 
       switch (m.msg.oneofKind) {
-        case "playAudio":
-          {
-            console.info("Got play_audio message");
-            const data = m.msg.playAudio || {};
-            const url = data.url || "";
-            const announce = data.announce || false;
-            if (url) {
-              console.log(`Playing URL '${url}' (announce=${announce})`);
-              this._playAudioCallback?.(url, announce);
-            } else {
-              console.warn("audio_data.url is not set");
-            }
-          }
-          break;
         case "setMicMute":
           console.info("Got set_mic_mute message");
           const shouldMute: boolean = m.msg.setMicMute;
           console.info(`Setting mic mute to ${shouldMute}`);
           this._mic_muted = shouldMute;
+          break;
+        // Actions that need to be handled by native code
+        case "playAudio":
+        case "setPlayerVolume":
+          console.log(
+            `Got "${m.msg.oneOfKind}" ServerMessage; passing it to native code`
+          );
+          this._handleNativeServerMessage(m);
           break;
         default:
           console.warn(`Got unknown message type '${m.msg.oneofKind}'`);
@@ -200,6 +188,13 @@ class CheyenneServer {
       console.error(e);
     }
   };
+
+  private _handleNativeServerMessage(sm: ServerMessage) {
+    let smb64: string = Buffer.from(ServerMessage.toBinary(sm)).toString(
+      "base64"
+    );
+    BackgroundTaskModule.handleServerMessage(smb64);
+  }
 }
 
 export const CheyenneSocket: CheyenneServer = new CheyenneServer();

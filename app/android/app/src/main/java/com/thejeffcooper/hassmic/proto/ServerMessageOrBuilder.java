@@ -60,5 +60,57 @@ public interface ServerMessageOrBuilder
    */
   boolean getSetMicMute();
 
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of the device
+   * </pre>
+   *
+   * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+   *
+   * @return Whether the setDeviceVolume field is set.
+   */
+  boolean hasSetDeviceVolume();
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of the device
+   * </pre>
+   *
+   * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+   *
+   * @return The setDeviceVolume.
+   */
+  com.thejeffcooper.hassmic.proto.DeviceVolumeChange getSetDeviceVolume();
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of a player
+   * </pre>
+   *
+   * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+   *
+   * @return Whether the setPlayerVolume field is set.
+   */
+  boolean hasSetPlayerVolume();
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of a player
+   * </pre>
+   *
+   * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+   *
+   * @return The setPlayerVolume.
+   */
+  com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange getSetPlayerVolume();
+
   public com.thejeffcooper.hassmic.proto.ServerMessage.MsgCase getMsgCase();
 }

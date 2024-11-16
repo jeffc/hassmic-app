@@ -25,6 +25,8 @@ public final class ServerMessage
   public enum MsgCase {
     PLAY_AUDIO(1),
     SET_MIC_MUTE(2),
+    SET_DEVICE_VOLUME(3),
+    SET_PLAYER_VOLUME(4),
     MSG_NOT_SET(0);
     private final int value;
 
@@ -46,6 +48,10 @@ public final class ServerMessage
           return PLAY_AUDIO;
         case 2:
           return SET_MIC_MUTE;
+        case 3:
+          return SET_DEVICE_VOLUME;
+        case 4:
+          return SET_PLAYER_VOLUME;
         case 0:
           return MSG_NOT_SET;
         default:
@@ -219,6 +225,182 @@ public final class ServerMessage
    */
   private void clearSetMicMute() {
     if (msgCase_ == 2) {
+      msgCase_ = 0;
+      msg_ = null;
+    }
+  }
+
+  public static final int SET_DEVICE_VOLUME_FIELD_NUMBER = 3;
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of the device
+   * </pre>
+   *
+   * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+   */
+  @java.lang.Override
+  public boolean hasSetDeviceVolume() {
+    return msgCase_ == 3;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of the device
+   * </pre>
+   *
+   * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+   */
+  @java.lang.Override
+  public com.thejeffcooper.hassmic.proto.DeviceVolumeChange getSetDeviceVolume() {
+    if (msgCase_ == 3) {
+      return (com.thejeffcooper.hassmic.proto.DeviceVolumeChange) msg_;
+    }
+    return com.thejeffcooper.hassmic.proto.DeviceVolumeChange.getDefaultInstance();
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of the device
+   * </pre>
+   *
+   * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+   */
+  private void setSetDeviceVolume(com.thejeffcooper.hassmic.proto.DeviceVolumeChange value) {
+    value.getClass();
+    msg_ = value;
+    msgCase_ = 3;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of the device
+   * </pre>
+   *
+   * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+   */
+  private void mergeSetDeviceVolume(com.thejeffcooper.hassmic.proto.DeviceVolumeChange value) {
+    value.getClass();
+    if (msgCase_ == 3
+        && msg_ != com.thejeffcooper.hassmic.proto.DeviceVolumeChange.getDefaultInstance()) {
+      msg_ =
+          com.thejeffcooper.hassmic.proto.DeviceVolumeChange.newBuilder(
+                  (com.thejeffcooper.hassmic.proto.DeviceVolumeChange) msg_)
+              .mergeFrom(value)
+              .buildPartial();
+    } else {
+      msg_ = value;
+    }
+    msgCase_ = 3;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of the device
+   * </pre>
+   *
+   * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+   */
+  private void clearSetDeviceVolume() {
+    if (msgCase_ == 3) {
+      msgCase_ = 0;
+      msg_ = null;
+    }
+  }
+
+  public static final int SET_PLAYER_VOLUME_FIELD_NUMBER = 4;
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of a player
+   * </pre>
+   *
+   * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+   */
+  @java.lang.Override
+  public boolean hasSetPlayerVolume() {
+    return msgCase_ == 4;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of a player
+   * </pre>
+   *
+   * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+   */
+  @java.lang.Override
+  public com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange getSetPlayerVolume() {
+    if (msgCase_ == 4) {
+      return (com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange) msg_;
+    }
+    return com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.getDefaultInstance();
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of a player
+   * </pre>
+   *
+   * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+   */
+  private void setSetPlayerVolume(com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange value) {
+    value.getClass();
+    msg_ = value;
+    msgCase_ = 4;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of a player
+   * </pre>
+   *
+   * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+   */
+  private void mergeSetPlayerVolume(com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange value) {
+    value.getClass();
+    if (msgCase_ == 4
+        && msg_ != com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.getDefaultInstance()) {
+      msg_ =
+          com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.newBuilder(
+                  (com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange) msg_)
+              .mergeFrom(value)
+              .buildPartial();
+    } else {
+      msg_ = value;
+    }
+    msgCase_ = 4;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Set the volume of a player
+   * </pre>
+   *
+   * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+   */
+  private void clearSetPlayerVolume() {
+    if (msgCase_ == 4) {
       msgCase_ = 0;
       msg_ = null;
     }
@@ -492,6 +674,186 @@ public final class ServerMessage
       return this;
     }
 
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of the device
+     * </pre>
+     *
+     * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+     */
+    @java.lang.Override
+    public boolean hasSetDeviceVolume() {
+      return instance.hasSetDeviceVolume();
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of the device
+     * </pre>
+     *
+     * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+     */
+    @java.lang.Override
+    public com.thejeffcooper.hassmic.proto.DeviceVolumeChange getSetDeviceVolume() {
+      return instance.getSetDeviceVolume();
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of the device
+     * </pre>
+     *
+     * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+     */
+    public Builder setSetDeviceVolume(com.thejeffcooper.hassmic.proto.DeviceVolumeChange value) {
+      copyOnWrite();
+      instance.setSetDeviceVolume(value);
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of the device
+     * </pre>
+     *
+     * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+     */
+    public Builder setSetDeviceVolume(
+        com.thejeffcooper.hassmic.proto.DeviceVolumeChange.Builder builderForValue) {
+      copyOnWrite();
+      instance.setSetDeviceVolume(builderForValue.build());
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of the device
+     * </pre>
+     *
+     * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+     */
+    public Builder mergeSetDeviceVolume(com.thejeffcooper.hassmic.proto.DeviceVolumeChange value) {
+      copyOnWrite();
+      instance.mergeSetDeviceVolume(value);
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of the device
+     * </pre>
+     *
+     * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+     */
+    public Builder clearSetDeviceVolume() {
+      copyOnWrite();
+      instance.clearSetDeviceVolume();
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of a player
+     * </pre>
+     *
+     * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+     */
+    @java.lang.Override
+    public boolean hasSetPlayerVolume() {
+      return instance.hasSetPlayerVolume();
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of a player
+     * </pre>
+     *
+     * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+     */
+    @java.lang.Override
+    public com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange getSetPlayerVolume() {
+      return instance.getSetPlayerVolume();
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of a player
+     * </pre>
+     *
+     * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+     */
+    public Builder setSetPlayerVolume(
+        com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange value) {
+      copyOnWrite();
+      instance.setSetPlayerVolume(value);
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of a player
+     * </pre>
+     *
+     * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+     */
+    public Builder setSetPlayerVolume(
+        com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.Builder builderForValue) {
+      copyOnWrite();
+      instance.setSetPlayerVolume(builderForValue.build());
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of a player
+     * </pre>
+     *
+     * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+     */
+    public Builder mergeSetPlayerVolume(
+        com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange value) {
+      copyOnWrite();
+      instance.mergeSetPlayerVolume(value);
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Set the volume of a player
+     * </pre>
+     *
+     * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+     */
+    public Builder clearSetPlayerVolume() {
+      copyOnWrite();
+      instance.clearSetPlayerVolume();
+      return this;
+    }
+
     // @@protoc_insertion_point(builder_scope:hassmic.ServerMessage)
   }
 
@@ -514,11 +876,15 @@ public final class ServerMessage
         {
           java.lang.Object[] objects =
               new java.lang.Object[] {
-                "msg_", "msgCase_", com.thejeffcooper.hassmic.proto.PlayAudio.class,
+                "msg_",
+                "msgCase_",
+                com.thejeffcooper.hassmic.proto.PlayAudio.class,
+                com.thejeffcooper.hassmic.proto.DeviceVolumeChange.class,
+                com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.class,
               };
           java.lang.String info =
-              "\u0000\u0002\u0001\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001<\u0000\u0002:"
-                  + "\u0000";
+              "\u0000\u0004\u0001\u0000\u0001\u0004\u0004\u0000\u0000\u0000\u0001<\u0000\u0002:"
+                  + "\u0000\u0003<\u0000\u0004<\u0000";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

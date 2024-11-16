@@ -23,32 +23,32 @@ public interface ClientEventOrBuilder
   com.thejeffcooper.hassmic.proto.ClientEvent.MediaPlayerStateChange getMediaPlayerStateChange();
 
   /**
-   * <code>.hassmic.ClientEvent.MediaPlayerVolumeChange media_player_volume_change = 2;</code>
+   * <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code>
    *
    * @return Whether the mediaPlayerVolumeChange field is set.
    */
   boolean hasMediaPlayerVolumeChange();
 
   /**
-   * <code>.hassmic.ClientEvent.MediaPlayerVolumeChange media_player_volume_change = 2;</code>
+   * <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code>
    *
    * @return The mediaPlayerVolumeChange.
    */
-  com.thejeffcooper.hassmic.proto.ClientEvent.MediaPlayerVolumeChange getMediaPlayerVolumeChange();
+  com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange getMediaPlayerVolumeChange();
 
   /**
-   * <code>.hassmic.ClientEvent.DeviceVolumeChange device_volume_change = 3;</code>
+   * <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code>
    *
    * @return Whether the deviceVolumeChange field is set.
    */
   boolean hasDeviceVolumeChange();
 
   /**
-   * <code>.hassmic.ClientEvent.DeviceVolumeChange device_volume_change = 3;</code>
+   * <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code>
    *
    * @return The deviceVolumeChange.
    */
-  com.thejeffcooper.hassmic.proto.ClientEvent.DeviceVolumeChange getDeviceVolumeChange();
+  com.thejeffcooper.hassmic.proto.DeviceVolumeChange getDeviceVolumeChange();
 
   public com.thejeffcooper.hassmic.proto.ClientEvent.EventCase getEventCase();
 }

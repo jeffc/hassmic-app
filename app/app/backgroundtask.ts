@@ -165,10 +165,6 @@ class BackgroundTaskManager_ {
       }
     });
 
-    CheyenneSocket.setPlayAudioCallback((url: string, announce: boolean) => {
-      console.log(`Playing audio: '${url}' (announce=${announce})`);
-      this.playAudio(url, announce);
-    });
     CheyenneSocket.startServer();
     console.log("Started server");
     await ZeroconfManager.StartZeroconf();
@@ -239,17 +235,8 @@ class BackgroundTaskManager_ {
     BackgroundTaskModule.startService();
   };
 
-  // play some audio
-  playAudio = (url: string, announce: boolean) => {
-    let sm = ServerMessage.create({
-      msg: {
-        oneofKind: "playAudio",
-        playAudio: {
-          url: url,
-          announce: announce,
-        },
-      },
-    });
+  // handle a proto valued message in native code
+  handleNativeServerMessage = (sm: ServerMessage) => {
     let smb64: string = Buffer.from(ServerMessage.toBinary(sm)).toString(
       "base64"
     );

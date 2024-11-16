@@ -26,26 +26,17 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import com.facebook.react.HeadlessJsTaskService;
+import com.facebook.react.bridge.ReactMethod;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.thejeffcooper.hassmic.proto.*;
 
 public class BackgroundTaskService extends Service {
-  public static final String PLAY_AUDIO_ACTION = "com.thejeffcooper.hassmic.INTENT_PLAY_AUDIO";
   public static final String PROTO_SERVERMESSAGE_ACTION =
       "com.thejeffcooper.hassmic.INTENT_PROTO_SERVERMESSAGE";
   public static final String KEY_PROTO_DATA = "com.thejeffcooper.hassmic.KEY_PROTO_DATA";
 
   public static final String EVENT_PLAY_SOUND_START = "hassmic.SpeechStart";
   public static final String EVENT_PLAY_SOUND_STOP = "hassmic.SpeechStop";
-  public static final String EVENT_MEDIA_PLAYER_EVENT = "hassmic.MediaPlayerEvent";
-
-  public static final String MEDIA_PLAYER_EVENT_WHICH_PLAYER = "which_player";
-  public static final String MEDIA_PLAYER_EVENT_WHICH_EVENT = "which_event";
-
-  public static final String MEDIA_PLAYER_EVENT_PLAYBACK_STATE_CHANGED = "playback_state_changed";
-
-  public static final String URL_KEY = "URL";
-  public static final String ANNOUNCE_KEY = "ANNOUNCE";
 
   private static final int SERVICE_NOTIFICATION_ID = 100001;
   private static final String CHANNEL_ID = "BACKGROUND_LISTEN";
@@ -53,6 +44,24 @@ public class BackgroundTaskService extends Service {
   private Handler handler = new Handler();
   private ExoPlayer audioExo;
   private ExoPlayer announceExo;
+
+  private Player enumToPlayer(MediaPlayerId id) {
+    switch (id) {
+      case ID_PLAYBACK:
+        return audioExo;
+      case ID_ANNOUNCE:
+        return announceExo;
+      default:
+        Log.w("HassmicBackgroundTaskService", "Can't get player for unknown player id " + id);
+        return null;
+    }
+  }
+
+  @ReactMethod
+  public float getVolume(MediaPlayerId id) {
+    Player p = enumToPlayer(id);
+    return p.getVolume();
+  }
 
   private Runnable runnableCode =
       new Runnable() {
@@ -166,6 +175,24 @@ public class BackgroundTaskService extends Service {
                         b.setNewState(newState);
                         protob.setMediaPlayerStateChange(b.build());
                         break;
+
+                        // note: this might fire twice (once for each player)
+                      case Player.EVENT_DEVICE_VOLUME_CHANGED:
+                        DeviceVolumeChange d =
+                            DeviceVolumeChange.newBuilder()
+                                .setNewVolume(p.getDeviceVolume())
+                                .build();
+                        protob.setDeviceVolumeChange(d);
+                        break;
+
+                      case Player.EVENT_VOLUME_CHANGED:
+                        MediaPlayerVolumeChange mpvc =
+                            MediaPlayerVolumeChange.newBuilder()
+                                .setPlayer(which_player)
+                                .setNewVolume(p.getVolume())
+                                .build();
+                        protob.setMediaPlayerVolumeChange(mpvc);
+                        break;
                     }
 
                     ClientEvent ce = protob.build();
@@ -197,6 +224,7 @@ public class BackgroundTaskService extends Service {
 
   private final BroadcastReceiver brec =
       new BroadcastReceiver() {
+
         @Override
         public void onReceive(Context context, Intent intent) {
           Log.d("HassmicBackgroundTaskService", "called onReceive()");
@@ -263,7 +291,32 @@ public class BackgroundTaskService extends Service {
                 }
                 break;
               }
-
+            case SET_DEVICE_VOLUME:
+              // need to figure out if Player.setDeviceVolume() is actually the
+              // right way to do this, or if it needs to be done a different
+              // way.
+              Log.w(
+                  "HassmicBackgroundTaskService", "set_device_volume is not currently implemented");
+              break;
+            case SET_PLAYER_VOLUME:
+              float newVolume = sm.getSetPlayerVolume().getNewVolume();
+              Player p = enumToPlayer(sm.getSetPlayerVolume().getPlayer());
+              if (p == null) {
+                Log.e("HassmicBackgroundTaskService", "Can't determine player; not setting volume");
+                break;
+              }
+              if (0.0 <= newVolume && newVolume <= 1.0) {
+                // per android docs, use a log scale for volume
+                float logVol = 1.0f - (float) (Math.log(101 - 100 * newVolume) / Math.log(101));
+                Log.d(
+                    "HassmicBackgroundTaskService",
+                    "Setting device volume to " + newVolume + " (=>" + logVol + ")");
+                p.setVolume(logVol);
+              } else {
+                Log.e(
+                    "HassmicBackgroundTaskService", "Device volume setting invalid: " + newVolume);
+              }
+              break;
             case SET_MIC_MUTE:
               {
                 String t = sm.getMsgCase().toString();
@@ -272,7 +325,6 @@ public class BackgroundTaskService extends Service {
                     "Got ServerMessage type '" + t + "' in native code, which shouldn't happen.");
                 break;
               }
-
             default:
               Log.e(
                   "HassmicBackgroundTaskService",

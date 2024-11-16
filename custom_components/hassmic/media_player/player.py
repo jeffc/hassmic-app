@@ -40,14 +40,13 @@ class Player(MediaPlayerEntity):
         self._attr_supported_features = (
             MediaPlayerEntityFeature(0)
             | MediaPlayerEntityFeature.MEDIA_ANNOUNCE
-            # | MediaPlayerEntityFeature.MEDIA_ENQUEUE
-            # | MediaPlayerEntityFeature.NEXT_TRACK
             | MediaPlayerEntityFeature.PAUSE
             | MediaPlayerEntityFeature.PLAY
             | MediaPlayerEntityFeature.PLAY_MEDIA
             | MediaPlayerEntityFeature.STOP
-            # | MediaPlayerEntityFeature.VOLUME_MUTE
-            # | MediaPlayerEntityFeature.VOLUME_SET
+            | MediaPlayerEntityFeature.VOLUME_SET
+            # | MediaPlayerEntityFeature.MEDIA_ENQUEUE
+            # | MediaPlayerEntityFeature.NEXT_TRACK
         )
 
     async def async_play_media(
@@ -78,6 +77,22 @@ class Player(MediaPlayerEntity):
             )
         )
 
+    def set_volume_level(self, volume: float) -> None:
+        """Set the volume level."""
+        if volume is None:
+            _LOGGER.debug("Requested volume is None")
+            return
+        if not (0 <= volume and volume <= 1):
+            raise ValueError(f"{volume} is not between 0 and 1")
+
+        _LOGGER.info("Setting volume to %f", volume)
+        sm = proto.ServerMessage(
+            set_player_volume=proto.MediaPlayerVolumeChange(
+                player=proto.MediaPlayerId.ID_PLAYBACK, new_volume=volume
+            )
+        )
+        self._hassmic.connection_manager.send_enqueue(sm)
+
     def handle_client_event(self, event: proto.ClientEvent):
         """Handle a client event."""
         (which, val) = betterproto.which_one_of(event, "event")
@@ -106,3 +121,14 @@ class Player(MediaPlayerEntity):
                 _LOGGER.warning("Got unhandled client event type %s", which)
 
         self.schedule_update_ha_state()
+
+    def handle_connection_state_change(self, new_state: bool):
+        """If the remote device just reconnected, remind it what settings it should have."""
+        _LOGGER.debug("Connection state change")
+        if new_state:
+            self.send_config()
+
+    def send_config(self):
+        """Send the various media player settings to the remote."""
+        _LOGGER.debug("send volume: %s", self._attr_volume_level)
+        self.set_volume_level(self._attr_volume_level)

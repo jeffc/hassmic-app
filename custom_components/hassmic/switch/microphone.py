@@ -41,11 +41,13 @@ class Microphone(base.SwitchBase):
         self.schedule_update_ha_state()
 
     def handle_connection_state_change(self, new_state: bool):
+        """If the remote device just reconnected, remind it what mic_mute status it should have."""
         super().handle_connection_state_change(new_state)
         if new_state:
             self.send_mic_mute_status()
 
     def send_mic_mute_status(self):
+        """Send the mic mute status to the remote."""
         _LOGGER.debug(
             "Sending signal to turn %s microphone", "on" if self._attr_is_on else "off"
         )

@@ -85,17 +85,6 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void playAudio(String url, boolean announce) {
-    Log.d("HassmicBackgroundTaskModule", "Sending play media intent: " + url);
-    Intent playIntent =
-        new Intent(BackgroundTaskService.PLAY_AUDIO_ACTION)
-            .putExtra(BackgroundTaskService.URL_KEY, url)
-            .putExtra(BackgroundTaskService.ANNOUNCE_KEY, announce);
-    Log.d("HassmicBackgroundTaskModule", playIntent.toString());
-    this.reactContext.sendBroadcast(playIntent);
-  }
-
-  @ReactMethod
   public void handleServerMessage(String servermessageBase64) {
     byte[] smbytes = Base64.decode(servermessageBase64, Base64.DEFAULT);
     Log.d("HassmicBackgroundTaskModule", "Handling server message");

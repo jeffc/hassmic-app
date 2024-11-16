@@ -18,6 +18,12 @@ class MediaPlayerState(betterproto.Enum):
     STATE_PAUSED = 4
 
 
+class MediaPlayerCommand(betterproto.Enum):
+    COMMAND_UNKNOWN = 0
+    COMMAND_PLAY = 1
+    COMMAND_PAUSE = 2
+
+
 class MediaPlayerId(betterproto.Enum):
     """The different media players available"""
 
@@ -50,16 +56,31 @@ class AudioData(betterproto.Message):
 
 
 @dataclass
+class MediaPlayerVolumeChange(betterproto.Message):
+    """A media player has changed volume"""
+
+    player: "MediaPlayerId" = betterproto.enum_field(1)
+    new_volume: float = betterproto.float_field(2)
+
+
+@dataclass
+class DeviceVolumeChange(betterproto.Message):
+    """The device volume has changed"""
+
+    new_volume: float = betterproto.float_field(1)
+
+
+@dataclass
 class ClientEvent(betterproto.Message):
     """Tell the server that a client event occurred"""
 
     media_player_state_change: "ClientEventMediaPlayerStateChange" = (
         betterproto.message_field(1, group="event")
     )
-    media_player_volume_change: "ClientEventMediaPlayerVolumeChange" = (
-        betterproto.message_field(2, group="event")
+    media_player_volume_change: "MediaPlayerVolumeChange" = betterproto.message_field(
+        2, group="event"
     )
-    device_volume_change: "ClientEventDeviceVolumeChange" = betterproto.message_field(
+    device_volume_change: "DeviceVolumeChange" = betterproto.message_field(
         3, group="event"
     )
 
@@ -70,21 +91,6 @@ class ClientEventMediaPlayerStateChange(betterproto.Message):
 
     player: "MediaPlayerId" = betterproto.enum_field(1)
     new_state: "MediaPlayerState" = betterproto.enum_field(2)
-
-
-@dataclass
-class ClientEventMediaPlayerVolumeChange(betterproto.Message):
-    """A media player has changed volume"""
-
-    player: "MediaPlayerId" = betterproto.enum_field(1)
-    new_volume: float = betterproto.float_field(2)
-
-
-@dataclass
-class ClientEventDeviceVolumeChange(betterproto.Message):
-    """The device volume has changed"""
-
-    new_volume: float = betterproto.float_field(1)
 
 
 @dataclass
@@ -115,3 +121,9 @@ class ServerMessage(betterproto.Message):
     play_audio: "PlayAudio" = betterproto.message_field(1, group="msg")
     # Set whether the mic should be muted
     set_mic_mute: bool = betterproto.bool_field(2, group="msg")
+    # Set the volume of the device
+    set_device_volume: "DeviceVolumeChange" = betterproto.message_field(3, group="msg")
+    # Set the volume of a player
+    set_player_volume: "MediaPlayerVolumeChange" = betterproto.message_field(
+        4, group="msg"
+    )

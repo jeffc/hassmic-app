@@ -10,6 +10,7 @@ option java_multiple_files = true;
 message ClientInfo {
   // The version, for example "0.9.2"
   string version = 1;
+  // The uuid of this client
   string uuid = 2;
 }
 
@@ -30,6 +31,12 @@ enum MediaPlayerState {
   STATE_PAUSED = 4;
 }
 
+enum MediaPlayerCommand {
+  COMMAND_UNKNOWN = 0;
+  COMMAND_PLAY = 1;
+  COMMAND_PAUSE = 2;
+}
+
 // The different media players available
 enum MediaPlayerId {
   ID_UNKNOWN = 0;
@@ -41,6 +48,16 @@ enum MediaPlayerId {
   ID_ANNOUNCE = 2;
 }
 
+// A media player has changed volume
+message MediaPlayerVolumeChange {
+  MediaPlayerId player = 1;
+  float new_volume = 2;
+}
+
+// The device volume has changed
+message DeviceVolumeChange {
+  float new_volume = 1;
+}
 
 // Tell the server that a client event occurred
 message ClientEvent {
@@ -48,17 +65,6 @@ message ClientEvent {
   message MediaPlayerStateChange {
     MediaPlayerId player = 1;
     MediaPlayerState new_state = 2;
-  }
-
-  // A media player has changed volume
-  message MediaPlayerVolumeChange {
-    MediaPlayerId player = 1;
-    float new_volume = 2;
-  }
-
-  // The device volume has changed
-  message DeviceVolumeChange {
-    float new_volume = 1;
   }
 
   oneof event {
@@ -96,5 +102,11 @@ message ServerMessage {
 
     // Set whether the mic should be muted
     bool set_mic_mute = 2;
+
+    // Set the volume of the device
+    DeviceVolumeChange set_device_volume = 3;
+
+    // Set the volume of a player
+    MediaPlayerVolumeChange set_player_volume = 4;
   }
 }
