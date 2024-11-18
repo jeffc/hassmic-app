@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -44,6 +45,21 @@ public class BackgroundTaskService extends Service {
   private Handler handler = new Handler();
   private ExoPlayer audioExo;
   private ExoPlayer announceExo;
+
+  // binder implentation from android guide to allow module to bind to this service.
+  private IBinder binder = new BackgroundTaskBinder();
+
+  public class BackgroundTaskBinder extends Binder {
+    BackgroundTaskService getService() {
+      // Return this instance of LocalService so clients can call public methods.
+      return BackgroundTaskService.this;
+    }
+  }
+
+  @Override
+  public IBinder onBind(Intent intent) {
+    return binder;
+  }
 
   private Player enumToPlayer(MediaPlayerId id) {
     switch (id) {
@@ -178,20 +194,18 @@ public class BackgroundTaskService extends Service {
 
                         // note: this might fire twice (once for each player)
                       case Player.EVENT_DEVICE_VOLUME_CHANGED:
-                        DeviceVolumeChange d =
-                            DeviceVolumeChange.newBuilder()
-                                .setNewVolume(p.getDeviceVolume())
-                                .build();
+                        DeviceVolume d =
+                            DeviceVolume.newBuilder().setNewVolume(p.getDeviceVolume()).build();
                         protob.setDeviceVolumeChange(d);
                         break;
 
                       case Player.EVENT_VOLUME_CHANGED:
-                        MediaPlayerVolumeChange mpvc =
-                            MediaPlayerVolumeChange.newBuilder()
+                        MediaPlayerVolume mpv =
+                            MediaPlayerVolume.newBuilder()
                                 .setPlayer(which_player)
                                 .setNewVolume(p.getVolume())
                                 .build();
-                        protob.setMediaPlayerVolumeChange(mpvc);
+                        protob.setMediaPlayerVolumeChange(mpv);
                         break;
                     }
 
@@ -207,11 +221,6 @@ public class BackgroundTaskService extends Service {
           announceExo.addListener(audioEventListener);
         }
       };
-
-  @Override
-  public IBinder onBind(Intent intent) {
-    return null;
-  }
 
   @Override
   public void onCreate() {
@@ -248,90 +257,125 @@ public class BackgroundTaskService extends Service {
           }
           Log.d("HassmicBackgroundTaskService", "Proto parsed ok");
 
-          switch (sm.getMsgCase()) {
-            case PLAY_AUDIO:
-              {
-                PlayAudio pa = sm.getPlayAudio();
-                boolean announce = pa.getAnnounce();
-                String url = pa.getUrl();
-
-                Log.d(
-                    "HassmicBackgroundTaskService",
-                    "Playing " + url + " (announce = " + String.valueOf(announce) + ")");
-                MediaItem i = MediaItem.fromUri(url);
-
-                if (announce) {
-                  // if we're announcing, pause the audioExo if it's playing
-                  if (audioExo.isPlaying()) {
-                    Log.d(
-                        "HassmicBackgroundTaskService",
-                        "Playing announcement. Pausing playing audio");
-                    audioExo.pause();
-                    announceExo.addListener(
-                        new Player.Listener() {
-                          @Override
-                          public void onPlaybackStateChanged(@Player.State int newState) {
-                            if (newState == Player.STATE_ENDED) {
-                              Log.d(
-                                  "HassmicBackgroundTaskService",
-                                  "Finished playing announcement. Resuming audio");
-                              audioExo.play();
-                              announceExo.removeListener(this);
-                            }
-                          }
-                        });
-                  }
-                  announceExo.setMediaItem(i);
-                  announceExo.prepare();
-                  announceExo.play();
-                } else {
-                  audioExo.setMediaItem(i);
-                  audioExo.prepare();
-                  audioExo.play();
-                }
-                break;
-              }
-            case SET_DEVICE_VOLUME:
-              // need to figure out if Player.setDeviceVolume() is actually the
-              // right way to do this, or if it needs to be done a different
-              // way.
-              Log.w(
-                  "HassmicBackgroundTaskService", "set_device_volume is not currently implemented");
-              break;
-            case SET_PLAYER_VOLUME:
-              float newVolume = sm.getSetPlayerVolume().getNewVolume();
-              Player p = enumToPlayer(sm.getSetPlayerVolume().getPlayer());
-              if (p == null) {
-                Log.e("HassmicBackgroundTaskService", "Can't determine player; not setting volume");
-                break;
-              }
-              if (0.0 <= newVolume && newVolume <= 1.0) {
-                // per android docs, use a log scale for volume
-                float logVol = 1.0f - (float) (Math.log(101 - 100 * newVolume) / Math.log(101));
-                Log.d(
-                    "HassmicBackgroundTaskService",
-                    "Setting device volume to " + newVolume + " (=>" + logVol + ")");
-                p.setVolume(logVol);
-              } else {
-                Log.e(
-                    "HassmicBackgroundTaskService", "Device volume setting invalid: " + newVolume);
-              }
-              break;
-            case SET_MIC_MUTE:
-              {
-                String t = sm.getMsgCase().toString();
-                Log.e(
-                    "HassmicBackgroundTaskService",
-                    "Got ServerMessage type '" + t + "' in native code, which shouldn't happen.");
-                break;
-              }
-            default:
-              Log.e(
-                  "HassmicBackgroundTaskService",
-                  "Got unknown ServerMessage type: " + sm.getMsgCase().getNumber());
-          }
+          BackgroundTaskService.this.handleServerMessage(sm);
         }
       };
+
+  public void handleServerMessage(ServerMessage sm) {
+    switch (sm.getMsgCase()) {
+      case PLAY_AUDIO:
+        {
+          PlayAudio pa = sm.getPlayAudio();
+          boolean announce = pa.getAnnounce();
+          String url = pa.getUrl();
+
+          Log.d(
+              "HassmicBackgroundTaskService",
+              "Playing " + url + " (announce = " + String.valueOf(announce) + ")");
+          MediaItem i = MediaItem.fromUri(url);
+
+          if (announce) {
+            // if we're announcing, pause the audioExo if it's playing
+            if (audioExo.isPlaying()) {
+              Log.d("HassmicBackgroundTaskService", "Playing announcement. Pausing playing audio");
+              audioExo.pause();
+              announceExo.addListener(
+                  new Player.Listener() {
+                    @Override
+                    public void onPlaybackStateChanged(@Player.State int newState) {
+                      if (newState == Player.STATE_ENDED) {
+                        Log.d(
+                            "HassmicBackgroundTaskService",
+                            "Finished playing announcement. Resuming audio");
+                        audioExo.play();
+                        announceExo.removeListener(this);
+                      }
+                    }
+                  });
+            }
+            announceExo.setMediaItem(i);
+            announceExo.prepare();
+            announceExo.play();
+          } else {
+            audioExo.setMediaItem(i);
+            audioExo.prepare();
+            audioExo.play();
+          }
+          break;
+        }
+      case SET_DEVICE_VOLUME:
+        // need to figure out if Player.setDeviceVolume() is actually the
+        // right way to do this, or if it needs to be done a different
+        // way.
+        Log.w("HassmicBackgroundTaskService", "set_device_volume is not currently implemented");
+        break;
+      case SET_PLAYER_VOLUME:
+        float newVolume = sm.getSetPlayerVolume().getNewVolume();
+        Player p = enumToPlayer(sm.getSetPlayerVolume().getPlayer());
+        if (p == null) {
+          Log.e("HassmicBackgroundTaskService", "Can't determine player; not setting volume");
+          break;
+        }
+        if (0.0 <= newVolume && newVolume <= 1.0) {
+          // per android docs, use a log scale for volume
+          float logVol = 1.0f - (float) (Math.log(101 - 100 * newVolume) / Math.log(101));
+          Log.d(
+              "HassmicBackgroundTaskService",
+              "Setting device volume to " + newVolume + " (=>" + logVol + ")");
+          p.setVolume(logVol);
+        } else {
+          Log.e("HassmicBackgroundTaskService", "Device volume setting invalid: " + newVolume);
+        }
+        break;
+      case SET_MIC_MUTE:
+        {
+          String t = sm.getMsgCase().toString();
+          Log.e(
+              "HassmicBackgroundTaskService",
+              "Got ServerMessage type '" + t + "' in native code, which shouldn't happen.");
+          break;
+        }
+      case COMMAND:
+        {
+          Player pp = enumToPlayer(sm.getCommand().getId());
+          if (pp == null) {
+            Log.e("HassmicBackgroundTaskService", "Got player command but no player ID set");
+            break;
+          }
+          MediaPlayerCommandId cmd = sm.getCommand().getCommand();
+
+          switch (cmd) {
+            case COMMAND_PLAY:
+              Log.d(
+                  "HassMicBackgroundService",
+                  "Got play command for player " + sm.getCommand().getId().toString());
+              pp.play();
+              break;
+            case COMMAND_PAUSE:
+              Log.d(
+                  "HassMicBackgroundService",
+                  "Got pause command for player " + sm.getCommand().getId().toString());
+              pp.pause();
+              break;
+            case COMMAND_STOP:
+              Log.d(
+                  "HassMicBackgroundService",
+                  "Got stop command for player " + sm.getCommand().getId().toString());
+              pp.stop();
+              break;
+            default:
+              Log.e(
+                  "HassmicBackgroundTaskService", "Got unknown player command: " + cmd.toString());
+              break;
+          }
+        }
+      default:
+        Log.e(
+            "HassmicBackgroundTaskService",
+            "Got unknown ServerMessage type: " + sm.getMsgCase().getNumber());
+    }
+  }
+  ;
 
   @Override
   public void onDestroy() {

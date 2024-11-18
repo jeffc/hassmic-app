@@ -12,6 +12,8 @@ message ClientInfo {
   string version = 1;
   // The uuid of this client
   string uuid = 2;
+  // Optional volume settings
+  repeated MediaPlayerVolume volume_levels = 3;
 }
 
 // A ping message
@@ -31,10 +33,17 @@ enum MediaPlayerState {
   STATE_PAUSED = 4;
 }
 
-enum MediaPlayerCommand {
+enum MediaPlayerCommandId {
   COMMAND_UNKNOWN = 0;
   COMMAND_PLAY = 1;
   COMMAND_PAUSE = 2;
+  COMMAND_STOP = 3;
+}
+
+// A command paired with a player
+message MediaPlayerCommand {
+  MediaPlayerId id = 1;
+  MediaPlayerCommandId command = 2;
 }
 
 // The different media players available
@@ -49,13 +58,13 @@ enum MediaPlayerId {
 }
 
 // A media player has changed volume
-message MediaPlayerVolumeChange {
+message MediaPlayerVolume {
   MediaPlayerId player = 1;
   float new_volume = 2;
 }
 
 // The device volume has changed
-message DeviceVolumeChange {
+message DeviceVolume {
   float new_volume = 1;
 }
 
@@ -69,8 +78,8 @@ message ClientEvent {
 
   oneof event {
     MediaPlayerStateChange media_player_state_change = 1;
-    MediaPlayerVolumeChange media_player_volume_change = 2;
-    DeviceVolumeChange device_volume_change = 3;
+    MediaPlayerVolume media_player_volume_change = 2;
+    DeviceVolume device_volume_change = 3;
     Log log = 4;
   }
 }
@@ -110,9 +119,12 @@ message ServerMessage {
     bool set_mic_mute = 2;
 
     // Set the volume of the device
-    DeviceVolumeChange set_device_volume = 3;
+    DeviceVolume set_device_volume = 3;
 
     // Set the volume of a player
-    MediaPlayerVolumeChange set_player_volume = 4;
+    MediaPlayerVolume set_player_volume = 4;
+
+    // Play, pause, stop, etc
+    MediaPlayerCommand command = 5;
   }
 }

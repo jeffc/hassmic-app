@@ -2,6 +2,7 @@
 # sources: hassmic.proto
 # plugin: python-betterproto
 from dataclasses import dataclass
+from typing import List
 
 import betterproto
 
@@ -18,10 +19,11 @@ class MediaPlayerState(betterproto.Enum):
     STATE_PAUSED = 4
 
 
-class MediaPlayerCommand(betterproto.Enum):
+class MediaPlayerCommandId(betterproto.Enum):
     COMMAND_UNKNOWN = 0
     COMMAND_PLAY = 1
     COMMAND_PAUSE = 2
+    COMMAND_STOP = 3
 
 
 class MediaPlayerId(betterproto.Enum):
@@ -42,6 +44,8 @@ class ClientInfo(betterproto.Message):
     version: str = betterproto.string_field(1)
     # The uuid of this client
     uuid: str = betterproto.string_field(2)
+    # Optional volume settings
+    volume_levels: List["MediaPlayerVolume"] = betterproto.message_field(3)
 
 
 @dataclass
@@ -57,7 +61,15 @@ class AudioData(betterproto.Message):
 
 
 @dataclass
-class MediaPlayerVolumeChange(betterproto.Message):
+class MediaPlayerCommand(betterproto.Message):
+    """A command paired with a player"""
+
+    id: "MediaPlayerId" = betterproto.enum_field(1)
+    command: "MediaPlayerCommandId" = betterproto.enum_field(2)
+
+
+@dataclass
+class MediaPlayerVolume(betterproto.Message):
     """A media player has changed volume"""
 
     player: "MediaPlayerId" = betterproto.enum_field(1)
@@ -65,7 +77,7 @@ class MediaPlayerVolumeChange(betterproto.Message):
 
 
 @dataclass
-class DeviceVolumeChange(betterproto.Message):
+class DeviceVolume(betterproto.Message):
     """The device volume has changed"""
 
     new_volume: float = betterproto.float_field(1)
@@ -78,12 +90,10 @@ class ClientEvent(betterproto.Message):
     media_player_state_change: "ClientEventMediaPlayerStateChange" = (
         betterproto.message_field(1, group="event")
     )
-    media_player_volume_change: "MediaPlayerVolumeChange" = betterproto.message_field(
+    media_player_volume_change: "MediaPlayerVolume" = betterproto.message_field(
         2, group="event"
     )
-    device_volume_change: "DeviceVolumeChange" = betterproto.message_field(
-        3, group="event"
-    )
+    device_volume_change: "DeviceVolume" = betterproto.message_field(3, group="event")
     log: "Log" = betterproto.message_field(4, group="event")
 
 
@@ -131,8 +141,8 @@ class ServerMessage(betterproto.Message):
     # Set whether the mic should be muted
     set_mic_mute: bool = betterproto.bool_field(2, group="msg")
     # Set the volume of the device
-    set_device_volume: "DeviceVolumeChange" = betterproto.message_field(3, group="msg")
+    set_device_volume: "DeviceVolume" = betterproto.message_field(3, group="msg")
     # Set the volume of a player
-    set_player_volume: "MediaPlayerVolumeChange" = betterproto.message_field(
-        4, group="msg"
-    )
+    set_player_volume: "MediaPlayerVolume" = betterproto.message_field(4, group="msg")
+    # Play, pause, stop, etc
+    command: "MediaPlayerCommand" = betterproto.message_field(5, group="msg")

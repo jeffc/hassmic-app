@@ -8,6 +8,7 @@ import {
   AudioData,
   ClientInfo,
   ClientMessage,
+  MediaPlayerId,
   Ping,
   ServerMessage,
 } from "./proto/hassmic";
@@ -81,6 +82,14 @@ class CheyenneServer {
           clientInfo: {
             uuid: uuid,
             version: APP_VERSION,
+            volume_levels: [
+              {
+                id: MediaPlayerId.ID_PLAYBACK,
+                new_volume: BackgroundTaskModule.getVolume(
+                  MediaPlayerId.ID_PLAYBACK
+                ),
+              },
+            ],
           },
         },
       })

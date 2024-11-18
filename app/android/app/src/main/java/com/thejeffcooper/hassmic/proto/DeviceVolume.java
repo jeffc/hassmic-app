@@ -10,14 +10,14 @@ package com.thejeffcooper.hassmic.proto;
  * The device volume has changed
  * </pre>
  *
- * Protobuf type {@code hassmic.DeviceVolumeChange}
+ * Protobuf type {@code hassmic.DeviceVolume}
  */
-public final class DeviceVolumeChange
-    extends com.google.protobuf.GeneratedMessageLite<DeviceVolumeChange, DeviceVolumeChange.Builder>
+public final class DeviceVolume
+    extends com.google.protobuf.GeneratedMessageLite<DeviceVolume, DeviceVolume.Builder>
     implements
-    // @@protoc_insertion_point(message_implements:hassmic.DeviceVolumeChange)
-    DeviceVolumeChangeOrBuilder {
-  private DeviceVolumeChange() {}
+    // @@protoc_insertion_point(message_implements:hassmic.DeviceVolume)
+    DeviceVolumeOrBuilder {
+  private DeviceVolume() {}
 
   public static final int NEW_VOLUME_FIELD_NUMBER = 1;
   private float newVolume_;
@@ -48,25 +48,25 @@ public final class DeviceVolumeChange
     newVolume_ = 0F;
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseFrom(
-      java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(java.nio.ByteBuffer data)
+      throws com.google.protobuf.InvalidProtocolBufferException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(DEFAULT_INSTANCE, data);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(
       java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(
         DEFAULT_INSTANCE, data, extensionRegistry);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(DEFAULT_INSTANCE, data);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -74,47 +74,47 @@ public final class DeviceVolumeChange
         DEFAULT_INSTANCE, data, extensionRegistry);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseFrom(byte[] data)
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(DEFAULT_INSTANCE, data);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(
       byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(
         DEFAULT_INSTANCE, data, extensionRegistry);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseFrom(
-      java.io.InputStream input) throws java.io.IOException {
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(java.io.InputStream input)
+      throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(DEFAULT_INSTANCE, input);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(
       java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(
         DEFAULT_INSTANCE, input, extensionRegistry);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseDelimitedFrom(
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseDelimitedFrom(
       java.io.InputStream input) throws java.io.IOException {
     return parseDelimitedFrom(DEFAULT_INSTANCE, input);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseDelimitedFrom(
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseDelimitedFrom(
       java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(
       com.google.protobuf.CodedInputStream input) throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(DEFAULT_INSTANCE, input);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -126,7 +126,7 @@ public final class DeviceVolumeChange
     return (Builder) DEFAULT_INSTANCE.createBuilder();
   }
 
-  public static Builder newBuilder(com.thejeffcooper.hassmic.proto.DeviceVolumeChange prototype) {
+  public static Builder newBuilder(com.thejeffcooper.hassmic.proto.DeviceVolume prototype) {
     return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
   }
 
@@ -137,15 +137,15 @@ public final class DeviceVolumeChange
    * The device volume has changed
    * </pre>
    *
-   * Protobuf type {@code hassmic.DeviceVolumeChange}
+   * Protobuf type {@code hassmic.DeviceVolume}
    */
   public static final class Builder
       extends com.google.protobuf.GeneratedMessageLite.Builder<
-          com.thejeffcooper.hassmic.proto.DeviceVolumeChange, Builder>
+          com.thejeffcooper.hassmic.proto.DeviceVolume, Builder>
       implements
-      // @@protoc_insertion_point(builder_implements:hassmic.DeviceVolumeChange)
-      com.thejeffcooper.hassmic.proto.DeviceVolumeChangeOrBuilder {
-    // Construct using com.thejeffcooper.hassmic.proto.DeviceVolumeChange.newBuilder()
+      // @@protoc_insertion_point(builder_implements:hassmic.DeviceVolume)
+      com.thejeffcooper.hassmic.proto.DeviceVolumeOrBuilder {
+    // Construct using com.thejeffcooper.hassmic.proto.DeviceVolume.newBuilder()
     private Builder() {
       super(DEFAULT_INSTANCE);
     }
@@ -183,7 +183,7 @@ public final class DeviceVolumeChange
       return this;
     }
 
-    // @@protoc_insertion_point(builder_scope:hassmic.DeviceVolumeChange)
+    // @@protoc_insertion_point(builder_scope:hassmic.DeviceVolume)
   }
 
   @java.lang.Override
@@ -195,7 +195,7 @@ public final class DeviceVolumeChange
     switch (method) {
       case NEW_MUTABLE_INSTANCE:
         {
-          return new com.thejeffcooper.hassmic.proto.DeviceVolumeChange();
+          return new com.thejeffcooper.hassmic.proto.DeviceVolume();
         }
       case NEW_BUILDER:
         {
@@ -218,15 +218,14 @@ public final class DeviceVolumeChange
         }
       case GET_PARSER:
         {
-          com.google.protobuf.Parser<com.thejeffcooper.hassmic.proto.DeviceVolumeChange> parser =
-              PARSER;
+          com.google.protobuf.Parser<com.thejeffcooper.hassmic.proto.DeviceVolume> parser = PARSER;
           if (parser == null) {
-            synchronized (com.thejeffcooper.hassmic.proto.DeviceVolumeChange.class) {
+            synchronized (com.thejeffcooper.hassmic.proto.DeviceVolume.class) {
               parser = PARSER;
               if (parser == null) {
                 parser =
-                    new DefaultInstanceBasedParser<
-                        com.thejeffcooper.hassmic.proto.DeviceVolumeChange>(DEFAULT_INSTANCE);
+                    new DefaultInstanceBasedParser<com.thejeffcooper.hassmic.proto.DeviceVolume>(
+                        DEFAULT_INSTANCE);
                 PARSER = parser;
               }
             }
@@ -245,25 +244,25 @@ public final class DeviceVolumeChange
     throw new UnsupportedOperationException();
   }
 
-  // @@protoc_insertion_point(class_scope:hassmic.DeviceVolumeChange)
-  private static final com.thejeffcooper.hassmic.proto.DeviceVolumeChange DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:hassmic.DeviceVolume)
+  private static final com.thejeffcooper.hassmic.proto.DeviceVolume DEFAULT_INSTANCE;
 
   static {
-    DeviceVolumeChange defaultInstance = new DeviceVolumeChange();
+    DeviceVolume defaultInstance = new DeviceVolume();
     // New instances are implicitly immutable so no need to make
     // immutable.
     DEFAULT_INSTANCE = defaultInstance;
     com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        DeviceVolumeChange.class, defaultInstance);
+        DeviceVolume.class, defaultInstance);
   }
 
-  public static com.thejeffcooper.hassmic.proto.DeviceVolumeChange getDefaultInstance() {
+  public static com.thejeffcooper.hassmic.proto.DeviceVolume getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static volatile com.google.protobuf.Parser<DeviceVolumeChange> PARSER;
+  private static volatile com.google.protobuf.Parser<DeviceVolume> PARSER;
 
-  public static com.google.protobuf.Parser<DeviceVolumeChange> parser() {
+  public static com.google.protobuf.Parser<DeviceVolume> parser() {
     return DEFAULT_INSTANCE.getParserForType();
   }
 }

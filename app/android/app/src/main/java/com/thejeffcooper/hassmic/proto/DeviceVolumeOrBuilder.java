@@ -3,9 +3,9 @@
 
 package com.thejeffcooper.hassmic.proto;
 
-public interface DeviceVolumeChangeOrBuilder
+public interface DeviceVolumeOrBuilder
     extends
-    // @@protoc_insertion_point(interface_extends:hassmic.DeviceVolumeChange)
+    // @@protoc_insertion_point(interface_extends:hassmic.DeviceVolume)
     com.google.protobuf.MessageLiteOrBuilder {
 
   /**

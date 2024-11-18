@@ -20,6 +20,7 @@ public final class ClientInfo
   private ClientInfo() {
     version_ = "";
     uuid_ = "";
+    volumeLevels_ = emptyProtobufList();
   }
 
   public static final int VERSION_FIELD_NUMBER = 1;
@@ -184,6 +185,176 @@ public final class ClientInfo
   private void setUuidBytes(com.google.protobuf.ByteString value) {
     checkByteStringIsUtf8(value);
     uuid_ = value.toStringUtf8();
+  }
+
+  public static final int VOLUME_LEVELS_FIELD_NUMBER = 3;
+  private com.google.protobuf.Internal.ProtobufList<
+          com.thejeffcooper.hassmic.proto.MediaPlayerVolume>
+      volumeLevels_;
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  @java.lang.Override
+  public java.util.List<com.thejeffcooper.hassmic.proto.MediaPlayerVolume> getVolumeLevelsList() {
+    return volumeLevels_;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  public java.util.List<? extends com.thejeffcooper.hassmic.proto.MediaPlayerVolumeOrBuilder>
+      getVolumeLevelsOrBuilderList() {
+    return volumeLevels_;
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  @java.lang.Override
+  public int getVolumeLevelsCount() {
+    return volumeLevels_.size();
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  @java.lang.Override
+  public com.thejeffcooper.hassmic.proto.MediaPlayerVolume getVolumeLevels(int index) {
+    return volumeLevels_.get(index);
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  public com.thejeffcooper.hassmic.proto.MediaPlayerVolumeOrBuilder getVolumeLevelsOrBuilder(
+      int index) {
+    return volumeLevels_.get(index);
+  }
+
+  private void ensureVolumeLevelsIsMutable() {
+    com.google.protobuf.Internal.ProtobufList<com.thejeffcooper.hassmic.proto.MediaPlayerVolume>
+        tmp = volumeLevels_;
+    if (!tmp.isModifiable()) {
+      volumeLevels_ = com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
+    }
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  private void setVolumeLevels(int index, com.thejeffcooper.hassmic.proto.MediaPlayerVolume value) {
+    value.getClass();
+    ensureVolumeLevelsIsMutable();
+    volumeLevels_.set(index, value);
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  private void addVolumeLevels(com.thejeffcooper.hassmic.proto.MediaPlayerVolume value) {
+    value.getClass();
+    ensureVolumeLevelsIsMutable();
+    volumeLevels_.add(value);
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  private void addVolumeLevels(int index, com.thejeffcooper.hassmic.proto.MediaPlayerVolume value) {
+    value.getClass();
+    ensureVolumeLevelsIsMutable();
+    volumeLevels_.add(index, value);
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  private void addAllVolumeLevels(
+      java.lang.Iterable<? extends com.thejeffcooper.hassmic.proto.MediaPlayerVolume> values) {
+    ensureVolumeLevelsIsMutable();
+    com.google.protobuf.AbstractMessageLite.addAll(values, volumeLevels_);
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  private void clearVolumeLevels() {
+    volumeLevels_ = emptyProtobufList();
+  }
+
+  /**
+   *
+   *
+   * <pre>
+   * Optional volume settings
+   * </pre>
+   *
+   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+   */
+  private void removeVolumeLevels(int index) {
+    ensureVolumeLevelsIsMutable();
+    volumeLevels_.remove(index);
   }
 
   public static com.thejeffcooper.hassmic.proto.ClientInfo parseFrom(java.nio.ByteBuffer data)
@@ -458,6 +629,189 @@ public final class ClientInfo
       return this;
     }
 
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.thejeffcooper.hassmic.proto.MediaPlayerVolume> getVolumeLevelsList() {
+      return java.util.Collections.unmodifiableList(instance.getVolumeLevelsList());
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    @java.lang.Override
+    public int getVolumeLevelsCount() {
+      return instance.getVolumeLevelsCount();
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    @java.lang.Override
+    public com.thejeffcooper.hassmic.proto.MediaPlayerVolume getVolumeLevels(int index) {
+      return instance.getVolumeLevels(index);
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    public Builder setVolumeLevels(
+        int index, com.thejeffcooper.hassmic.proto.MediaPlayerVolume value) {
+      copyOnWrite();
+      instance.setVolumeLevels(index, value);
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    public Builder setVolumeLevels(
+        int index, com.thejeffcooper.hassmic.proto.MediaPlayerVolume.Builder builderForValue) {
+      copyOnWrite();
+      instance.setVolumeLevels(index, builderForValue.build());
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    public Builder addVolumeLevels(com.thejeffcooper.hassmic.proto.MediaPlayerVolume value) {
+      copyOnWrite();
+      instance.addVolumeLevels(value);
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    public Builder addVolumeLevels(
+        int index, com.thejeffcooper.hassmic.proto.MediaPlayerVolume value) {
+      copyOnWrite();
+      instance.addVolumeLevels(index, value);
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    public Builder addVolumeLevels(
+        com.thejeffcooper.hassmic.proto.MediaPlayerVolume.Builder builderForValue) {
+      copyOnWrite();
+      instance.addVolumeLevels(builderForValue.build());
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    public Builder addVolumeLevels(
+        int index, com.thejeffcooper.hassmic.proto.MediaPlayerVolume.Builder builderForValue) {
+      copyOnWrite();
+      instance.addVolumeLevels(index, builderForValue.build());
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    public Builder addAllVolumeLevels(
+        java.lang.Iterable<? extends com.thejeffcooper.hassmic.proto.MediaPlayerVolume> values) {
+      copyOnWrite();
+      instance.addAllVolumeLevels(values);
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    public Builder clearVolumeLevels() {
+      copyOnWrite();
+      instance.clearVolumeLevels();
+      return this;
+    }
+
+    /**
+     *
+     *
+     * <pre>
+     * Optional volume settings
+     * </pre>
+     *
+     * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
+     */
+    public Builder removeVolumeLevels(int index) {
+      copyOnWrite();
+      instance.removeVolumeLevels(index);
+      return this;
+    }
+
     // @@protoc_insertion_point(builder_scope:hassmic.ClientInfo)
   }
 
@@ -480,11 +834,14 @@ public final class ClientInfo
         {
           java.lang.Object[] objects =
               new java.lang.Object[] {
-                "version_", "uuid_",
+                "version_",
+                "uuid_",
+                "volumeLevels_",
+                com.thejeffcooper.hassmic.proto.MediaPlayerVolume.class,
               };
           java.lang.String info =
-              "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\u0208\u0002\u0208"
-                  + "";
+              "\u0000\u0003\u0000\u0000\u0001\u0003\u0003\u0000\u0001\u0000\u0001\u0208\u0002\u0208"
+                  + "\u0003\u001b";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

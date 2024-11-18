@@ -77,6 +77,42 @@ class Player(MediaPlayerEntity):
             )
         )
 
+    async def async_media_play(self):
+        """Send a play command"""
+        _LOGGER.info("Playing")
+        self._hassmic.connection_manager.send_enqueue(
+            proto.ServerMessage(
+                command=proto.MediaPlayerCommand(
+                    id=proto.MediaPlayerId.ID_PLAYBACK,
+                    command=proto.MediaPlayerCommandId.COMMAND_PLAY,
+                )
+            )
+        )
+
+    async def async_media_pause(self):
+        """Send a pause command"""
+        _LOGGER.info("Pausing playback")
+        self._hassmic.connection_manager.send_enqueue(
+            proto.ServerMessage(
+                command=proto.MediaPlayerCommand(
+                    id=proto.MediaPlayerId.ID_PLAYBACK,
+                    command=proto.MediaPlayerCommandId.COMMAND_PAUSE,
+                )
+            )
+        )
+
+    async def async_media_stop(self):
+        """Send a stop command"""
+        _LOGGER.info("Stopping playback")
+        self._hassmic.connection_manager.send_enqueue(
+            proto.ServerMessage(
+                command=proto.MediaPlayerCommand(
+                    id=proto.MediaPlayerId.ID_PLAYBACK,
+                    command=proto.MediaPlayerCommandId.COMMAND_STOP,
+                )
+            )
+        )
+
     def set_volume_level(self, volume: float) -> None:
         """Set the volume level."""
         if volume is None:
@@ -87,7 +123,7 @@ class Player(MediaPlayerEntity):
 
         _LOGGER.info("Setting volume to %f", volume)
         sm = proto.ServerMessage(
-            set_player_volume=proto.MediaPlayerVolumeChange(
+            set_player_volume=proto.MediaPlayerVolume(
                 player=proto.MediaPlayerId.ID_PLAYBACK, new_volume=volume
             )
         )
@@ -114,7 +150,10 @@ class Player(MediaPlayerEntity):
                                 "Got unhandled media player state %s", val.new_state
                             )
 
-            case "media_player_volume_change" | "device_volume_change" | "log":
+            case "log":
+                pass  # ignore logs here
+
+            case "media_player_volume_change" | "device_volume_change":
                 _LOGGER.debug("Got %s, ignoring it", which)
 
             case _:
@@ -128,7 +167,12 @@ class Player(MediaPlayerEntity):
         if new_state:
             self.send_config()
 
+        self.available = new_state
+        self.schedule_update_ha_state()
+
     def send_config(self):
         """Send the various media player settings to the remote."""
-        _LOGGER.debug("send volume: %s", self._attr_volume_level)
-        self.set_volume_level(self._attr_volume_level)
+
+        if self._attr_volume_level is not None:
+            _LOGGER.debug("send volume: %s", self._attr_volume_level)
+            self.set_volume_level(self._attr_volume_level)

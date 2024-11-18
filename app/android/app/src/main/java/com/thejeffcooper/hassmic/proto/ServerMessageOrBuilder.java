@@ -67,7 +67,7 @@ public interface ServerMessageOrBuilder
    * Set the volume of the device
    * </pre>
    *
-   * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+   * <code>.hassmic.DeviceVolume set_device_volume = 3;</code>
    *
    * @return Whether the setDeviceVolume field is set.
    */
@@ -80,11 +80,11 @@ public interface ServerMessageOrBuilder
    * Set the volume of the device
    * </pre>
    *
-   * <code>.hassmic.DeviceVolumeChange set_device_volume = 3;</code>
+   * <code>.hassmic.DeviceVolume set_device_volume = 3;</code>
    *
    * @return The setDeviceVolume.
    */
-  com.thejeffcooper.hassmic.proto.DeviceVolumeChange getSetDeviceVolume();
+  com.thejeffcooper.hassmic.proto.DeviceVolume getSetDeviceVolume();
 
   /**
    *
@@ -93,7 +93,7 @@ public interface ServerMessageOrBuilder
    * Set the volume of a player
    * </pre>
    *
-   * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+   * <code>.hassmic.MediaPlayerVolume set_player_volume = 4;</code>
    *
    * @return Whether the setPlayerVolume field is set.
    */
@@ -106,11 +106,37 @@ public interface ServerMessageOrBuilder
    * Set the volume of a player
    * </pre>
    *
-   * <code>.hassmic.MediaPlayerVolumeChange set_player_volume = 4;</code>
+   * <code>.hassmic.MediaPlayerVolume set_player_volume = 4;</code>
    *
    * @return The setPlayerVolume.
    */
-  com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange getSetPlayerVolume();
+  com.thejeffcooper.hassmic.proto.MediaPlayerVolume getSetPlayerVolume();
+
+  /**
+   *
+   *
+   * <pre>
+   * Play, pause, stop, etc
+   * </pre>
+   *
+   * <code>.hassmic.MediaPlayerCommand command = 5;</code>
+   *
+   * @return Whether the command field is set.
+   */
+  boolean hasCommand();
+
+  /**
+   *
+   *
+   * <pre>
+   * Play, pause, stop, etc
+   * </pre>
+   *
+   * <code>.hassmic.MediaPlayerCommand command = 5;</code>
+   *
+   * @return The command.
+   */
+  com.thejeffcooper.hassmic.proto.MediaPlayerCommand getCommand();
 
   public com.thejeffcooper.hassmic.proto.ServerMessage.MsgCase getMsgCase();
 }

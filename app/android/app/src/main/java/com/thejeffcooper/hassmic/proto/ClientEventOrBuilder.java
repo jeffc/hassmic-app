@@ -23,32 +23,32 @@ public interface ClientEventOrBuilder
   com.thejeffcooper.hassmic.proto.ClientEvent.MediaPlayerStateChange getMediaPlayerStateChange();
 
   /**
-   * <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code>
+   * <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code>
    *
    * @return Whether the mediaPlayerVolumeChange field is set.
    */
   boolean hasMediaPlayerVolumeChange();
 
   /**
-   * <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code>
+   * <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code>
    *
    * @return The mediaPlayerVolumeChange.
    */
-  com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange getMediaPlayerVolumeChange();
+  com.thejeffcooper.hassmic.proto.MediaPlayerVolume getMediaPlayerVolumeChange();
 
   /**
-   * <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code>
+   * <code>.hassmic.DeviceVolume device_volume_change = 3;</code>
    *
    * @return Whether the deviceVolumeChange field is set.
    */
   boolean hasDeviceVolumeChange();
 
   /**
-   * <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code>
+   * <code>.hassmic.DeviceVolume device_volume_change = 3;</code>
    *
    * @return The deviceVolumeChange.
    */
-  com.thejeffcooper.hassmic.proto.DeviceVolumeChange getDeviceVolumeChange();
+  com.thejeffcooper.hassmic.proto.DeviceVolume getDeviceVolumeChange();
 
   /**
    * <code>.hassmic.Log log = 4;</code>

@@ -585,38 +585,37 @@ public final class ClientEvent
 
   public static final int MEDIA_PLAYER_VOLUME_CHANGE_FIELD_NUMBER = 2;
 
-  /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
+  /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
   @java.lang.Override
   public boolean hasMediaPlayerVolumeChange() {
     return eventCase_ == 2;
   }
 
-  /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
+  /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
   @java.lang.Override
-  public com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange getMediaPlayerVolumeChange() {
+  public com.thejeffcooper.hassmic.proto.MediaPlayerVolume getMediaPlayerVolumeChange() {
     if (eventCase_ == 2) {
-      return (com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange) event_;
+      return (com.thejeffcooper.hassmic.proto.MediaPlayerVolume) event_;
     }
-    return com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.getDefaultInstance();
+    return com.thejeffcooper.hassmic.proto.MediaPlayerVolume.getDefaultInstance();
   }
 
-  /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
-  private void setMediaPlayerVolumeChange(
-      com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange value) {
+  /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
+  private void setMediaPlayerVolumeChange(com.thejeffcooper.hassmic.proto.MediaPlayerVolume value) {
     value.getClass();
     event_ = value;
     eventCase_ = 2;
   }
 
-  /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
+  /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
   private void mergeMediaPlayerVolumeChange(
-      com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange value) {
+      com.thejeffcooper.hassmic.proto.MediaPlayerVolume value) {
     value.getClass();
     if (eventCase_ == 2
-        && event_ != com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.getDefaultInstance()) {
+        && event_ != com.thejeffcooper.hassmic.proto.MediaPlayerVolume.getDefaultInstance()) {
       event_ =
-          com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.newBuilder(
-                  (com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange) event_)
+          com.thejeffcooper.hassmic.proto.MediaPlayerVolume.newBuilder(
+                  (com.thejeffcooper.hassmic.proto.MediaPlayerVolume) event_)
               .mergeFrom(value)
               .buildPartial();
     } else {
@@ -625,7 +624,7 @@ public final class ClientEvent
     eventCase_ = 2;
   }
 
-  /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
+  /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
   private void clearMediaPlayerVolumeChange() {
     if (eventCase_ == 2) {
       eventCase_ = 0;
@@ -635,36 +634,36 @@ public final class ClientEvent
 
   public static final int DEVICE_VOLUME_CHANGE_FIELD_NUMBER = 3;
 
-  /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
+  /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
   @java.lang.Override
   public boolean hasDeviceVolumeChange() {
     return eventCase_ == 3;
   }
 
-  /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
+  /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
   @java.lang.Override
-  public com.thejeffcooper.hassmic.proto.DeviceVolumeChange getDeviceVolumeChange() {
+  public com.thejeffcooper.hassmic.proto.DeviceVolume getDeviceVolumeChange() {
     if (eventCase_ == 3) {
-      return (com.thejeffcooper.hassmic.proto.DeviceVolumeChange) event_;
+      return (com.thejeffcooper.hassmic.proto.DeviceVolume) event_;
     }
-    return com.thejeffcooper.hassmic.proto.DeviceVolumeChange.getDefaultInstance();
+    return com.thejeffcooper.hassmic.proto.DeviceVolume.getDefaultInstance();
   }
 
-  /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
-  private void setDeviceVolumeChange(com.thejeffcooper.hassmic.proto.DeviceVolumeChange value) {
+  /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
+  private void setDeviceVolumeChange(com.thejeffcooper.hassmic.proto.DeviceVolume value) {
     value.getClass();
     event_ = value;
     eventCase_ = 3;
   }
 
-  /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
-  private void mergeDeviceVolumeChange(com.thejeffcooper.hassmic.proto.DeviceVolumeChange value) {
+  /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
+  private void mergeDeviceVolumeChange(com.thejeffcooper.hassmic.proto.DeviceVolume value) {
     value.getClass();
     if (eventCase_ == 3
-        && event_ != com.thejeffcooper.hassmic.proto.DeviceVolumeChange.getDefaultInstance()) {
+        && event_ != com.thejeffcooper.hassmic.proto.DeviceVolume.getDefaultInstance()) {
       event_ =
-          com.thejeffcooper.hassmic.proto.DeviceVolumeChange.newBuilder(
-                  (com.thejeffcooper.hassmic.proto.DeviceVolumeChange) event_)
+          com.thejeffcooper.hassmic.proto.DeviceVolume.newBuilder(
+                  (com.thejeffcooper.hassmic.proto.DeviceVolume) event_)
               .mergeFrom(value)
               .buildPartial();
     } else {
@@ -673,7 +672,7 @@ public final class ClientEvent
     eventCase_ = 3;
   }
 
-  /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
+  /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
   private void clearDeviceVolumeChange() {
     if (eventCase_ == 3) {
       eventCase_ = 0;
@@ -886,85 +885,84 @@ public final class ClientEvent
       return this;
     }
 
-    /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
+    /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
     @java.lang.Override
     public boolean hasMediaPlayerVolumeChange() {
       return instance.hasMediaPlayerVolumeChange();
     }
 
-    /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
+    /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
     @java.lang.Override
-    public com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange getMediaPlayerVolumeChange() {
+    public com.thejeffcooper.hassmic.proto.MediaPlayerVolume getMediaPlayerVolumeChange() {
       return instance.getMediaPlayerVolumeChange();
     }
 
-    /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
+    /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
     public Builder setMediaPlayerVolumeChange(
-        com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange value) {
+        com.thejeffcooper.hassmic.proto.MediaPlayerVolume value) {
       copyOnWrite();
       instance.setMediaPlayerVolumeChange(value);
       return this;
     }
 
-    /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
+    /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
     public Builder setMediaPlayerVolumeChange(
-        com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.Builder builderForValue) {
+        com.thejeffcooper.hassmic.proto.MediaPlayerVolume.Builder builderForValue) {
       copyOnWrite();
       instance.setMediaPlayerVolumeChange(builderForValue.build());
       return this;
     }
 
-    /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
+    /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
     public Builder mergeMediaPlayerVolumeChange(
-        com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange value) {
+        com.thejeffcooper.hassmic.proto.MediaPlayerVolume value) {
       copyOnWrite();
       instance.mergeMediaPlayerVolumeChange(value);
       return this;
     }
 
-    /** <code>.hassmic.MediaPlayerVolumeChange media_player_volume_change = 2;</code> */
+    /** <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code> */
     public Builder clearMediaPlayerVolumeChange() {
       copyOnWrite();
       instance.clearMediaPlayerVolumeChange();
       return this;
     }
 
-    /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
+    /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
     @java.lang.Override
     public boolean hasDeviceVolumeChange() {
       return instance.hasDeviceVolumeChange();
     }
 
-    /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
+    /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
     @java.lang.Override
-    public com.thejeffcooper.hassmic.proto.DeviceVolumeChange getDeviceVolumeChange() {
+    public com.thejeffcooper.hassmic.proto.DeviceVolume getDeviceVolumeChange() {
       return instance.getDeviceVolumeChange();
     }
 
-    /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
-    public Builder setDeviceVolumeChange(com.thejeffcooper.hassmic.proto.DeviceVolumeChange value) {
+    /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
+    public Builder setDeviceVolumeChange(com.thejeffcooper.hassmic.proto.DeviceVolume value) {
       copyOnWrite();
       instance.setDeviceVolumeChange(value);
       return this;
     }
 
-    /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
+    /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
     public Builder setDeviceVolumeChange(
-        com.thejeffcooper.hassmic.proto.DeviceVolumeChange.Builder builderForValue) {
+        com.thejeffcooper.hassmic.proto.DeviceVolume.Builder builderForValue) {
       copyOnWrite();
       instance.setDeviceVolumeChange(builderForValue.build());
       return this;
     }
 
-    /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
-    public Builder mergeDeviceVolumeChange(
-        com.thejeffcooper.hassmic.proto.DeviceVolumeChange value) {
+    /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
+    public Builder mergeDeviceVolumeChange(com.thejeffcooper.hassmic.proto.DeviceVolume value) {
       copyOnWrite();
       instance.mergeDeviceVolumeChange(value);
       return this;
     }
 
-    /** <code>.hassmic.DeviceVolumeChange device_volume_change = 3;</code> */
+    /** <code>.hassmic.DeviceVolume device_volume_change = 3;</code> */
     public Builder clearDeviceVolumeChange() {
       copyOnWrite();
       instance.clearDeviceVolumeChange();
@@ -1036,8 +1034,8 @@ public final class ClientEvent
                 "event_",
                 "eventCase_",
                 com.thejeffcooper.hassmic.proto.ClientEvent.MediaPlayerStateChange.class,
-                com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.class,
-                com.thejeffcooper.hassmic.proto.DeviceVolumeChange.class,
+                com.thejeffcooper.hassmic.proto.MediaPlayerVolume.class,
+                com.thejeffcooper.hassmic.proto.DeviceVolume.class,
                 com.thejeffcooper.hassmic.proto.Log.class,
               };
           java.lang.String info =

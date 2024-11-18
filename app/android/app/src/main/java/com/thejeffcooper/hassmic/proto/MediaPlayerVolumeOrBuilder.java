@@ -3,9 +3,9 @@
 
 package com.thejeffcooper.hassmic.proto;
 
-public interface MediaPlayerVolumeChangeOrBuilder
+public interface MediaPlayerVolumeOrBuilder
     extends
-    // @@protoc_insertion_point(interface_extends:hassmic.MediaPlayerVolumeChange)
+    // @@protoc_insertion_point(interface_extends:hassmic.MediaPlayerVolume)
     com.google.protobuf.MessageLiteOrBuilder {
 
   /**

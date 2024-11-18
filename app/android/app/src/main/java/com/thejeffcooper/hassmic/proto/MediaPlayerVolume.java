@@ -10,15 +10,14 @@ package com.thejeffcooper.hassmic.proto;
  * A media player has changed volume
  * </pre>
  *
- * Protobuf type {@code hassmic.MediaPlayerVolumeChange}
+ * Protobuf type {@code hassmic.MediaPlayerVolume}
  */
-public final class MediaPlayerVolumeChange
-    extends com.google.protobuf.GeneratedMessageLite<
-        MediaPlayerVolumeChange, MediaPlayerVolumeChange.Builder>
+public final class MediaPlayerVolume
+    extends com.google.protobuf.GeneratedMessageLite<MediaPlayerVolume, MediaPlayerVolume.Builder>
     implements
-    // @@protoc_insertion_point(message_implements:hassmic.MediaPlayerVolumeChange)
-    MediaPlayerVolumeChangeOrBuilder {
-  private MediaPlayerVolumeChange() {}
+    // @@protoc_insertion_point(message_implements:hassmic.MediaPlayerVolume)
+    MediaPlayerVolumeOrBuilder {
+  private MediaPlayerVolume() {}
 
   public static final int PLAYER_FIELD_NUMBER = 1;
   private int player_;
@@ -98,25 +97,25 @@ public final class MediaPlayerVolumeChange
     newVolume_ = 0F;
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseFrom(
       java.nio.ByteBuffer data) throws com.google.protobuf.InvalidProtocolBufferException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(DEFAULT_INSTANCE, data);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseFrom(
       java.nio.ByteBuffer data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(
         DEFAULT_INSTANCE, data, extensionRegistry);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(DEFAULT_INSTANCE, data);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -124,47 +123,47 @@ public final class MediaPlayerVolumeChange
         DEFAULT_INSTANCE, data, extensionRegistry);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseFrom(byte[] data)
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(DEFAULT_INSTANCE, data);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseFrom(
       byte[] data, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(
         DEFAULT_INSTANCE, data, extensionRegistry);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseFrom(
       java.io.InputStream input) throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(DEFAULT_INSTANCE, input);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseFrom(
       java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(
         DEFAULT_INSTANCE, input, extensionRegistry);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseDelimitedFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseDelimitedFrom(
       java.io.InputStream input) throws java.io.IOException {
     return parseDelimitedFrom(DEFAULT_INSTANCE, input);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseDelimitedFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseDelimitedFrom(
       java.io.InputStream input, com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseFrom(
       com.google.protobuf.CodedInputStream input) throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageLite.parseFrom(DEFAULT_INSTANCE, input);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange parseFrom(
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -176,8 +175,7 @@ public final class MediaPlayerVolumeChange
     return (Builder) DEFAULT_INSTANCE.createBuilder();
   }
 
-  public static Builder newBuilder(
-      com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange prototype) {
+  public static Builder newBuilder(com.thejeffcooper.hassmic.proto.MediaPlayerVolume prototype) {
     return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
   }
 
@@ -188,15 +186,15 @@ public final class MediaPlayerVolumeChange
    * A media player has changed volume
    * </pre>
    *
-   * Protobuf type {@code hassmic.MediaPlayerVolumeChange}
+   * Protobuf type {@code hassmic.MediaPlayerVolume}
    */
   public static final class Builder
       extends com.google.protobuf.GeneratedMessageLite.Builder<
-          com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange, Builder>
+          com.thejeffcooper.hassmic.proto.MediaPlayerVolume, Builder>
       implements
-      // @@protoc_insertion_point(builder_implements:hassmic.MediaPlayerVolumeChange)
-      com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChangeOrBuilder {
-    // Construct using com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.newBuilder()
+      // @@protoc_insertion_point(builder_implements:hassmic.MediaPlayerVolume)
+      com.thejeffcooper.hassmic.proto.MediaPlayerVolumeOrBuilder {
+    // Construct using com.thejeffcooper.hassmic.proto.MediaPlayerVolume.newBuilder()
     private Builder() {
       super(DEFAULT_INSTANCE);
     }
@@ -289,7 +287,7 @@ public final class MediaPlayerVolumeChange
       return this;
     }
 
-    // @@protoc_insertion_point(builder_scope:hassmic.MediaPlayerVolumeChange)
+    // @@protoc_insertion_point(builder_scope:hassmic.MediaPlayerVolume)
   }
 
   @java.lang.Override
@@ -301,7 +299,7 @@ public final class MediaPlayerVolumeChange
     switch (method) {
       case NEW_MUTABLE_INSTANCE:
         {
-          return new com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange();
+          return new com.thejeffcooper.hassmic.proto.MediaPlayerVolume();
         }
       case NEW_BUILDER:
         {
@@ -325,15 +323,15 @@ public final class MediaPlayerVolumeChange
         }
       case GET_PARSER:
         {
-          com.google.protobuf.Parser<com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange>
-              parser = PARSER;
+          com.google.protobuf.Parser<com.thejeffcooper.hassmic.proto.MediaPlayerVolume> parser =
+              PARSER;
           if (parser == null) {
-            synchronized (com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange.class) {
+            synchronized (com.thejeffcooper.hassmic.proto.MediaPlayerVolume.class) {
               parser = PARSER;
               if (parser == null) {
                 parser =
                     new DefaultInstanceBasedParser<
-                        com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange>(DEFAULT_INSTANCE);
+                        com.thejeffcooper.hassmic.proto.MediaPlayerVolume>(DEFAULT_INSTANCE);
                 PARSER = parser;
               }
             }
@@ -352,25 +350,25 @@ public final class MediaPlayerVolumeChange
     throw new UnsupportedOperationException();
   }
 
-  // @@protoc_insertion_point(class_scope:hassmic.MediaPlayerVolumeChange)
-  private static final com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:hassmic.MediaPlayerVolume)
+  private static final com.thejeffcooper.hassmic.proto.MediaPlayerVolume DEFAULT_INSTANCE;
 
   static {
-    MediaPlayerVolumeChange defaultInstance = new MediaPlayerVolumeChange();
+    MediaPlayerVolume defaultInstance = new MediaPlayerVolume();
     // New instances are implicitly immutable so no need to make
     // immutable.
     DEFAULT_INSTANCE = defaultInstance;
     com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
-        MediaPlayerVolumeChange.class, defaultInstance);
+        MediaPlayerVolume.class, defaultInstance);
   }
 
-  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolumeChange getDefaultInstance() {
+  public static com.thejeffcooper.hassmic.proto.MediaPlayerVolume getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static volatile com.google.protobuf.Parser<MediaPlayerVolumeChange> PARSER;
+  private static volatile com.google.protobuf.Parser<MediaPlayerVolume> PARSER;
 
-  public static com.google.protobuf.Parser<MediaPlayerVolumeChange> parser() {
+  public static com.google.protobuf.Parser<MediaPlayerVolume> parser() {
     return DEFAULT_INSTANCE.getParserForType();
   }
 }
