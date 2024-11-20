@@ -26,7 +26,6 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 import com.facebook.react.HeadlessJsTaskService;
-import com.facebook.react.bridge.ReactMethod;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.thejeffcooper.hassmic.proto.*;
 
@@ -57,10 +56,16 @@ public class BackgroundTaskService extends Service {
     }
   }
 
-  @ReactMethod
-  public float getVolume(MediaPlayerId id) {
-    Player p = enumToPlayer(id);
-    return p.getVolume();
+  // android docs require setting volume based on a log scale.
+  // This function scales a linear-scaled volume (between 0 and 1 inclusive) to
+  // a log-scaled volume
+  private float scaleVolume(float linear) {
+    return 1.0f - (float) (Math.log(101 - 100 * linear) / Math.log(101));
+  }
+
+  // This function reverses scaleVolume()
+  private float unscaleVolume(float log) {
+    return (101f / 100f) * ((float) Math.pow(101, -log) - 1.0f);
   }
 
   @Override
@@ -184,7 +189,9 @@ public class BackgroundTaskService extends Service {
                         // note: this might fire twice (once for each player)
                       case Player.EVENT_DEVICE_VOLUME_CHANGED:
                         DeviceVolume d =
-                            DeviceVolume.newBuilder().setVolume(p.getDeviceVolume()).build();
+                            DeviceVolume.newBuilder()
+                                .setVolume(unscaleVolume(p.getDeviceVolume()))
+                                .build();
                         protob.setDeviceVolumeChange(d);
                         break;
 
@@ -208,20 +215,6 @@ public class BackgroundTaskService extends Service {
               };
           audioExo.addListener(audioEventListener);
           announceExo.addListener(audioEventListener);
-
-          // Get initial state and pass it back to javascript
-          ClientInfo.Builder cib = ClientInfo.newBuilder();
-          cib.addVolumeLevels(
-              MediaPlayerVolume.newBuilder()
-                  .setPlayer(MediaPlayerId.ID_PLAYBACK)
-                  .setVolume(audioExo.getVolume())
-                  .build());
-          cib.addVolumeLevels(
-              MediaPlayerVolume.newBuilder()
-                  .setPlayer(MediaPlayerId.ID_ANNOUNCE)
-                  .setVolume(announceExo.getVolume())
-                  .build());
-          BackgroundTaskModule.SendPartialClientInfo(getApplicationContext(), cib.build());
         }
       };
 
@@ -321,7 +314,7 @@ public class BackgroundTaskService extends Service {
         }
         if (0.0 <= newVolume && newVolume <= 1.0) {
           // per android docs, use a log scale for volume
-          float logVol = 1.0f - (float) (Math.log(101 - 100 * newVolume) / Math.log(101));
+          float logVol = scaleVolume(newVolume);
           Log.d(
               "HassmicBackgroundTaskService",
               "Setting device volume to " + newVolume + " (=>" + logVol + ")");

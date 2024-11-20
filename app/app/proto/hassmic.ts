@@ -11,6 +11,25 @@ import type { PartialMessage } from "@protobuf-ts/runtime";
 import { reflectionMergePartial } from "@protobuf-ts/runtime";
 import { MessageType } from "@protobuf-ts/runtime";
 /**
+ * Information saved and loaded between runs of the hassmic app
+ *
+ * @generated from protobuf message hassmic.SavedSettings
+ */
+export interface SavedSettings {
+    /**
+     * The last volume of the `announce` player
+     *
+     * @generated from protobuf field: float announce_volume = 1;
+     */
+    announceVolume: number;
+    /**
+     * The last volume of the `playback` player
+     *
+     * @generated from protobuf field: float playback_volume = 2;
+     */
+    playbackVolume: number;
+}
+/**
  * Information that the client sends about itself
  *
  * @generated from protobuf message hassmic.ClientInfo
@@ -28,12 +47,6 @@ export interface ClientInfo {
      * @generated from protobuf field: string uuid = 2;
      */
     uuid: string;
-    /**
-     * Volume settings
-     *
-     * @generated from protobuf field: repeated hassmic.MediaPlayerVolume volume_levels = 3;
-     */
-    volumeLevels: MediaPlayerVolume[];
 }
 /**
  * A ping message
@@ -189,6 +202,12 @@ export interface ClientMessage {
          */
         clientEvent: ClientEvent;
     } | {
+        oneofKind: "savedSettings";
+        /**
+         * @generated from protobuf field: hassmic.SavedSettings saved_settings = 5;
+         */
+        savedSettings: SavedSettings;
+    } | {
         oneofKind: undefined;
     };
 }
@@ -336,19 +355,72 @@ export enum MediaPlayerId {
     ID_ANNOUNCE = 2
 }
 // @generated message type with reflection information, may provide speed optimized methods
+class SavedSettings$Type extends MessageType<SavedSettings> {
+    constructor() {
+        super("hassmic.SavedSettings", [
+            { no: 1, name: "announce_volume", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ },
+            { no: 2, name: "playback_volume", kind: "scalar", T: 2 /*ScalarType.FLOAT*/ }
+        ]);
+    }
+    create(value?: PartialMessage<SavedSettings>): SavedSettings {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.announceVolume = 0;
+        message.playbackVolume = 0;
+        if (value !== undefined)
+            reflectionMergePartial<SavedSettings>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: SavedSettings): SavedSettings {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* float announce_volume */ 1:
+                    message.announceVolume = reader.float();
+                    break;
+                case /* float playback_volume */ 2:
+                    message.playbackVolume = reader.float();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: SavedSettings, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* float announce_volume = 1; */
+        if (message.announceVolume !== 0)
+            writer.tag(1, WireType.Bit32).float(message.announceVolume);
+        /* float playback_volume = 2; */
+        if (message.playbackVolume !== 0)
+            writer.tag(2, WireType.Bit32).float(message.playbackVolume);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message hassmic.SavedSettings
+ */
+export const SavedSettings = new SavedSettings$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class ClientInfo$Type extends MessageType<ClientInfo> {
     constructor() {
         super("hassmic.ClientInfo", [
             { no: 1, name: "version", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "uuid", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "volume_levels", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => MediaPlayerVolume }
+            { no: 2, name: "uuid", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<ClientInfo>): ClientInfo {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.version = "";
         message.uuid = "";
-        message.volumeLevels = [];
         if (value !== undefined)
             reflectionMergePartial<ClientInfo>(this, message, value);
         return message;
@@ -363,9 +435,6 @@ class ClientInfo$Type extends MessageType<ClientInfo> {
                     break;
                 case /* string uuid */ 2:
                     message.uuid = reader.string();
-                    break;
-                case /* repeated hassmic.MediaPlayerVolume volume_levels */ 3:
-                    message.volumeLevels.push(MediaPlayerVolume.internalBinaryRead(reader, reader.uint32(), options));
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -385,9 +454,6 @@ class ClientInfo$Type extends MessageType<ClientInfo> {
         /* string uuid = 2; */
         if (message.uuid !== "")
             writer.tag(2, WireType.LengthDelimited).string(message.uuid);
-        /* repeated hassmic.MediaPlayerVolume volume_levels = 3; */
-        for (let i = 0; i < message.volumeLevels.length; i++)
-            MediaPlayerVolume.internalBinaryWrite(message.volumeLevels[i], writer.tag(3, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -816,7 +882,8 @@ class ClientMessage$Type extends MessageType<ClientMessage> {
             { no: 1, name: "ping", kind: "message", oneof: "msg", T: () => Ping },
             { no: 2, name: "client_info", kind: "message", oneof: "msg", T: () => ClientInfo },
             { no: 3, name: "audio_data", kind: "message", oneof: "msg", T: () => AudioData },
-            { no: 4, name: "client_event", kind: "message", oneof: "msg", T: () => ClientEvent }
+            { no: 4, name: "client_event", kind: "message", oneof: "msg", T: () => ClientEvent },
+            { no: 5, name: "saved_settings", kind: "message", oneof: "msg", T: () => SavedSettings }
         ]);
     }
     create(value?: PartialMessage<ClientMessage>): ClientMessage {
@@ -855,6 +922,12 @@ class ClientMessage$Type extends MessageType<ClientMessage> {
                         clientEvent: ClientEvent.internalBinaryRead(reader, reader.uint32(), options, (message.msg as any).clientEvent)
                     };
                     break;
+                case /* hassmic.SavedSettings saved_settings */ 5:
+                    message.msg = {
+                        oneofKind: "savedSettings",
+                        savedSettings: SavedSettings.internalBinaryRead(reader, reader.uint32(), options, (message.msg as any).savedSettings)
+                    };
+                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -879,6 +952,9 @@ class ClientMessage$Type extends MessageType<ClientMessage> {
         /* hassmic.ClientEvent client_event = 4; */
         if (message.msg.oneofKind === "clientEvent")
             ClientEvent.internalBinaryWrite(message.msg.clientEvent, writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+        /* hassmic.SavedSettings saved_settings = 5; */
+        if (message.msg.oneofKind === "savedSettings")
+            SavedSettings.internalBinaryWrite(message.msg.savedSettings, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

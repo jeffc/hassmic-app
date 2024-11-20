@@ -5,6 +5,14 @@ package hassmic;
 option java_package = "com.thejeffcooper.hassmic.proto";
 option java_multiple_files = true;
 
+// Information saved and loaded between runs of the hassmic app
+message SavedSettings {
+  // The last volume of the `announce` player
+  float announce_volume = 1;
+
+  // The last volume of the `playback` player
+  float playback_volume = 2;
+}
 
 // Information that the client sends about itself
 message ClientInfo {
@@ -12,8 +20,6 @@ message ClientInfo {
   string version = 1;
   // The uuid of this client
   string uuid = 2;
-  // Volume settings
-  repeated MediaPlayerVolume volume_levels = 3;
 }
 
 // A ping message
@@ -76,7 +82,6 @@ message MediaPlayerStateChange {
 
 // Tell the server that a client event occurred
 message ClientEvent {
-
   oneof event {
     MediaPlayerStateChange media_player_state_change = 1;
     MediaPlayerVolume media_player_volume_change = 2;
@@ -98,6 +103,7 @@ message ClientMessage {
     ClientInfo client_info = 2;
     AudioData audio_data = 3;
     ClientEvent client_event = 4;
+    SavedSettings saved_settings = 5;
   }
 }
 

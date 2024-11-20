@@ -149,12 +149,30 @@ class Player(MediaPlayerEntity):
                             _LOGGER.warning(
                                 "Got unhandled media player state %s", val.new_state
                             )
+            case "saved_settings":
+                if val.playback_volume is not None:
+                    if self._attr_volume_level is None:
+                        _LOGGER.debug(
+                            "Setting playback volume to %d", val.playback_volume
+                        )
+                        self._attr_volume_level = val.playback_volume
+                        self.schedule_update_ha_state()
+                    else:
+                        _LOGGER.warning(
+                            "Got saved settings from client, but volume is already set!"
+                        )
+                else:
+                    _LOGGER.warning(
+                        "Got saved settings from client, but no playback_volume is specified!"
+                    )
 
-            case "log":
-                pass  # ignore logs here
+            case "media_player_volume_change":
+                if val.player == proto.MediaPlayerId.ID_PLAYBACK:
+                    self._attr_volume_level = val.volume
+                    self.schedule_update_ha_state()
 
-            case "media_player_volume_change" | "device_volume_change":
-                _LOGGER.debug("Got %s, ignoring it", which)
+            case "log" | "device_volume_change":
+                pass  # ignore these cases
 
             case _:
                 _LOGGER.warning("Got unhandled client event type %s", which)
@@ -164,7 +182,7 @@ class Player(MediaPlayerEntity):
     def handle_connection_state_change(self, new_state: bool):
         """If the remote device just reconnected, remind it what settings it should have."""
         _LOGGER.debug("Connection state change")
-        if new_state:
+        if new_state and self._attr_volume_level is not None:
             self.send_config()
 
         self.available = new_state
@@ -176,3 +194,6 @@ class Player(MediaPlayerEntity):
         if self._attr_volume_level is not None:
             _LOGGER.debug("send volume: %s", self._attr_volume_level)
             self.set_volume_level(self._attr_volume_level)
+
+
+# vim: set ts=4 sw=4:

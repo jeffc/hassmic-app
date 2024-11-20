@@ -27,6 +27,7 @@ public final class ClientMessage
     CLIENT_INFO(2),
     AUDIO_DATA(3),
     CLIENT_EVENT(4),
+    SAVED_SETTINGS(5),
     MSG_NOT_SET(0);
     private final int value;
 
@@ -52,6 +53,8 @@ public final class ClientMessage
           return AUDIO_DATA;
         case 4:
           return CLIENT_EVENT;
+        case 5:
+          return SAVED_SETTINGS;
         case 0:
           return MSG_NOT_SET;
         default:
@@ -257,6 +260,54 @@ public final class ClientMessage
   /** <code>.hassmic.ClientEvent client_event = 4;</code> */
   private void clearClientEvent() {
     if (msgCase_ == 4) {
+      msgCase_ = 0;
+      msg_ = null;
+    }
+  }
+
+  public static final int SAVED_SETTINGS_FIELD_NUMBER = 5;
+
+  /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+  @java.lang.Override
+  public boolean hasSavedSettings() {
+    return msgCase_ == 5;
+  }
+
+  /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+  @java.lang.Override
+  public com.thejeffcooper.hassmic.proto.SavedSettings getSavedSettings() {
+    if (msgCase_ == 5) {
+      return (com.thejeffcooper.hassmic.proto.SavedSettings) msg_;
+    }
+    return com.thejeffcooper.hassmic.proto.SavedSettings.getDefaultInstance();
+  }
+
+  /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+  private void setSavedSettings(com.thejeffcooper.hassmic.proto.SavedSettings value) {
+    value.getClass();
+    msg_ = value;
+    msgCase_ = 5;
+  }
+
+  /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+  private void mergeSavedSettings(com.thejeffcooper.hassmic.proto.SavedSettings value) {
+    value.getClass();
+    if (msgCase_ == 5
+        && msg_ != com.thejeffcooper.hassmic.proto.SavedSettings.getDefaultInstance()) {
+      msg_ =
+          com.thejeffcooper.hassmic.proto.SavedSettings.newBuilder(
+                  (com.thejeffcooper.hassmic.proto.SavedSettings) msg_)
+              .mergeFrom(value)
+              .buildPartial();
+    } else {
+      msg_ = value;
+    }
+    msgCase_ = 5;
+  }
+
+  /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+  private void clearSavedSettings() {
+    if (msgCase_ == 5) {
       msgCase_ = 0;
       msg_ = null;
     }
@@ -537,6 +588,47 @@ public final class ClientMessage
       return this;
     }
 
+    /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+    @java.lang.Override
+    public boolean hasSavedSettings() {
+      return instance.hasSavedSettings();
+    }
+
+    /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+    @java.lang.Override
+    public com.thejeffcooper.hassmic.proto.SavedSettings getSavedSettings() {
+      return instance.getSavedSettings();
+    }
+
+    /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+    public Builder setSavedSettings(com.thejeffcooper.hassmic.proto.SavedSettings value) {
+      copyOnWrite();
+      instance.setSavedSettings(value);
+      return this;
+    }
+
+    /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+    public Builder setSavedSettings(
+        com.thejeffcooper.hassmic.proto.SavedSettings.Builder builderForValue) {
+      copyOnWrite();
+      instance.setSavedSettings(builderForValue.build());
+      return this;
+    }
+
+    /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+    public Builder mergeSavedSettings(com.thejeffcooper.hassmic.proto.SavedSettings value) {
+      copyOnWrite();
+      instance.mergeSavedSettings(value);
+      return this;
+    }
+
+    /** <code>.hassmic.SavedSettings saved_settings = 5;</code> */
+    public Builder clearSavedSettings() {
+      copyOnWrite();
+      instance.clearSavedSettings();
+      return this;
+    }
+
     // @@protoc_insertion_point(builder_scope:hassmic.ClientMessage)
   }
 
@@ -565,10 +657,11 @@ public final class ClientMessage
                 com.thejeffcooper.hassmic.proto.ClientInfo.class,
                 com.thejeffcooper.hassmic.proto.AudioData.class,
                 com.thejeffcooper.hassmic.proto.ClientEvent.class,
+                com.thejeffcooper.hassmic.proto.SavedSettings.class,
               };
           java.lang.String info =
-              "\u0000\u0004\u0001\u0000\u0001\u0004\u0004\u0000\u0000\u0000\u0001<\u0000\u0002<"
-                  + "\u0000\u0003<\u0000\u0004<\u0000";
+              "\u0000\u0005\u0001\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001<\u0000\u0002<"
+                  + "\u0000\u0003<\u0000\u0004<\u0000\u0005<\u0000";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

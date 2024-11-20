@@ -7,6 +7,7 @@ import { UUIDManager } from "./util";
 import {
   AudioData,
   ClientInfo,
+  ClientEvent,
   ClientMessage,
   MediaPlayerId,
   Ping,
@@ -39,6 +40,19 @@ class CheyenneServer {
   private _setConnectionState = (s: boolean) => {
     this._connectionStateCallback?.(s);
   };
+
+  constructor() {
+    NativeManager.addClientEventListener((ce: ClientEvent) => {
+      let cm = ClientMessage.create({
+        msg: {
+          oneofKind: "clientEvent",
+          clientEvent: ce,
+        },
+      });
+      console.log(`Client message: ${ClientMessage.toJsonString(cm)}`);
+      CheyenneSocket.sendMessage(cm);
+    });
+  }
 
   streamAudio = (streamData: Uint8Array) => {
     if (this._sock && !this._mic_muted) {
@@ -80,6 +94,7 @@ class CheyenneServer {
           clientInfo: {
             uuid: uuid,
             version: APP_VERSION,
+            savedSettings: NativeManager.getSavedSettings(),
           },
         },
       })

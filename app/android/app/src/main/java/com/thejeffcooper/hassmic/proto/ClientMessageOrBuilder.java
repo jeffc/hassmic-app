@@ -64,5 +64,19 @@ public interface ClientMessageOrBuilder
    */
   com.thejeffcooper.hassmic.proto.ClientEvent getClientEvent();
 
+  /**
+   * <code>.hassmic.SavedSettings saved_settings = 5;</code>
+   *
+   * @return Whether the savedSettings field is set.
+   */
+  boolean hasSavedSettings();
+
+  /**
+   * <code>.hassmic.SavedSettings saved_settings = 5;</code>
+   *
+   * @return The savedSettings.
+   */
+  com.thejeffcooper.hassmic.proto.SavedSettings getSavedSettings();
+
   public com.thejeffcooper.hassmic.proto.ClientMessage.MsgCase getMsgCase();
 }

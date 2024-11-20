@@ -22,7 +22,6 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
   private static ReactApplicationContext reactContext;
 
   public static final String KEY_FIRE_JS_EVENT = "HassMicFireJSEvent";
-  public static final String KEY_PARTIAL_CLIENT_INFO = "HassMicPartialClientInfo";
   public static final String KEY_JS_EVENT_DATA = "HassMicJSEventData";
   public static final String KEY_JS_PROTO_VALUED_EVENT = "HassMic.ProtoValuedEvent";
   public static final String KEY_JS_EVENT_PROTO = "HassMicJSEventProto";
@@ -113,13 +112,6 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
     Log.d("HassmicBackgroundTaskModule", "Firing JS Event");
     Intent fireJSEvent = new Intent(KEY_FIRE_JS_EVENT);
     fireJSEvent.putExtra(KEY_JS_EVENT_PROTO, ev.toByteArray());
-    ctx.sendBroadcast(fireJSEvent);
-  }
-
-  public static void SendPartialClientInfo(Context ctx, ClientInfo ci) {
-    Log.d("HassmicBackgroundTaskModule", "Passing partial client info back to JS");
-    Intent fireJSEvent = new Intent(KEY_PARTIAL_CLIENT_INFO);
-    fireJSEvent.putExtra(KEY_JS_EVENT_PROTO, ci.toByteArray());
     ctx.sendBroadcast(fireJSEvent);
   }
 }

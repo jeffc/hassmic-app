@@ -59,37 +59,4 @@ public interface ClientInfoOrBuilder
    * @return The bytes for uuid.
    */
   com.google.protobuf.ByteString getUuidBytes();
-
-  /**
-   *
-   *
-   * <pre>
-   * Volume settings
-   * </pre>
-   *
-   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
-   */
-  java.util.List<com.thejeffcooper.hassmic.proto.MediaPlayerVolume> getVolumeLevelsList();
-
-  /**
-   *
-   *
-   * <pre>
-   * Volume settings
-   * </pre>
-   *
-   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
-   */
-  com.thejeffcooper.hassmic.proto.MediaPlayerVolume getVolumeLevels(int index);
-
-  /**
-   *
-   *
-   * <pre>
-   * Volume settings
-   * </pre>
-   *
-   * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
-   */
-  int getVolumeLevelsCount();
 }

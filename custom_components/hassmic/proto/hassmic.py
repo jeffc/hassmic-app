@@ -2,7 +2,6 @@
 # sources: hassmic.proto
 # plugin: python-betterproto
 from dataclasses import dataclass
-from typing import List
 
 import betterproto
 
@@ -37,6 +36,16 @@ class MediaPlayerId(betterproto.Enum):
 
 
 @dataclass
+class SavedSettings(betterproto.Message):
+    """Information saved and loaded between runs of the hassmic app"""
+
+    # The last volume of the `announce` player
+    announce_volume: float = betterproto.float_field(1)
+    # The last volume of the `playback` player
+    playback_volume: float = betterproto.float_field(2)
+
+
+@dataclass
 class ClientInfo(betterproto.Message):
     """Information that the client sends about itself"""
 
@@ -44,8 +53,6 @@ class ClientInfo(betterproto.Message):
     version: str = betterproto.string_field(1)
     # The uuid of this client
     uuid: str = betterproto.string_field(2)
-    # Volume settings
-    volume_levels: List["MediaPlayerVolume"] = betterproto.message_field(3)
 
 
 @dataclass
@@ -120,6 +127,7 @@ class ClientMessage(betterproto.Message):
     client_info: "ClientInfo" = betterproto.message_field(2, group="msg")
     audio_data: "AudioData" = betterproto.message_field(3, group="msg")
     client_event: "ClientEvent" = betterproto.message_field(4, group="msg")
+    saved_settings: "SavedSettings" = betterproto.message_field(5, group="msg")
 
 
 @dataclass

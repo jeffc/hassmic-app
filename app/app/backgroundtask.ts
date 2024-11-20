@@ -120,7 +120,6 @@ class BackgroundTaskManager_ {
       console.error("Background task is already running; not starting again!");
       return;
     }
-    console.log("GOT TO BACKGROUND TASK RUNFN");
 
     await NativeManager.waitForReady();
 
@@ -138,16 +137,6 @@ class BackgroundTaskManager_ {
       this.stop_fn = resolve;
     });
     // native event listeners
-    NativeManager.addClientEventListener((ce: ClientEvent) => {
-      let cm = ClientMessage.create({
-        msg: {
-          oneofKind: "clientEvent",
-          clientEvent: ce,
-        },
-      });
-      console.log(`Client message: ${ClientMessage.toJsonString(cm)}`);
-      CheyenneSocket.sendMessage(cm);
-    });
     CheyenneSocket.startServer();
     console.log("Started server");
     await ZeroconfManager.StartZeroconf();
