@@ -44,7 +44,7 @@ class ClientInfo(betterproto.Message):
     version: str = betterproto.string_field(1)
     # The uuid of this client
     uuid: str = betterproto.string_field(2)
-    # Optional volume settings
+    # Volume settings
     volume_levels: List["MediaPlayerVolume"] = betterproto.message_field(3)
 
 
@@ -73,36 +73,36 @@ class MediaPlayerVolume(betterproto.Message):
     """A media player has changed volume"""
 
     player: "MediaPlayerId" = betterproto.enum_field(1)
-    new_volume: float = betterproto.float_field(2)
+    volume: float = betterproto.float_field(2)
 
 
 @dataclass
 class DeviceVolume(betterproto.Message):
     """The device volume has changed"""
 
-    new_volume: float = betterproto.float_field(1)
+    volume: float = betterproto.float_field(1)
+
+
+@dataclass
+class MediaPlayerStateChange(betterproto.Message):
+    """A media player has changed state"""
+
+    player: "MediaPlayerId" = betterproto.enum_field(1)
+    new_state: "MediaPlayerState" = betterproto.enum_field(2)
 
 
 @dataclass
 class ClientEvent(betterproto.Message):
     """Tell the server that a client event occurred"""
 
-    media_player_state_change: "ClientEventMediaPlayerStateChange" = (
-        betterproto.message_field(1, group="event")
+    media_player_state_change: "MediaPlayerStateChange" = betterproto.message_field(
+        1, group="event"
     )
     media_player_volume_change: "MediaPlayerVolume" = betterproto.message_field(
         2, group="event"
     )
     device_volume_change: "DeviceVolume" = betterproto.message_field(3, group="event")
     log: "Log" = betterproto.message_field(4, group="event")
-
-
-@dataclass
-class ClientEventMediaPlayerStateChange(betterproto.Message):
-    """A media player has changed state"""
-
-    player: "MediaPlayerId" = betterproto.enum_field(1)
-    new_state: "MediaPlayerState" = betterproto.enum_field(2)
 
 
 @dataclass

@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ServiceInfo;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -46,21 +45,6 @@ public class BackgroundTaskService extends Service {
   private ExoPlayer audioExo;
   private ExoPlayer announceExo;
 
-  // binder implentation from android guide to allow module to bind to this service.
-  private IBinder binder = new BackgroundTaskBinder();
-
-  public class BackgroundTaskBinder extends Binder {
-    BackgroundTaskService getService() {
-      // Return this instance of LocalService so clients can call public methods.
-      return BackgroundTaskService.this;
-    }
-  }
-
-  @Override
-  public IBinder onBind(Intent intent) {
-    return binder;
-  }
-
   private Player enumToPlayer(MediaPlayerId id) {
     switch (id) {
       case ID_PLAYBACK:
@@ -77,6 +61,11 @@ public class BackgroundTaskService extends Service {
   public float getVolume(MediaPlayerId id) {
     Player p = enumToPlayer(id);
     return p.getVolume();
+  }
+
+  @Override
+  public IBinder onBind(Intent intent) {
+    return null;
   }
 
   private Runnable runnableCode =
@@ -167,8 +156,8 @@ public class BackgroundTaskService extends Service {
                     switch (e) {
                       case Player.EVENT_PLAYBACK_STATE_CHANGED:
                       case Player.EVENT_IS_PLAYING_CHANGED:
-                        ClientEvent.MediaPlayerStateChange.Builder b =
-                            ClientEvent.MediaPlayerStateChange.newBuilder().setPlayer(which_player);
+                        MediaPlayerStateChange.Builder b =
+                            MediaPlayerStateChange.newBuilder().setPlayer(which_player);
 
                         MediaPlayerState newState = null;
 
@@ -195,7 +184,7 @@ public class BackgroundTaskService extends Service {
                         // note: this might fire twice (once for each player)
                       case Player.EVENT_DEVICE_VOLUME_CHANGED:
                         DeviceVolume d =
-                            DeviceVolume.newBuilder().setNewVolume(p.getDeviceVolume()).build();
+                            DeviceVolume.newBuilder().setVolume(p.getDeviceVolume()).build();
                         protob.setDeviceVolumeChange(d);
                         break;
 
@@ -203,7 +192,7 @@ public class BackgroundTaskService extends Service {
                         MediaPlayerVolume mpv =
                             MediaPlayerVolume.newBuilder()
                                 .setPlayer(which_player)
-                                .setNewVolume(p.getVolume())
+                                .setVolume(p.getVolume())
                                 .build();
                         protob.setMediaPlayerVolumeChange(mpv);
                         break;
@@ -219,6 +208,20 @@ public class BackgroundTaskService extends Service {
               };
           audioExo.addListener(audioEventListener);
           announceExo.addListener(audioEventListener);
+
+          // Get initial state and pass it back to javascript
+          ClientInfo.Builder cib = ClientInfo.newBuilder();
+          cib.addVolumeLevels(
+              MediaPlayerVolume.newBuilder()
+                  .setPlayer(MediaPlayerId.ID_PLAYBACK)
+                  .setVolume(audioExo.getVolume())
+                  .build());
+          cib.addVolumeLevels(
+              MediaPlayerVolume.newBuilder()
+                  .setPlayer(MediaPlayerId.ID_ANNOUNCE)
+                  .setVolume(announceExo.getVolume())
+                  .build());
+          BackgroundTaskModule.SendPartialClientInfo(getApplicationContext(), cib.build());
         }
       };
 
@@ -310,7 +313,7 @@ public class BackgroundTaskService extends Service {
         Log.w("HassmicBackgroundTaskService", "set_device_volume is not currently implemented");
         break;
       case SET_PLAYER_VOLUME:
-        float newVolume = sm.getSetPlayerVolume().getNewVolume();
+        float newVolume = sm.getSetPlayerVolume().getVolume();
         Player p = enumToPlayer(sm.getSetPlayerVolume().getPlayer());
         if (p == null) {
           Log.e("HassmicBackgroundTaskService", "Can't determine player; not setting volume");

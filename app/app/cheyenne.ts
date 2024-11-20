@@ -1,7 +1,7 @@
 import TcpSocket from "react-native-tcp-socket";
 import { APP_VERSION } from "./constants";
 import { Buffer } from "buffer";
-import { NativeModules } from "react-native";
+import { NativeManager } from "./nativemgr";
 import { UUIDManager } from "./util";
 
 import {
@@ -12,8 +12,6 @@ import {
   Ping,
   ServerMessage,
 } from "./proto/hassmic";
-
-const { BackgroundTaskModule } = NativeModules;
 
 type CallbackType<T> = ((s: T) => void) | null;
 
@@ -82,14 +80,6 @@ class CheyenneServer {
           clientInfo: {
             uuid: uuid,
             version: APP_VERSION,
-            volume_levels: [
-              {
-                id: MediaPlayerId.ID_PLAYBACK,
-                new_volume: BackgroundTaskModule.getVolume(
-                  MediaPlayerId.ID_PLAYBACK
-                ),
-              },
-            ],
           },
         },
       })
@@ -205,9 +195,9 @@ class CheyenneServer {
         case "playAudio":
         case "setPlayerVolume":
           console.log(
-            `Got "${m.msg.oneOfKind}" ServerMessage; passing it to native code`
+            `Got "${m.msg.oneofKind}" ServerMessage; passing it to native code`
           );
-          this._handleNativeServerMessage(m);
+          NativeManager.handleServerMessage(m);
           break;
         default:
           console.warn(`Got unknown message type '${m.msg.oneofKind}'`);
@@ -216,13 +206,6 @@ class CheyenneServer {
       console.error(e);
     }
   };
-
-  private _handleNativeServerMessage(sm: ServerMessage) {
-    let smb64: string = Buffer.from(ServerMessage.toBinary(sm)).toString(
-      "base64"
-    );
-    BackgroundTaskModule.handleServerMessage(smb64);
-  }
 }
 
 export const CheyenneSocket: CheyenneServer = new CheyenneServer();

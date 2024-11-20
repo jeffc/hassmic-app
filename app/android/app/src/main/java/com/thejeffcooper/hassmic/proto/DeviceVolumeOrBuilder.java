@@ -9,9 +9,9 @@ public interface DeviceVolumeOrBuilder
     com.google.protobuf.MessageLiteOrBuilder {
 
   /**
-   * <code>float new_volume = 1;</code>
+   * <code>float volume = 1;</code>
    *
-   * @return The newVolume.
+   * @return The volume.
    */
-  float getNewVolume();
+  float getVolume();
 }

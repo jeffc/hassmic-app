@@ -19,33 +19,33 @@ public final class DeviceVolume
     DeviceVolumeOrBuilder {
   private DeviceVolume() {}
 
-  public static final int NEW_VOLUME_FIELD_NUMBER = 1;
-  private float newVolume_;
+  public static final int VOLUME_FIELD_NUMBER = 1;
+  private float volume_;
 
   /**
-   * <code>float new_volume = 1;</code>
+   * <code>float volume = 1;</code>
    *
-   * @return The newVolume.
+   * @return The volume.
    */
   @java.lang.Override
-  public float getNewVolume() {
-    return newVolume_;
+  public float getVolume() {
+    return volume_;
   }
 
   /**
-   * <code>float new_volume = 1;</code>
+   * <code>float volume = 1;</code>
    *
-   * @param value The newVolume to set.
+   * @param value The volume to set.
    */
-  private void setNewVolume(float value) {
+  private void setVolume(float value) {
 
-    newVolume_ = value;
+    volume_ = value;
   }
 
-  /** <code>float new_volume = 1;</code> */
-  private void clearNewVolume() {
+  /** <code>float volume = 1;</code> */
+  private void clearVolume() {
 
-    newVolume_ = 0F;
+    volume_ = 0F;
   }
 
   public static com.thejeffcooper.hassmic.proto.DeviceVolume parseFrom(java.nio.ByteBuffer data)
@@ -151,35 +151,35 @@ public final class DeviceVolume
     }
 
     /**
-     * <code>float new_volume = 1;</code>
+     * <code>float volume = 1;</code>
      *
-     * @return The newVolume.
+     * @return The volume.
      */
     @java.lang.Override
-    public float getNewVolume() {
-      return instance.getNewVolume();
+    public float getVolume() {
+      return instance.getVolume();
     }
 
     /**
-     * <code>float new_volume = 1;</code>
+     * <code>float volume = 1;</code>
      *
-     * @param value The newVolume to set.
+     * @param value The volume to set.
      * @return This builder for chaining.
      */
-    public Builder setNewVolume(float value) {
+    public Builder setVolume(float value) {
       copyOnWrite();
-      instance.setNewVolume(value);
+      instance.setVolume(value);
       return this;
     }
 
     /**
-     * <code>float new_volume = 1;</code>
+     * <code>float volume = 1;</code>
      *
      * @return This builder for chaining.
      */
-    public Builder clearNewVolume() {
+    public Builder clearVolume() {
       copyOnWrite();
-      instance.clearNewVolume();
+      instance.clearVolume();
       return this;
     }
 
@@ -205,7 +205,7 @@ public final class DeviceVolume
         {
           java.lang.Object[] objects =
               new java.lang.Object[] {
-                "newVolume_",
+                "volume_",
               };
           java.lang.String info =
               "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0001";

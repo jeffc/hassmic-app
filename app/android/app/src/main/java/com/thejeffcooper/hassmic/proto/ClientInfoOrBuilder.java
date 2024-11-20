@@ -64,7 +64,7 @@ public interface ClientInfoOrBuilder
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -75,7 +75,7 @@ public interface ClientInfoOrBuilder
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -86,7 +86,7 @@ public interface ClientInfoOrBuilder
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>

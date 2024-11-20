@@ -2,13 +2,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppRegistry } from "react-native";
 import { Buffer } from "buffer";
 import { CheyenneSocket } from "./cheyenne";
-import { NativeModules, NativeEventEmitter } from "react-native";
 import { PermissionsAndroid } from "react-native";
 import { STORAGE_KEY_RUN_BACKGROUND_TASK } from "./constants";
 import { ZeroconfManager } from "./zeroconf";
+import { NativeManager } from "./nativemgr";
 import { ClientEvent, ClientMessage, ServerMessage } from "./proto/hassmic";
-
-const { BackgroundTaskModule } = NativeModules;
 
 // note - patched version from
 // https://github.com/jeffc/react-native-live-audio-stream
@@ -122,13 +120,16 @@ class BackgroundTaskManager_ {
       console.error("Background task is already running; not starting again!");
       return;
     }
+    console.log("GOT TO BACKGROUND TASK RUNFN");
+
+    await NativeManager.waitForReady();
 
     const shouldRun = await this.isEnabled;
 
     if (!shouldRun) {
       console.log("Not running background task; is disabled");
       this.setState(TaskState.STOPPED);
-      BackgroundTaskModule.stopService();
+      NativeManager.killService();
       return;
     }
 
@@ -136,35 +137,17 @@ class BackgroundTaskManager_ {
     const shouldStop = new Promise<void>((resolve) => {
       this.stop_fn = resolve;
     });
-
-    const emitter = new NativeEventEmitter(BackgroundTaskModule);
-    emitter.addListener("hassmic.SpeechStart", () => {
-      console.log("Speech playback start");
+    // native event listeners
+    NativeManager.addClientEventListener((ce: ClientEvent) => {
+      let cm = ClientMessage.create({
+        msg: {
+          oneofKind: "clientEvent",
+          clientEvent: ce,
+        },
+      });
+      console.log(`Client message: ${ClientMessage.toJsonString(cm)}`);
+      CheyenneSocket.sendMessage(cm);
     });
-    emitter.addListener("hassmic.SpeechStop", () => {
-      console.log("Speech playback stop");
-    });
-    emitter.addListener("HassMic.ProtoValuedEvent", (d) => {
-      console.log(`Proto-valued event: ${d}`);
-      try {
-        let b64 = d.toString().trim();
-        let bts = Buffer.from(b64, "base64");
-        let ce = ClientEvent.fromBinary(bts);
-        console.log(`Client event: ${ClientEvent.toJsonString(ce)}`);
-        // pass the proto-valued event to the server
-        let cm = ClientMessage.create({
-          msg: {
-            oneofKind: "clientEvent",
-            clientEvent: ce,
-          },
-        });
-        console.log(`Client message: ${ClientMessage.toJsonString(cm)}`);
-        CheyenneSocket.sendMessage(cm);
-      } catch (e) {
-        console.error(`Error parsing proto valued event: ${e}`);
-      }
-    });
-
     CheyenneSocket.startServer();
     console.log("Started server");
     await ZeroconfManager.StartZeroconf();
@@ -203,7 +186,7 @@ class BackgroundTaskManager_ {
     console.log("Background task got stop signal, stopping");
     LiveAudioStream.stop();
     CheyenneSocket.stopServer();
-    BackgroundTaskModule.stopService();
+    NativeManager.killService();
     ZeroconfManager.StopZeroconf();
     this.setState(TaskState.STOPPED);
   };
@@ -225,22 +208,12 @@ class BackgroundTaskManager_ {
 
   // kill any existing instance of the task
   kill = () => {
-    try {
-      BackgroundTaskModule.stopService();
-    } catch (e) {}
+    NativeManager.killService();
   };
 
   // start the task
   run = () => {
-    BackgroundTaskModule.startService();
-  };
-
-  // handle a proto valued message in native code
-  handleNativeServerMessage = (sm: ServerMessage) => {
-    let smb64: string = Buffer.from(ServerMessage.toBinary(sm)).toString(
-      "base64"
-    );
-    BackgroundTaskModule.handleServerMessage(smb64);
+    NativeManager.runService();
   };
 }
 

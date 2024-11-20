@@ -196,7 +196,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -210,7 +210,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -224,7 +224,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -238,7 +238,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -252,7 +252,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -274,7 +274,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -289,7 +289,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -304,7 +304,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -319,7 +319,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -334,7 +334,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -347,7 +347,7 @@ public final class ClientInfo
    *
    *
    * <pre>
-   * Optional volume settings
+   * Volume settings
    * </pre>
    *
    * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -633,7 +633,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -647,7 +647,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -661,7 +661,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -675,7 +675,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -691,7 +691,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -707,7 +707,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -722,7 +722,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -738,7 +738,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -754,7 +754,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -770,7 +770,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -786,7 +786,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>
@@ -801,7 +801,7 @@ public final class ClientInfo
      *
      *
      * <pre>
-     * Optional volume settings
+     * Volume settings
      * </pre>
      *
      * <code>repeated .hassmic.MediaPlayerVolume volume_levels = 3;</code>

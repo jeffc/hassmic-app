@@ -9,18 +9,18 @@ public interface ClientEventOrBuilder
     com.google.protobuf.MessageLiteOrBuilder {
 
   /**
-   * <code>.hassmic.ClientEvent.MediaPlayerStateChange media_player_state_change = 1;</code>
+   * <code>.hassmic.MediaPlayerStateChange media_player_state_change = 1;</code>
    *
    * @return Whether the mediaPlayerStateChange field is set.
    */
   boolean hasMediaPlayerStateChange();
 
   /**
-   * <code>.hassmic.ClientEvent.MediaPlayerStateChange media_player_state_change = 1;</code>
+   * <code>.hassmic.MediaPlayerStateChange media_player_state_change = 1;</code>
    *
    * @return The mediaPlayerStateChange.
    */
-  com.thejeffcooper.hassmic.proto.ClientEvent.MediaPlayerStateChange getMediaPlayerStateChange();
+  com.thejeffcooper.hassmic.proto.MediaPlayerStateChange getMediaPlayerStateChange();
 
   /**
    * <code>.hassmic.MediaPlayerVolume media_player_volume_change = 2;</code>

@@ -1,7 +1,6 @@
 import { AppRegistry, Platform } from "react-native";
 import registerRootComponent from "expo/build/launch/registerRootComponent";
 import Index from "./app/main";
-import { name as appName } from "./app.json";
 import { BackgroundTaskManager } from "./app/backgroundtask";
 
 import TextEncoder from "react-native-fast-encoder";

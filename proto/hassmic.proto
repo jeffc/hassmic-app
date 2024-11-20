@@ -12,7 +12,7 @@ message ClientInfo {
   string version = 1;
   // The uuid of this client
   string uuid = 2;
-  // Optional volume settings
+  // Volume settings
   repeated MediaPlayerVolume volume_levels = 3;
 }
 
@@ -60,21 +60,22 @@ enum MediaPlayerId {
 // A media player has changed volume
 message MediaPlayerVolume {
   MediaPlayerId player = 1;
-  float new_volume = 2;
+  float volume = 2;
 }
 
 // The device volume has changed
 message DeviceVolume {
-  float new_volume = 1;
+  float volume = 1;
+}
+
+// A media player has changed state
+message MediaPlayerStateChange {
+  MediaPlayerId player = 1;
+  MediaPlayerState new_state = 2;
 }
 
 // Tell the server that a client event occurred
 message ClientEvent {
-  // A media player has changed state
-  message MediaPlayerStateChange {
-    MediaPlayerId player = 1;
-    MediaPlayerState new_state = 2;
-  }
 
   oneof event {
     MediaPlayerStateChange media_player_state_change = 1;

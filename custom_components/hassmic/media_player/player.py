@@ -124,7 +124,7 @@ class Player(MediaPlayerEntity):
         _LOGGER.info("Setting volume to %f", volume)
         sm = proto.ServerMessage(
             set_player_volume=proto.MediaPlayerVolume(
-                player=proto.MediaPlayerId.ID_PLAYBACK, new_volume=volume
+                player=proto.MediaPlayerId.ID_PLAYBACK, volume=volume
             )
         )
         self._hassmic.connection_manager.send_enqueue(sm)

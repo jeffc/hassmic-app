@@ -1,13 +1,10 @@
 package com.thejeffcooper.hassmic;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Build;
-import android.os.IBinder;
 import android.util.Base64;
 import android.util.Log;
 import androidx.core.content.ContextCompat;
@@ -25,12 +22,10 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
   private static ReactApplicationContext reactContext;
 
   public static final String KEY_FIRE_JS_EVENT = "HassMicFireJSEvent";
-  public static final String KEY_JS_EVENT_NAME = "HassMicJSEventName";
+  public static final String KEY_PARTIAL_CLIENT_INFO = "HassMicPartialClientInfo";
   public static final String KEY_JS_EVENT_DATA = "HassMicJSEventData";
   public static final String KEY_JS_PROTO_VALUED_EVENT = "HassMic.ProtoValuedEvent";
   public static final String KEY_JS_EVENT_PROTO = "HassMicJSEventProto";
-
-  private BackgroundTaskService backgroundService = null;
 
   BackgroundTaskModule(ReactApplicationContext context) {
     super(context);
@@ -73,25 +68,6 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
     return "BackgroundTaskModule";
   }
 
-  private ServiceConnection connection =
-      new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-          BackgroundTaskService.BackgroundTaskBinder binder =
-              (BackgroundTaskService.BackgroundTaskBinder) service;
-          BackgroundTaskModule.this.backgroundService = binder.getService();
-          BackgroundTaskModule.this.logToServer(
-              BackgroundTaskModule.this.reactContext, "Bound to background task");
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-          backgroundService = null;
-          BackgroundTaskModule.this.logToServer(
-              BackgroundTaskModule.this.reactContext, "Unbound from background task");
-        }
-      };
-
   @ReactMethod
   public void startService() {
     Intent serviceIntent = new Intent(this.reactContext, BackgroundTaskService.class);
@@ -103,7 +79,6 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
     } else {
       this.reactContext.startService(serviceIntent);
     }
-    this.reactContext.bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
   }
 
   @ReactMethod
@@ -115,38 +90,11 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
   public void handleServerMessage(String servermessageBase64) {
     byte[] smbytes = Base64.decode(servermessageBase64, Base64.DEFAULT);
     Log.d("HassmicBackgroundTaskModule", "Handling server message");
-    // Intent protoIntent =
-    //    new Intent(BackgroundTaskService.PROTO_SERVERMESSAGE_ACTION)
-    //        .putExtra(BackgroundTaskService.KEY_PROTO_DATA, smbytes);
-    // this.reactContext.sendBroadcast(protoIntent);
-    ServerMessage sm;
-    Log.d("HassmicBackgroundTaskModule", "Parsing proto from base64");
-    try {
-      sm = ServerMessage.parseFrom(smbytes);
-    } catch (InvalidProtocolBufferException e) {
-      Log.e("HassmicBackgroundTaskModule", "Failed to parse proto");
-      return;
-    }
-    if (this.backgroundService == null) {
-      this.logToServer(this.reactContext, "!!! backgroundService is null!");
-      return;
-    }
-    this.backgroundService.handleServerMessage(sm);
+    Intent protoIntent =
+        new Intent(BackgroundTaskService.PROTO_SERVERMESSAGE_ACTION)
+            .putExtra(BackgroundTaskService.KEY_PROTO_DATA, smbytes);
+    this.reactContext.sendBroadcast(protoIntent);
     this.logToServer(this.reactContext, "Successfully handled server message");
-  }
-
-  @ReactMethod
-  public float getVolume(int player_id) {
-    MediaPlayerId id = MediaPlayerId.forNumber(player_id);
-    if (id == null) {
-      Log.e("HassmicBackgroundTaskModule", "Invalid player_id: " + player_id);
-      return -2;
-    }
-    if (this.backgroundService != null) {
-      return this.backgroundService.getVolume(id);
-    } else {
-      return -1;
-    }
   }
 
   @ReactMethod
@@ -165,6 +113,13 @@ public class BackgroundTaskModule extends ReactContextBaseJavaModule {
     Log.d("HassmicBackgroundTaskModule", "Firing JS Event");
     Intent fireJSEvent = new Intent(KEY_FIRE_JS_EVENT);
     fireJSEvent.putExtra(KEY_JS_EVENT_PROTO, ev.toByteArray());
+    ctx.sendBroadcast(fireJSEvent);
+  }
+
+  public static void SendPartialClientInfo(Context ctx, ClientInfo ci) {
+    Log.d("HassmicBackgroundTaskModule", "Passing partial client info back to JS");
+    Intent fireJSEvent = new Intent(KEY_PARTIAL_CLIENT_INFO);
+    fireJSEvent.putExtra(KEY_JS_EVENT_PROTO, ci.toByteArray());
     ctx.sendBroadcast(fireJSEvent);
   }
 }

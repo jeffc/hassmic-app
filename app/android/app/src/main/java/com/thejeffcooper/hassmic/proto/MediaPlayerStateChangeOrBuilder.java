@@ -3,9 +3,9 @@
 
 package com.thejeffcooper.hassmic.proto;
 
-public interface MediaPlayerVolumeOrBuilder
+public interface MediaPlayerStateChangeOrBuilder
     extends
-    // @@protoc_insertion_point(interface_extends:hassmic.MediaPlayerVolume)
+    // @@protoc_insertion_point(interface_extends:hassmic.MediaPlayerStateChange)
     com.google.protobuf.MessageLiteOrBuilder {
 
   /**
@@ -23,9 +23,16 @@ public interface MediaPlayerVolumeOrBuilder
   com.thejeffcooper.hassmic.proto.MediaPlayerId getPlayer();
 
   /**
-   * <code>float volume = 2;</code>
+   * <code>.hassmic.MediaPlayerState new_state = 2;</code>
    *
-   * @return The volume.
+   * @return The enum numeric value on the wire for newState.
    */
-  float getVolume();
+  int getNewStateValue();
+
+  /**
+   * <code>.hassmic.MediaPlayerState new_state = 2;</code>
+   *
+   * @return The newState.
+   */
+  com.thejeffcooper.hassmic.proto.MediaPlayerState getNewState();
 }
