@@ -1,4 +1,11 @@
 repos:
+  - repo: local
+    hooks:
+      - id: sync-version
+        name: Sync version strings to VERSION file
+        language: script
+        entry: ./scripts/version_update.sh
+        files: 'VERSION'
   - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
     rev: v2.14.0
     hooks:

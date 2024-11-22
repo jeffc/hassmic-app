@@ -5,5 +5,8 @@
     "react-native-fast-encoder": "^0.1.12",
     "react-native-fetch-api": "^3.0.0",
     "web-streams-polyfill": "^4.0.0"
+  },
+  "devDependencies": {
+    "node-jq": "^6.0.1"
   }
 }
