@@ -232,6 +232,11 @@ class ConnectionManager:
         except Exception as e:
             _LOGGER.error(e)
         finally:
+            try:
+                while self._outbox.get_nowait():
+                    pass
+            except asyncio.QueueEmpty:
+                pass
             _LOGGER.debug("Exited send loop")
 
     async def _loop(self):
@@ -279,3 +284,6 @@ class ConnectionManager:
             _LOGGER.debug("Connection manager main loop caught cancel signal")
 
         await self.destroy_socket()
+
+
+# vim: set ts=4 sw=4:

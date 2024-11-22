@@ -9,6 +9,11 @@ from homeassistant.components import media_source
 from homeassistant.components.media_player import *
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.network import NoURLAvailableError, get_url
+from homeassistant.components.assist_pipeline.pipeline import (
+    PipelineEvent,
+    PipelineEventType,
+)
 
 from .. import util
 from ..proto import hassmic as proto
@@ -35,6 +40,8 @@ class Player(MediaPlayerEntity):
         self._hass = hass
         self._config_entry = config_entry
         self._hassmic = config_entry.runtime_data
+
+        self._paused_for_mic = False
 
         self._attr_state = MediaPlayerState.IDLE
         self._attr_supported_features = (
@@ -77,7 +84,7 @@ class Player(MediaPlayerEntity):
             )
         )
 
-    async def async_media_play(self):
+    def media_play(self):
         """Send a play command"""
         _LOGGER.info("Playing")
         self._hassmic.connection_manager.send_enqueue(
@@ -89,7 +96,7 @@ class Player(MediaPlayerEntity):
             )
         )
 
-    async def async_media_pause(self):
+    def media_pause(self):
         """Send a pause command"""
         _LOGGER.info("Pausing playback")
         self._hassmic.connection_manager.send_enqueue(
@@ -101,7 +108,7 @@ class Player(MediaPlayerEntity):
             )
         )
 
-    async def async_media_stop(self):
+    def media_stop(self):
         """Send a stop command"""
         _LOGGER.info("Stopping playback")
         self._hassmic.connection_manager.send_enqueue(
@@ -119,15 +126,9 @@ class Player(MediaPlayerEntity):
             _LOGGER.debug("Requested volume is None")
             return
         if not (0 <= volume and volume <= 1):
-            raise ValueError(f"{volume} is not between 0 and 1")
-
-        _LOGGER.info("Setting volume to %f", volume)
-        sm = proto.ServerMessage(
-            set_player_volume=proto.MediaPlayerVolume(
-                player=proto.MediaPlayerId.ID_PLAYBACK, volume=volume
-            )
-        )
-        self._hassmic.connection_manager.send_enqueue(sm)
+            _LOGGER.error(f"{volume} is not between 0 and 1")
+            return
+        self.send_volume(volume)
 
     def handle_client_event(self, event: proto.ClientEvent):
         """Handle a client event."""
@@ -149,33 +150,14 @@ class Player(MediaPlayerEntity):
                             _LOGGER.warning(
                                 "Got unhandled media player state %s", val.new_state
                             )
-            case "saved_settings":
-                if val.playback_volume is not None:
-                    if self._attr_volume_level is None:
-                        _LOGGER.debug(
-                            "Setting playback volume to %d", val.playback_volume
-                        )
-                        self._attr_volume_level = val.playback_volume
-                        self.schedule_update_ha_state()
-                    else:
-                        _LOGGER.warning(
-                            "Got saved settings from client, but volume is already set!"
-                        )
-                else:
-                    _LOGGER.warning(
-                        "Got saved settings from client, but no playback_volume is specified!"
-                    )
-
             case "media_player_volume_change":
                 if val.player == proto.MediaPlayerId.ID_PLAYBACK:
                     self._attr_volume_level = val.volume
+                    self.send_volume(val.volume)
                     self.schedule_update_ha_state()
 
-            case "log" | "device_volume_change":
-                pass  # ignore these cases
-
             case _:
-                _LOGGER.warning("Got unhandled client event type %s", which)
+                pass  # ignore cases not listed here
 
         self.schedule_update_ha_state()
 
@@ -183,17 +165,95 @@ class Player(MediaPlayerEntity):
         """If the remote device just reconnected, remind it what settings it should have."""
         _LOGGER.debug("Connection state change")
         if new_state and self._attr_volume_level is not None:
-            self.send_config()
+            self.send_volume(self._attr_volume_level)
 
         self.available = new_state
         self.schedule_update_ha_state()
 
-    def send_config(self):
+    def handle_saved_settings(self, ss: proto.SavedSettings):
+        if ss.playback_volume is not None:
+            if self._attr_volume_level is None:
+                _LOGGER.debug(
+                    "Setting playback volume to %f due to saved settings",
+                    ss.playback_volume,
+                )
+                self._attr_volume_level = ss.playback_volume
+                self.send_volume(ss.playback_volume)
+                self.schedule_update_ha_state()
+            else:
+                _LOGGER.warning(
+                    "Got saved settings from client, but volume is already set!"
+                )
+        else:
+            _LOGGER.warning(
+                "Got saved settings from client, but no playback_volume is specified!"
+            )
+
+    def send_volume(self, vol):
         """Send the various media player settings to the remote."""
 
-        if self._attr_volume_level is not None:
-            _LOGGER.debug("send volume: %s", self._attr_volume_level)
-            self.set_volume_level(self._attr_volume_level)
+        if vol is not None:
+            _LOGGER.info("Setting playback volume to %f", vol)
+            sm = proto.ServerMessage(
+                set_player_volume=proto.MediaPlayerVolume(
+                    player=proto.MediaPlayerId.ID_PLAYBACK, volume=vol
+                )
+            )
+            self._hassmic.connection_manager.send_enqueue(sm)
+
+    def handle_pipeline_event(self, event):
+        """Handle an event from the assist pipeline."""
+
+        match event.type:
+            case PipelineEventType.TTS_END:
+                o = event.data.get("tts_output")
+                path = o.get("url")
+                urlbase = None
+                try:
+                    urlbase = get_url(self._hass)
+                except NoURLAvailableError:
+                    _LOGGER.error(
+                        "Failed to get a working URL for this Home Assistant "
+                        "instance; can't send TTS URL to hassmic"
+                    )
+
+                if path and urlbase:
+                    _LOGGER.debug("Play URL: '%s'", urlbase + path)
+                    self._hassmic.connection_manager.send_enqueue(
+                        proto.ServerMessage(
+                            play_audio=proto.PlayAudio(
+                                url=urlbase + path,
+                                announce=True,
+                            )
+                        )
+                    )
+                else:
+                    _LOGGER.warning(
+                        "Can't play TTS: (%s) or URL Base (%s) not found",
+                        path,
+                        urlbase,
+                    )
+            case PipelineEventType.WAKE_WORD_END | PipelineEventType.STT_START | PipelineEventType.STT_VAD_START:
+                # These pipeline states indicate that we should stop,
+                # ~~collaborate~~ and listen
+                if (
+                    self._attr_state == MediaPlayerState.PLAYING
+                    and not self._paused_for_mic
+                ):
+                    # check for `not self._paused_for_mic` in case we've sent the
+                    # pause command but haven't yet gotten the response yet; no
+                    # need to send it again.
+                    _LOGGER.debug("heard wakeword; pausing playback")
+                    self._paused_for_mic = True
+                    self.media_pause()
+            case PipelineEventType.TTS_END | PipelineEventType.ERROR | PipelineEventType.RUN_END:
+                # Don't start playing while intent processing and STT start, but
+                # if we get any other pipeline state, we're good to resume
+                # playing
+                if self._paused_for_mic:
+                    _LOGGER.debug("resuming media after pause for TTS")
+                    self._paused_for_mic = False
+                    self.media_play()
 
 
 # vim: set ts=4 sw=4:

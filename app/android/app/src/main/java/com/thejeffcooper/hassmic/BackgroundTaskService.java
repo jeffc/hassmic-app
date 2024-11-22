@@ -65,7 +65,7 @@ public class BackgroundTaskService extends Service {
 
   // This function reverses scaleVolume()
   private float unscaleVolume(float log) {
-    return (101f / 100f) * ((float) Math.pow(101, -log) - 1.0f);
+    return (-101f / 100f) * ((float) Math.pow(101, -log) - 1.0f);
   }
 
   @Override
@@ -199,7 +199,7 @@ public class BackgroundTaskService extends Service {
                         MediaPlayerVolume mpv =
                             MediaPlayerVolume.newBuilder()
                                 .setPlayer(which_player)
-                                .setVolume(p.getVolume())
+                                .setVolume(unscaleVolume(p.getVolume()))
                                 .build();
                         protob.setMediaPlayerVolumeChange(mpv);
                         break;
@@ -317,7 +317,7 @@ public class BackgroundTaskService extends Service {
           float logVol = scaleVolume(newVolume);
           Log.d(
               "HassmicBackgroundTaskService",
-              "Setting device volume to " + newVolume + " (=>" + logVol + ")");
+              "Setting player volume to " + newVolume + " (=>" + logVol + ")");
           p.setVolume(logVol);
         } else {
           Log.e("HassmicBackgroundTaskService", "Device volume setting invalid: " + newVolume);

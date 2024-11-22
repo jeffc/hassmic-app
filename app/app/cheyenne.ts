@@ -94,8 +94,15 @@ class CheyenneServer {
           clientInfo: {
             uuid: uuid,
             version: APP_VERSION,
-            savedSettings: NativeManager.getSavedSettings(),
           },
+        },
+      })
+    );
+    this.sendMessage(
+      ClientMessage.create({
+        msg: {
+          oneofKind: "savedSettings",
+          savedSettings: NativeManager.getSavedSettings(),
         },
       })
     );
@@ -209,6 +216,7 @@ class CheyenneServer {
         // Actions that need to be handled by native code
         case "playAudio":
         case "setPlayerVolume":
+        case "command":
           console.log(
             `Got "${m.msg.oneofKind}" ServerMessage; passing it to native code`
           );

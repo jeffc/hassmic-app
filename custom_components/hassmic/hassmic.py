@@ -16,7 +16,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntry
 from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.network import NoURLAvailableError, get_url
 
 from .connection_manager import ConnectionManager
 from .exceptions import BadHassMicClientInfoException, BadMessageException
@@ -100,36 +99,6 @@ class HassMic:
         """
         _LOGGER.debug("Got pipeline event: %s", repr(event))
 
-        if event.type is PipelineEventType.TTS_END and (
-            o := event.data.get("tts_output")
-        ):
-            path = o.get("url")
-            urlbase = None
-            try:
-                urlbase = get_url(self._hass)
-            except NoURLAvailableError:
-                _LOGGER.error(
-                    "Failed to get a working URL for this Home Assistant "
-                    "instance; can't send TTS URL to hassmic"
-                )
-
-            if path and urlbase:
-                _LOGGER.debug("Play URL: '%s'", urlbase + path)
-                self._connection_manager.send_enqueue(
-                    ServerMessage(
-                        play_audio=PlayAudio(
-                            url=urlbase + path,
-                            announce=False,
-                        )
-                    )
-                )
-            else:
-                _LOGGER.warning(
-                    "Can't play TTS: (%s) or URL Base (%s) not found",
-                    path,
-                    urlbase,
-                )
-
         for e in self._entities:
             hpe = getattr(e, "handle_pipeline_event", None)
             if hpe is not None and callable(hpe):
@@ -153,6 +122,13 @@ class HassMic:
             hce = getattr(e, "handle_client_event", None)
             if hce is not None and callable(hce):
                 e.handle_client_event(event)
+
+    def _handle_saved_settings(self, ss: SavedSettings):
+        """Handle saved settings from the device."""
+        for e in self._entities:
+            hss = getattr(e, "handle_saved_settings", None)
+            if hss is not None and callable(hss):
+                e.handle_saved_settings(ss)
 
     async def stop(self):
         """Shut down instance."""
@@ -179,6 +155,9 @@ class HassMic:
 
             case "client_event":
                 self._handle_client_event(val)
+
+            case "saved_settings":
+                self._handle_saved_settings(val)
 
             case "ping":
                 pass

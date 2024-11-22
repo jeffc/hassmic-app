@@ -10,6 +10,7 @@ PLATFORMS = [
     Platform.SENSOR,
     Platform.SWITCH,
     Platform.MEDIA_PLAYER,
+    Platform.NUMBER,
 ]
 
 # Possible states for sensors
