@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import betterproto
 
-from homeassistant.components.number.const import *
+from homeassistant.components.number.const import NumberMode
 from homeassistant.components.number import NumberEntity, ENTITY_ID_FORMAT
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -35,7 +35,6 @@ class AnnounceVolume(NumberEntity):
         self._attr_native_min_value = 0
         self._attr_native_max_value = 1
         self._attr_native_step = 0.01
-        self._attr_native_unit_of_measurement = PERCENTAGE
 
     def set_native_value(self, volume: float) -> None:
         """Set the volume level."""
@@ -63,23 +62,23 @@ class AnnounceVolume(NumberEntity):
 
         self.schedule_update_ha_state()
 
-        def handle_saved_settings(self, ss: proto.SavedSettings):
-            if ss.announce_volume is not None:
-                if self._attr_native_state is None:
-                    _LOGGER.debug(
-                        "Setting announce volume to %f due to saved settings",
-                        ss.announce_volume,
-                    )
-                    self._attr_native_state = ss.announce_volume
-                    self.schedule_update_ha_state()
-                else:
-                    _LOGGER.warning(
-                        "Got saved settings from client, but announce volume is already set!"
-                    )
+    def handle_saved_settings(self, ss: proto.SavedSettings):
+        if ss.announce_volume is not None:
+            if self._attr_native_value is None:
+                _LOGGER.debug(
+                    "Setting announce volume to %f due to saved settings",
+                    ss.announce_volume,
+                )
+                self._attr_native_value = ss.announce_volume
+                self.schedule_update_ha_state()
             else:
                 _LOGGER.warning(
-                    "Got saved settings from client, but no announce_volume is specified!"
+                    "Got saved settings from client, but announce volume is already set!"
                 )
+        else:
+            _LOGGER.warning(
+                "Got saved settings from client, but no announce_volume is specified!"
+            )
 
     def handle_connection_state_change(self, new_state: bool):
         """If the remote device just reconnected, remind it what settings it should have."""

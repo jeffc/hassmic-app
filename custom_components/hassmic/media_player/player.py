@@ -52,6 +52,7 @@ class Player(MediaPlayerEntity):
             | MediaPlayerEntityFeature.PLAY_MEDIA
             | MediaPlayerEntityFeature.STOP
             | MediaPlayerEntityFeature.VOLUME_SET
+            | MediaPlayerEntityFeature.BROWSE_MEDIA
             # | MediaPlayerEntityFeature.MEDIA_ENQUEUE
             # | MediaPlayerEntityFeature.NEXT_TRACK
         )
@@ -129,6 +130,17 @@ class Player(MediaPlayerEntity):
             _LOGGER.error(f"{volume} is not between 0 and 1")
             return
         self.send_volume(volume)
+
+    # https://developers.home-assistant.io/docs/core/entity/media-player/#browse-media
+    async def async_browse_media(
+        self, media_content_type: str | None = None, media_content_id: str | None = None
+    ) -> BrowseMedia:
+        """Implement the websocket media browsing helper."""
+        return await media_source.async_browse_media(
+            self.hass,
+            media_content_id,
+            content_filter=lambda item: item.media_content_type.startswith("audio/"),
+        )
 
     def handle_client_event(self, event: proto.ClientEvent):
         """Handle a client event."""
