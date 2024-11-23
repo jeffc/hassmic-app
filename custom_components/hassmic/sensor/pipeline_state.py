@@ -34,3 +34,6 @@ class PipelineState(base.SensorBase):
         # processing.
         self._attr_native_value = event.type
         self.attr_extra_state_attributes = event.data
+
+
+# vim: set ts=4 sw=4:

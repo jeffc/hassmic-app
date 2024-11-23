@@ -105,3 +105,6 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             title=user_input.get("name") or "hassmic",
             data=user_input,
         )
+
+
+# vim: set ts=4 sw=4:

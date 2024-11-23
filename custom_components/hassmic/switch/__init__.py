@@ -26,3 +26,6 @@ async def async_setup_entry(
     async_add_entities(
         [switch_type(hass, config_entry) for switch_type in ALL_SWITCH_TYPES]
     )
+
+
+# vim: set ts=4 sw=4:

@@ -32,3 +32,6 @@ def InitializeEntity(
     )
     e.entity_id = generate_entity_id(entity_id_format, id_candidate, hass=hass)
     config_entry.runtime_data.register_entity(e)
+
+
+# vim: set ts=4 sw=4:

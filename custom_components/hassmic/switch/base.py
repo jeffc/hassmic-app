@@ -63,3 +63,6 @@ class SwitchBase(SwitchEntity):
         self.on_pipeline_event(event)
         self.schedule_update_ha_state()
         return
+
+
+# vim: set ts=4 sw=4:

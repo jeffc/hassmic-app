@@ -34,3 +34,6 @@ async def async_setup_entry(
     async_add_entities(
         [sensor_type(hass, config_entry) for sensor_type in ALL_SENSOR_TYPES]
     )
+
+
+# vim: set ts=4 sw=4:

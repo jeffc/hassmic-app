@@ -43,3 +43,6 @@ class STT(base.SensorBase):
                 self._attr_extra_state_attributes = {
                     "speech": txt,
                 }
+
+
+# vim: set ts=4 sw=4:

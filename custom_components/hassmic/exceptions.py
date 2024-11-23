@@ -11,3 +11,6 @@ class BadHassMicClientInfoException(Exception):
 
 class AlreadyRunningException(Exception):
     """Exception type asserts a task was asked to start that's already running."""
+
+
+# vim: set ts=4 sw=4:

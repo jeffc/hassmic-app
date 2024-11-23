@@ -66,3 +66,6 @@ class Intent(base.SensorBase):
                 **event.data,
                 "speech_output": speech,
             }
+
+
+# vim: set ts=4 sw=4:

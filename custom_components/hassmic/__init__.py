@@ -56,3 +56,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.debug("Unload platforms: %s", str(ok))
     _LOGGER.debug("Unloaded hassmic")
     return ok
+
+
+# vim: set ts=4 sw=4:

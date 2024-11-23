@@ -58,3 +58,6 @@ class SimpleState(base.SensorBase):
         s = getSimpleState(event.type)
         if s is not None:
             self._attr_native_value = s
+
+
+# vim: set ts=4 sw=4:

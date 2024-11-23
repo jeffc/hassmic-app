@@ -190,3 +190,6 @@ class HassMic:
             ) from err
 
         return msg
+
+
+# vim: set ts=4 sw=4:

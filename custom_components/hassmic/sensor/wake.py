@@ -44,3 +44,6 @@ class Wake(base.SensorBase):
 
             case PipelineEventType.WAKE_WORD_END:
                 self._attr_native_value = STATE_DETECTED
+
+
+# vim: set ts=4 sw=4:

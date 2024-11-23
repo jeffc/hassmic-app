@@ -17,3 +17,4 @@ PLATFORMS = [
 STATE_LISTENING = "listening"
 STATE_DETECTED = "detected"
 STATE_ERROR = "error"
+# vim: set ts=4 sw=4:

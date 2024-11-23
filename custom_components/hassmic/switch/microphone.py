@@ -54,3 +54,6 @@ class Microphone(base.SwitchBase):
         self._hassmic.connection_manager.send_enqueue(
             ServerMessage(set_mic_mute=not self._attr_is_on)
         )
+
+
+# vim: set ts=4 sw=4:

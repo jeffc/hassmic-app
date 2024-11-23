@@ -167,3 +167,6 @@ class PipelineManager:
                     self._queue.get_nowait()
                 except asyncio.QueueEmpty:
                     break
+
+
+# vim: set ts=4 sw=4:

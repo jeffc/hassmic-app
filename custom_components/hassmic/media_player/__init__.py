@@ -19,3 +19,6 @@ async def async_setup_entry(
     """Initialize hassmic config entry for media players."""
 
     async_add_entities([Player(hass, config_entry)])
+
+
+# vim: set ts=4 sw=4:
