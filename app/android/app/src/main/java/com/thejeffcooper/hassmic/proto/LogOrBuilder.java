@@ -21,4 +21,18 @@ public interface LogOrBuilder
    * @return The bytes for logText.
    */
   com.google.protobuf.ByteString getLogTextBytes();
+
+  /**
+   * <code>.hassmic.Log.Severity severity = 2;</code>
+   *
+   * @return The enum numeric value on the wire for severity.
+   */
+  int getSeverityValue();
+
+  /**
+   * <code>.hassmic.Log.Severity severity = 2;</code>
+   *
+   * @return The severity.
+   */
+  com.thejeffcooper.hassmic.proto.Log.Severity getSeverity();
 }

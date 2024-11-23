@@ -116,7 +116,19 @@ class HassMic:
         """Handle a client event from the device."""
         (which, val) = betterproto.which_one_of(event, "event")
         if which == "log":
-            _LOGGER.debug("[Client log]: %s", val.log_text)
+            logstr = val.log_text
+            lg = logging.getLogger(f"{__spec__.parent}.{self._host}")
+            match val.severity:
+                case LogSeverity.SEVERITY_DEBUG:
+                    lg.debug(logstr)
+                case LogSeverity.SEVERITY_INFO:
+                    lg.info(logstr)
+                case LogSeverity.SEVERITY_WARNING:
+                    lg.warning(logstr)
+                case LogSeverity.SEVERITY_ERROR:
+                    lg.error(logstr)
+                case _:
+                    lg.error("[SEVERITY NOT SET]" + logstr)
 
         for e in self._entities:
             hce = getattr(e, "handle_client_event", None)

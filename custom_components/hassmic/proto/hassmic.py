@@ -35,6 +35,14 @@ class MediaPlayerId(betterproto.Enum):
     ID_ANNOUNCE = 2
 
 
+class LogSeverity(betterproto.Enum):
+    SEVERITY_UNKNOWN = 0
+    SEVERITY_DEBUG = 1
+    SEVERITY_INFO = 2
+    SEVERITY_WARNING = 3
+    SEVERITY_ERROR = 4
+
+
 @dataclass
 class SavedSettings(betterproto.Message):
     """Information saved and loaded between runs of the hassmic app"""
@@ -117,6 +125,7 @@ class Log(betterproto.Message):
     """A log message passed from the client to the server"""
 
     log_text: str = betterproto.string_field(1)
+    severity: "LogSeverity" = betterproto.enum_field(2)
 
 
 @dataclass

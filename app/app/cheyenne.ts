@@ -2,7 +2,7 @@ import TcpSocket from "react-native-tcp-socket";
 import { APP_VERSION } from "./constants";
 import { Buffer } from "buffer";
 import { NativeManager } from "./nativemgr";
-import { UUIDManager } from "./util";
+import { HMLogger, UUIDManager } from "./util";
 
 import {
   AudioData,
@@ -49,7 +49,7 @@ class CheyenneServer {
           clientEvent: ce,
         },
       });
-      console.log(`Client message: ${ClientMessage.toJsonString(cm)}`);
+      HMLogger.debug(`Client message: ${ClientMessage.toJsonString(cm)}`);
       CheyenneSocket.sendMessage(cm);
     });
   }
@@ -68,7 +68,7 @@ class CheyenneServer {
           })
         );
       } catch (e) {
-        console.info(e);
+        HMLogger.info(e);
       }
     }
   };
@@ -80,8 +80,7 @@ class CheyenneServer {
         let b64 = Buffer.from(msg).toString("base64");
         this._sock.write(b64 + "\n");
       } catch (e) {
-        console.error(e);
-        console.error(e.stack);
+        HMLogger.error(e);
       }
     }
   };
@@ -122,11 +121,11 @@ class CheyenneServer {
             })
           );
         } catch (e) {
-          console.info(e);
+          HMLogger.info(e);
         }
         await new Promise((resolve) => setTimeout(resolve, 10 * 1e3));
       }
-      console.log("done ping");
+      HMLogger.debug("done ping");
     })().then(() => {});
   };
 
@@ -135,11 +134,11 @@ class CheyenneServer {
 
     this._server = TcpSocket.createServer((socket) => {
       socket.on("error", (err) => {
-        console.info(`Socket error: ${err}`);
+        HMLogger.info(`Socket error: ${err}`);
       });
 
       socket.on("close", (err) => {
-        console.info(`Closed connection`);
+        HMLogger.info(`Closed connection`);
         if (this._sock == socket) {
           this._sock = null;
         }
@@ -147,7 +146,7 @@ class CheyenneServer {
       });
 
       socket.on("timeout", () => {
-        console.info("Socket timed out");
+        HMLogger.info("Socket timed out");
         socket.destroy();
         this._setConnectionState(false);
       });
@@ -156,48 +155,29 @@ class CheyenneServer {
         this._handleIncomingData(d);
       });
 
-      console.info(`Got connection`);
+      HMLogger.info(`Got connection`);
       if (this._sock == null) {
         this._sock = socket;
         socket.setTimeout(60e3);
         this._setConnectionState(true);
         this.sendInfo(this._uuid);
         this.startPing();
-        this.logToServer("Set up successfully!");
-        console.info("All set up -- waiting");
+        HMLogger.info("All set up -- waiting");
       } else {
-        console.info("Already have a socket, dropping new connection");
+        HMLogger.warn("Already have a socket, dropping new connection");
         socket.destroy();
       }
     }).listen({ port: 11700, host: "0.0.0.0" });
   };
 
   stopServer = async () => {
-    console.log("stopping server...");
+    HMLogger.info("stopping server...");
     const p = new Promise<void>((resolve) => {
       this._server?.close(() => resolve());
     });
     this._sock?.destroy();
     await p;
-    console.log("Server stopped");
-  };
-
-  public logToServer = (m: string) => {
-    this.sendMessage(
-      ClientMessage.create({
-        msg: {
-          oneofKind: "clientEvent",
-          clientEvent: {
-            event: {
-              oneofKind: "log",
-              log: {
-                logText: m,
-              },
-            },
-          },
-        },
-      })
-    );
+    HMLogger.info("Server stopped");
   };
 
   private _handleIncomingData = async (d: Uint8Array) => {
@@ -208,25 +188,25 @@ class CheyenneServer {
 
       switch (m.msg.oneofKind) {
         case "setMicMute":
-          console.info("Got set_mic_mute message");
+          HMLogger.info("Got set_mic_mute message");
           const shouldMute: boolean = m.msg.setMicMute;
-          console.info(`Setting mic mute to ${shouldMute}`);
+          HMLogger.info(`Setting mic mute to ${shouldMute}`);
           this._mic_muted = shouldMute;
           break;
         // Actions that need to be handled by native code
         case "playAudio":
         case "setPlayerVolume":
         case "command":
-          console.log(
+          HMLogger.debug(
             `Got "${m.msg.oneofKind}" ServerMessage; passing it to native code`
           );
           NativeManager.handleServerMessage(m);
           break;
         default:
-          console.warn(`Got unknown message type '${m.msg.oneofKind}'`);
+          HMLogger.warning(`Got unknown message type '${m.msg.oneofKind}'`);
       }
     } catch (e) {
-      console.error(e);
+      HMLogger.error(e);
     }
   };
 }

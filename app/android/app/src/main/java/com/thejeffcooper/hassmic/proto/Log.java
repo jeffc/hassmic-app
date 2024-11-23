@@ -20,6 +20,108 @@ public final class Log extends com.google.protobuf.GeneratedMessageLite<Log, Log
     logText_ = "";
   }
 
+  /** Protobuf enum {@code hassmic.Log.Severity} */
+  public enum Severity implements com.google.protobuf.Internal.EnumLite {
+    /** <code>SEVERITY_UNKNOWN = 0;</code> */
+    SEVERITY_UNKNOWN(0),
+    /** <code>SEVERITY_DEBUG = 1;</code> */
+    SEVERITY_DEBUG(1),
+    /** <code>SEVERITY_INFO = 2;</code> */
+    SEVERITY_INFO(2),
+    /** <code>SEVERITY_WARNING = 3;</code> */
+    SEVERITY_WARNING(3),
+    /** <code>SEVERITY_ERROR = 4;</code> */
+    SEVERITY_ERROR(4),
+    UNRECOGNIZED(-1),
+    ;
+
+    /** <code>SEVERITY_UNKNOWN = 0;</code> */
+    public static final int SEVERITY_UNKNOWN_VALUE = 0;
+
+    /** <code>SEVERITY_DEBUG = 1;</code> */
+    public static final int SEVERITY_DEBUG_VALUE = 1;
+
+    /** <code>SEVERITY_INFO = 2;</code> */
+    public static final int SEVERITY_INFO_VALUE = 2;
+
+    /** <code>SEVERITY_WARNING = 3;</code> */
+    public static final int SEVERITY_WARNING_VALUE = 3;
+
+    /** <code>SEVERITY_ERROR = 4;</code> */
+    public static final int SEVERITY_ERROR_VALUE = 4;
+
+    @java.lang.Override
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static Severity valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static Severity forNumber(int value) {
+      switch (value) {
+        case 0:
+          return SEVERITY_UNKNOWN;
+        case 1:
+          return SEVERITY_DEBUG;
+        case 2:
+          return SEVERITY_INFO;
+        case 3:
+          return SEVERITY_WARNING;
+        case 4:
+          return SEVERITY_ERROR;
+        default:
+          return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<Severity> internalGetValueMap() {
+      return internalValueMap;
+    }
+
+    private static final com.google.protobuf.Internal.EnumLiteMap<Severity> internalValueMap =
+        new com.google.protobuf.Internal.EnumLiteMap<Severity>() {
+          @java.lang.Override
+          public Severity findValueByNumber(int number) {
+            return Severity.forNumber(number);
+          }
+        };
+
+    public static com.google.protobuf.Internal.EnumVerifier internalGetVerifier() {
+      return SeverityVerifier.INSTANCE;
+    }
+
+    private static final class SeverityVerifier
+        implements com.google.protobuf.Internal.EnumVerifier {
+      static final com.google.protobuf.Internal.EnumVerifier INSTANCE = new SeverityVerifier();
+
+      @java.lang.Override
+      public boolean isInRange(int number) {
+        return Severity.forNumber(number) != null;
+      }
+    }
+    ;
+
+    private final int value;
+
+    private Severity(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:hassmic.Log.Severity)
+  }
+
   public static final int LOG_TEXT_FIELD_NUMBER = 1;
   private java.lang.String logText_;
 
@@ -68,6 +170,55 @@ public final class Log extends com.google.protobuf.GeneratedMessageLite<Log, Log
   private void setLogTextBytes(com.google.protobuf.ByteString value) {
     checkByteStringIsUtf8(value);
     logText_ = value.toStringUtf8();
+  }
+
+  public static final int SEVERITY_FIELD_NUMBER = 2;
+  private int severity_;
+
+  /**
+   * <code>.hassmic.Log.Severity severity = 2;</code>
+   *
+   * @return The enum numeric value on the wire for severity.
+   */
+  @java.lang.Override
+  public int getSeverityValue() {
+    return severity_;
+  }
+
+  /**
+   * <code>.hassmic.Log.Severity severity = 2;</code>
+   *
+   * @return The severity.
+   */
+  @java.lang.Override
+  public com.thejeffcooper.hassmic.proto.Log.Severity getSeverity() {
+    com.thejeffcooper.hassmic.proto.Log.Severity result =
+        com.thejeffcooper.hassmic.proto.Log.Severity.forNumber(severity_);
+    return result == null ? com.thejeffcooper.hassmic.proto.Log.Severity.UNRECOGNIZED : result;
+  }
+
+  /**
+   * <code>.hassmic.Log.Severity severity = 2;</code>
+   *
+   * @param value The enum numeric value on the wire for severity to set.
+   */
+  private void setSeverityValue(int value) {
+    severity_ = value;
+  }
+
+  /**
+   * <code>.hassmic.Log.Severity severity = 2;</code>
+   *
+   * @param value The severity to set.
+   */
+  private void setSeverity(com.thejeffcooper.hassmic.proto.Log.Severity value) {
+    severity_ = value.getNumber();
+  }
+
+  /** <code>.hassmic.Log.Severity severity = 2;</code> */
+  private void clearSeverity() {
+
+    severity_ = 0;
   }
 
   public static com.thejeffcooper.hassmic.proto.Log parseFrom(java.nio.ByteBuffer data)
@@ -226,6 +377,61 @@ public final class Log extends com.google.protobuf.GeneratedMessageLite<Log, Log
       return this;
     }
 
+    /**
+     * <code>.hassmic.Log.Severity severity = 2;</code>
+     *
+     * @return The enum numeric value on the wire for severity.
+     */
+    @java.lang.Override
+    public int getSeverityValue() {
+      return instance.getSeverityValue();
+    }
+
+    /**
+     * <code>.hassmic.Log.Severity severity = 2;</code>
+     *
+     * @param value The severity to set.
+     * @return This builder for chaining.
+     */
+    public Builder setSeverityValue(int value) {
+      copyOnWrite();
+      instance.setSeverityValue(value);
+      return this;
+    }
+
+    /**
+     * <code>.hassmic.Log.Severity severity = 2;</code>
+     *
+     * @return The severity.
+     */
+    @java.lang.Override
+    public com.thejeffcooper.hassmic.proto.Log.Severity getSeverity() {
+      return instance.getSeverity();
+    }
+
+    /**
+     * <code>.hassmic.Log.Severity severity = 2;</code>
+     *
+     * @param value The enum numeric value on the wire for severity to set.
+     * @return This builder for chaining.
+     */
+    public Builder setSeverity(com.thejeffcooper.hassmic.proto.Log.Severity value) {
+      copyOnWrite();
+      instance.setSeverity(value);
+      return this;
+    }
+
+    /**
+     * <code>.hassmic.Log.Severity severity = 2;</code>
+     *
+     * @return This builder for chaining.
+     */
+    public Builder clearSeverity() {
+      copyOnWrite();
+      instance.clearSeverity();
+      return this;
+    }
+
     // @@protoc_insertion_point(builder_scope:hassmic.Log)
   }
 
@@ -248,10 +454,11 @@ public final class Log extends com.google.protobuf.GeneratedMessageLite<Log, Log
         {
           java.lang.Object[] objects =
               new java.lang.Object[] {
-                "logText_",
+                "logText_", "severity_",
               };
           java.lang.String info =
-              "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0208";
+              "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\u0208\u0002\f"
+                  + "";
           return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

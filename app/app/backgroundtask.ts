@@ -7,6 +7,7 @@ import { STORAGE_KEY_RUN_BACKGROUND_TASK } from "./constants";
 import { ZeroconfManager } from "./zeroconf";
 import { NativeManager } from "./nativemgr";
 import { ClientEvent, ClientMessage, ServerMessage } from "./proto/hassmic";
+import { HMLogger } from "./util";
 
 // note - patched version from
 // https://github.com/jeffc/react-native-live-audio-stream
@@ -68,13 +69,13 @@ class BackgroundTaskManager_ {
             en_str = from_storage?.toString();
           }
         } catch (e) {
-          console.error(`Error getting task enable state: ${e}`);
+          HMLogger.error(`Error getting task enable state: ${e}`);
           fail(e);
         }
 
         let en: boolean = en_str === "true";
         if (en_str === null) {
-          console.log("No enable state found. Setting to false.");
+          HMLogger.debug("No enable state found. Setting to false.");
           en = false;
         }
 
@@ -107,7 +108,7 @@ class BackgroundTaskManager_ {
           enable ? "true" : "false"
         );
       } catch (e) {
-        console.error(`Error saving enable state: ${e}`);
+        HMLogger.error(`Error saving enable state: ${e}`);
       }
       this.isEnabled = new Promise<boolean>((resolve) => resolve(enable));
       this.enableStateCallback(enable);
@@ -117,7 +118,7 @@ class BackgroundTaskManager_ {
   // actually run the task
   run_fn = async (taskData: any) => {
     if (this.taskState == TaskState.RUNNING) {
-      console.error("Background task is already running; not starting again!");
+      HMLogger.error("Background task is already running; not starting again!");
       return;
     }
 
@@ -126,29 +127,29 @@ class BackgroundTaskManager_ {
     const shouldRun = await this.isEnabled;
 
     if (!shouldRun) {
-      console.log("Not running background task; is disabled");
+      HMLogger.info("Not running background task; is disabled");
       this.setState(TaskState.STOPPED);
       NativeManager.killService();
       return;
     }
 
-    console.log("Started background task");
+    HMLogger.info("Started background task");
     const shouldStop = new Promise<void>((resolve) => {
       this.stop_fn = resolve;
     });
     // native event listeners
     CheyenneSocket.startServer();
-    console.log("Started server");
+    HMLogger.info("Started server");
     await ZeroconfManager.StartZeroconf();
     const ok = await PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO
     );
     if (!ok) {
-      console.error("no permission; bailing");
+      HMLogger.error("no permission; bailing");
       this.setState(TaskState.FAILED);
       return;
     }
-    console.log("permissions okay, starting stream");
+    HMLogger.info("permissions okay, starting stream");
     LiveAudioStream.init({
       sampleRate: 16000,
       channels: 1,
@@ -160,19 +161,19 @@ class BackgroundTaskManager_ {
     // @ts-ignore: This error is some weird interaction between TS and Java
     LiveAudioStream.on("RNLiveAudioStream.data", (data) => {
       if (typeof data == "object") {
-        console.warn(`Can't process: ${JSON.stringify(data)}`);
+        HMLogger.warning(`Can't process: ${JSON.stringify(data)}`);
         return;
       }
       const chunk = Buffer.from(data, "base64");
       CheyenneSocket.streamAudio(chunk);
     });
     LiveAudioStream.start();
-    console.log("stream started");
+    HMLogger.info("stream started");
     this.setState(TaskState.RUNNING);
 
-    console.log("Background task running, awaiting stop signal");
+    HMLogger.info("Background task running, awaiting stop signal");
     await shouldStop;
-    console.log("Background task got stop signal, stopping");
+    HMLogger.info("Background task got stop signal, stopping");
     LiveAudioStream.stop();
     CheyenneSocket.stopServer();
     NativeManager.killService();
@@ -189,7 +190,7 @@ class BackgroundTaskManager_ {
     if (this.stop_fn) {
       this.stop_fn();
     } else {
-      console.error(
+      HMLogger.error(
         "Called stop() on background task, but it doesn't appear to be running"
       );
     }

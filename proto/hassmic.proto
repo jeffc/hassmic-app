@@ -92,7 +92,16 @@ message ClientEvent {
 
 // A log message passed from the client to the server
 message Log {
+  enum Severity {
+    SEVERITY_UNKNOWN = 0;
+    SEVERITY_DEBUG = 1;
+    SEVERITY_INFO = 2;
+    SEVERITY_WARNING = 3;
+    SEVERITY_ERROR = 4;
+  }
+
   string log_text = 1;
+  Severity severity = 2;
 }
 
 

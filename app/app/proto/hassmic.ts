@@ -167,6 +167,35 @@ export interface Log {
      * @generated from protobuf field: string log_text = 1;
      */
     logText: string;
+    /**
+     * @generated from protobuf field: hassmic.Log.Severity severity = 2;
+     */
+    severity: Log_Severity;
+}
+/**
+ * @generated from protobuf enum hassmic.Log.Severity
+ */
+export enum Log_Severity {
+    /**
+     * @generated from protobuf enum value: SEVERITY_UNKNOWN = 0;
+     */
+    UNKNOWN = 0,
+    /**
+     * @generated from protobuf enum value: SEVERITY_DEBUG = 1;
+     */
+    DEBUG = 1,
+    /**
+     * @generated from protobuf enum value: SEVERITY_INFO = 2;
+     */
+    INFO = 2,
+    /**
+     * @generated from protobuf enum value: SEVERITY_WARNING = 3;
+     */
+    WARNING = 3,
+    /**
+     * @generated from protobuf enum value: SEVERITY_ERROR = 4;
+     */
+    ERROR = 4
 }
 /**
  * The wrapper message that actually gets sent to the server
@@ -832,12 +861,14 @@ export const ClientEvent = new ClientEvent$Type();
 class Log$Type extends MessageType<Log> {
     constructor() {
         super("hassmic.Log", [
-            { no: 1, name: "log_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "log_text", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "severity", kind: "enum", T: () => ["hassmic.Log.Severity", Log_Severity, "SEVERITY_"] }
         ]);
     }
     create(value?: PartialMessage<Log>): Log {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.logText = "";
+        message.severity = 0;
         if (value !== undefined)
             reflectionMergePartial<Log>(this, message, value);
         return message;
@@ -849,6 +880,9 @@ class Log$Type extends MessageType<Log> {
             switch (fieldNo) {
                 case /* string log_text */ 1:
                     message.logText = reader.string();
+                    break;
+                case /* hassmic.Log.Severity severity */ 2:
+                    message.severity = reader.int32();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -865,6 +899,9 @@ class Log$Type extends MessageType<Log> {
         /* string log_text = 1; */
         if (message.logText !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.logText);
+        /* hassmic.Log.Severity severity = 2; */
+        if (message.severity !== 0)
+            writer.tag(2, WireType.Varint).int32(message.severity);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);

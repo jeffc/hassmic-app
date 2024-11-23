@@ -8,6 +8,7 @@ import {
   CLIENT_EVENT_KEY,
   STORAGE_KEY_SAVED_SETTINGS_PROTO,
 } from "./constants";
+import { HMLogger } from "./util";
 
 import {
   ClientEvent,
@@ -30,8 +31,8 @@ class NativeManager_ {
     });
     // run async init
     this.initialize_().then(
-      (ok) => console.log("Init ok"),
-      (nok) => console.error(`Init not ok: ${nok}`)
+      (ok) => HMLogger.debug("Init ok"),
+      (nok) => HMLogger.debug(`Init not ok: ${nok}`)
     );
   }
 
@@ -41,14 +42,14 @@ class NativeManager_ {
 
   private savedSettings_: SavedSettings = SavedSettings.create({});
   private writeSavedSettings_ = async () => {
-    console.log("writing saved settings");
+    HMLogger.debug("writing saved settings");
     await AsyncStorage.setItem(
       STORAGE_KEY_SAVED_SETTINGS_PROTO,
       Buffer.from(SavedSettings.toBinary(this.savedSettings_)).toString(
         "base64"
       )
     );
-    console.log("wrote");
+    HMLogger.debug("wrote");
   };
 
   getSavedSettings = () => {
@@ -59,37 +60,31 @@ class NativeManager_ {
 
   // perform async initializiations
   private initialize_ = async () => {
-    console.warn("Initializing native manager");
-    console.warn("Listening");
-
     // get the saved settings from storage
     let ss = await AsyncStorage.getItem(STORAGE_KEY_SAVED_SETTINGS_PROTO);
     if (ss) {
       try {
-        console.warn(`got storage: ${ss.toString()}`);
         let b64 = ss.toString().trim();
         let bts = Buffer.from(b64, "base64");
         this.savedSettings_ = SavedSettings.fromBinary(bts);
-        console.warn("Parsed");
       } catch (e) {
-        console.error(`Error loading saved settings: ${e}`);
+        HMLogger.error(`Error loading saved settings: ${e}`);
         ss = null;
       }
     }
     if (!ss) {
-      console.warn(`No saved settings found, creating defaults`);
+      HMLogger.warn(`No saved settings found, creating defaults`);
       this.savedSettings_ = SavedSettings.create({
         announceVolume: 1.0,
         playbackVolume: 1.0,
       });
     }
-    console.warn("saving...");
-    console.log(SavedSettings.toJsonString(this.savedSettings_));
+    HMLogger.debug(SavedSettings.toJsonString(this.savedSettings_));
     await this.writeSavedSettings_();
 
     this.addClientEventListener(this.onClientEvent);
 
-    console.info("Native manager is ready.");
+    HMLogger.debug("Native manager is ready.");
     this.setReady();
   };
 
@@ -100,14 +95,14 @@ class NativeManager_ {
   // Add a listener for ClientEvents sent by native code.
   addClientEventListener = (f: (ev: ClientEvent) => void) => {
     this.emitter.addListener(CLIENT_EVENT_KEY, (ev) => {
-      console.log(`Proto-valued event: ${ev}`);
+      HMLogger.debug(`Proto-valued event: ${ev}`);
       try {
         let b64 = ev.toString().trim();
         let bts = Buffer.from(b64, "base64");
         let ce = ClientEvent.fromBinary(bts);
         f(ce);
       } catch (e) {
-        console.error(`Error in ClientEvent Listener: ${e}`);
+        HMLogger.error(`Error in ClientEvent Listener: ${e}`);
       }
     });
   };
@@ -134,24 +129,28 @@ class NativeManager_ {
 
   // What to do on ClientEvent receipt from native code
   private onClientEvent = (ce: ClientEvent) => {
-    console.info(ClientEvent.toJsonString(ce));
+    HMLogger.info(ClientEvent.toJsonString(ce));
     if (ce.event.oneofKind == "mediaPlayerVolumeChange") {
       const vl = ce.event.mediaPlayerVolumeChange;
       switch (vl.player) {
         case MediaPlayerId.ID_ANNOUNCE:
-          console.log(`Setting new volume level for announce to ${vl.volume}`);
+          HMLogger.debug(
+            `Setting new volume level for announce to ${vl.volume}`
+          );
           this.savedSettings_.announceVolume = vl.volume;
           // save in the background
           this.writeSavedSettings_().then(() => {});
           break;
         case MediaPlayerId.ID_PLAYBACK:
-          console.log(`Setting new volume level for playback to ${vl.volume}`);
+          HMLogger.debug(
+            `Setting new volume level for playback to ${vl.volume}`
+          );
           this.savedSettings_.playbackVolume = vl.volume;
           // save in the background
           this.writeSavedSettings_().then(() => {});
           break;
         default:
-          console.error(`Unknown player in event: ${vl.player}`);
+          HMLogger.error(`Unknown player in event: ${vl.player}`);
       }
     }
   };
