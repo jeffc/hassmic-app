@@ -46,7 +46,7 @@ class HassMic:
         try:
             async with asyncio.timeout(2):
                 m = await HassMic.recv_message(reader)
-                if (w := betterproto.which_one_of(m, "msg"))[0] == "clientInfo":
+                if (w := betterproto.which_one_of(m, "msg"))[0] == "client_info":
                     if (uuid := w[1].get("uuid")) is not None:
                         return uuid
                 raise BadHassMicClientInfoException
