@@ -1,12 +1,8 @@
-# HassMic (The App)
+# HassMic
 
-This is the HassMic app, an Android application designed to run on devices
-acting as Home Assistant voice assistant satellites.
-
-It is meant to pair with the [HassMic
-Integration](http://github.com/jeffc/hassmic-integration).
-
-[**Latest dev commit APK**](https://f001.backblazeb2.com/file/jeffcooper-public-bucket/hassmic-artifacts/by-branch/hassmic-dev.apk) (no guarantee of functionality, takes about 10 minutes from commit time to availability)
+Hassmic is an Android application and [Home
+Assistant](https://home-assistant.io) designed to run on devices acting as Home
+Assistant voice assistant satellites.
 
 It is currently in active development and probably has lots of bugs. Some
 highlights:
@@ -35,8 +31,8 @@ This work is licensed under a
 
 ## Dev Tips
 
-This project is built on React-Native, but uses a substantial amount of native
-code. Using `npx expo run:android` _might_ work, but isn't officially supported.
+This project is built on React Native and uses a substantial amount of native
+code. Vestiges of expo infrastructure still exist, but expo commands won't work.
 
 To build an APK use,
 
